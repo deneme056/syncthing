@@ -26,18 +26,18 @@ func (a Vector) Compare(b Vector) Ordering {
 
 	result := Equal
 
-	for ai < len(a) || bi < len(b) {
+	for ai < len(a.Counters) || bi < len(b.Counters) {
 		var aMissing, bMissing bool
 
-		if ai < len(a) {
-			av = a[ai]
+		if ai < len(a.Counters) {
+			av = a.Counters[ai]
 		} else {
 			av = Counter{}
 			aMissing = true
 		}
 
-		if bi < len(b) {
-			bv = b[bi]
+		if bi < len(b.Counters) {
+			bv = b.Counters[bi]
 		} else {
 			bv = Counter{}
 			bMissing = true
@@ -77,10 +77,10 @@ func (a Vector) Compare(b Vector) Ordering {
 			}
 		}
 
-		if ai < len(a) && (av.ID <= bv.ID || bMissing) {
+		if ai < len(a.Counters) && (av.ID <= bv.ID || bMissing) {
 			ai++
 		}
-		if bi < len(b) && (bv.ID <= av.ID || aMissing) {
+		if bi < len(b.Counters) && (bv.ID <= av.ID || aMissing) {
 			bi++
 		}
 	}

@@ -1,0 +1,128 @@
+syntax = "proto2";
+
+package protocol;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.goproto_stringer_all) = false;
+
+message HelloMessage {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional string deviceName = 1 [(gogoproto.nullable) = false];
+	optional string clientName = 2 [(gogoproto.nullable) = false];
+	optional string clientVersion = 3 [(gogoproto.nullable) = false];
+}
+
+message IndexMessage {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional string folder = 1 [(gogoproto.nullable) = false];
+	repeated FileInfo files = 2 [(gogoproto.nullable) = false];
+	optional uint32 flags = 3 [(gogoproto.nullable) = false];
+	repeated Option options = 4 [(gogoproto.nullable) = false];
+}
+
+message FileInfo {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional string name = 1 [(gogoproto.nullable) = false];
+	optional uint32 flags = 2 [(gogoproto.nullable) = false];
+	optional int64 modified = 3 [(gogoproto.nullable) = false];
+	optional Vector version = 4 [(gogoproto.nullable) = false];
+	optional int64 localVersion = 5 [(gogoproto.nullable) = false];
+	optional int64 length = 6 [(gogoproto.nullable) = false];
+	repeated BlockInfo blocks = 7 [(gogoproto.nullable) = false];
+}
+
+message BlockInfo {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional int64 offset = 1 [(gogoproto.nullable) = false];
+	optional int32 length = 2 [(gogoproto.nullable) = false];
+	optional bytes hash = 3 [(gogoproto.nullable) = false];
+}
+
+message Option {
+	option (gogoproto.goproto_unrecognized) = false;
+        optional string key = 1 [(gogoproto.nullable) = false];
+        optional string value = 2 [(gogoproto.nullable) = false];
+}
+
+message RequestMessage {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional string folder = 1 [(gogoproto.nullable) = false];
+	optional string name = 2 [(gogoproto.nullable) = false];
+	optional int64 offset = 3 [(gogoproto.nullable) = false];
+	optional int32 length = 4 [(gogoproto.nullable) = false];
+	optional bytes hash = 5 [(gogoproto.nullable) = false];
+	optional uint32 flags = 6 [(gogoproto.nullable) = false];
+	repeated Option options = 7 [(gogoproto.nullable) = false];
+}
+
+message ResponseMessage {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional bytes data = 1 [(gogoproto.nullable) = false];
+	optional int32 code = 2 [(gogoproto.nullable) = false];
+}
+
+message ClusterConfigMessage {
+	option (gogoproto.goproto_unrecognized) = false;
+	repeated Folder folders = 1 [(gogoproto.nullable) = false];
+	repeated Option options = 2 [(gogoproto.nullable) = false];
+}
+
+message DownloadProgressMessage {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional string folder = 1 [(gogoproto.nullable) = false];
+	repeated FileDownloadProgressUpdate updates = 2 [(gogoproto.nullable) = false];
+	optional uint32 flags = 3 [(gogoproto.nullable) = false];
+	repeated Option options = 4 [(gogoproto.nullable) = false];
+}
+
+message Folder {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional string id = 1 [(gogoproto.customname) = "ID", (gogoproto.nullable) = false];
+	optional string label = 2 [(gogoproto.nullable) = false];
+	repeated Device devices = 3 [(gogoproto.nullable) = false];
+	optional uint32 flags = 4 [(gogoproto.nullable) = false];
+	repeated Option options = 5 [(gogoproto.nullable) = false];
+}
+
+message Device {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional bytes id = 1 [(gogoproto.customname) = "ID", (gogoproto.nullable) = false];
+	optional string name = 2 [(gogoproto.nullable) = false];
+	repeated string addresses = 3;
+	optional uint32 compression = 4 [(gogoproto.nullable) = false];
+	optional string certName = 5 [(gogoproto.nullable) = false];
+	optional int64 maxLocalVersion = 6 [(gogoproto.nullable) = false];
+	optional uint32 flags = 7 [(gogoproto.nullable) = false];
+	repeated Option options = 8 [(gogoproto.nullable) = false];
+}
+
+message FileDownloadProgressUpdate {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional uint32 opdateType = 1 [(gogoproto.nullable) = false];
+	optional string name = 2 [(gogoproto.nullable) = false];
+	optional Vector version = 3 [(gogoproto.nullable) = false];
+	repeated int32 blockIndexes = 4;
+}
+
+message CloseMessage {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional string reason = 1 [(gogoproto.nullable) = false];
+	optional int32 code = 2 [(gogoproto.nullable) = false];
+}
+
+message EmptyMessage {
+	option (gogoproto.goproto_unrecognized) = false;
+}
+
+message Vector {
+	option (gogoproto.goproto_unrecognized) = false;
+	repeated Counter counters = 1 [(gogoproto.nullable) = false];
+}
+
+message Counter {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional uint64 id = 1 [(gogoproto.customname) = "ID", (gogoproto.nullable) = false];
+	optional uint64 value = 2 [(gogoproto.nullable) = false];
+}

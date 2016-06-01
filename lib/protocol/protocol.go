@@ -12,7 +12,6 @@ import (
 	"time"
 
 	lz4 "github.com/bkaradzic/go-lz4"
-	"github.com/calmh/xdr"
 )
 
 const (
@@ -153,8 +152,8 @@ type hdrMsg struct {
 }
 
 type encodable interface {
-	MarshalXDRInto(m *xdr.Marshaller) error
-	XDRSize() int
+	MarshalTo([]byte) (int, error)
+	Size() int
 }
 
 type isEofer interface {
@@ -220,7 +219,7 @@ func (c *rawConnection) Index(folder string, idx []FileInfo, flags uint32, optio
 	default:
 	}
 	c.idxMut.Lock()
-	c.send(-1, messageTypeIndex, IndexMessage{
+	c.send(-1, messageTypeIndex, &IndexMessage{
 		Folder:  folder,
 		Files:   idx,
 		Flags:   flags,
@@ -238,7 +237,7 @@ func (c *rawConnection) IndexUpdate(folder string, idx []FileInfo, flags uint32,
 	default:
 	}
 	c.idxMut.Lock()
-	c.send(-1, messageTypeIndexUpdate, IndexMessage{
+	c.send(-1, messageTypeIndexUpdate, &IndexMessage{
 		Folder:  folder,
 		Files:   idx,
 		Flags:   flags,
@@ -271,11 +270,11 @@ func (c *rawConnection) Request(folder string, name string, offset int64, size i
 	c.awaiting[id] = rc
 	c.awaitingMut.Unlock()
 
-	ok := c.send(id, messageTypeRequest, RequestMessage{
+	ok := c.send(id, messageTypeRequest, &RequestMessage{
 		Folder:  folder,
 		Name:    name,
 		Offset:  offset,
-		Size:    int32(size),
+		Length:  int32(size),
 		Hash:    hash,
 		Flags:   flags,
 		Options: nil,
@@ -293,7 +292,7 @@ func (c *rawConnection) Request(folder string, name string, offset int64, size i
 
 // ClusterConfig send the cluster configuration message to the peer and returns any error
 func (c *rawConnection) ClusterConfig(config ClusterConfigMessage) {
-	c.send(-1, messageTypeClusterConfig, config, nil)
+	c.send(-1, messageTypeClusterConfig, &config, nil)
 }
 
 func (c *rawConnection) Closed() bool {
@@ -307,7 +306,7 @@ func (c *rawConnection) Closed() bool {
 
 // DownloadProgress sends the progress updates for the files that are currently being downloaded.
 func (c *rawConnection) DownloadProgress(folder string, updates []FileDownloadProgressUpdate, flags uint32, options []Option) {
-	c.send(-1, messageTypeDownloadProgress, DownloadProgressMessage{
+	c.send(-1, messageTypeDownloadProgress, &DownloadProgressMessage{
 		Folder:  folder,
 		Updates: updates,
 		Flags:   flags,
@@ -345,56 +344,56 @@ func (c *rawConnection) readerLoop() (err error) {
 		}
 
 		switch msg := msg.(type) {
-		case ClusterConfigMessage:
+		case *ClusterConfigMessage:
 			if state != stateInitial {
 				return fmt.Errorf("protocol error: cluster config message in state %d", state)
 			}
-			go c.receiver.ClusterConfig(c.id, msg)
+			go c.receiver.ClusterConfig(c.id, *msg)
 			state = stateReady
 
-		case IndexMessage:
+		case *IndexMessage:
 			switch hdr.msgType {
 			case messageTypeIndex:
 				if state != stateReady {
 					return fmt.Errorf("protocol error: index message in state %d", state)
 				}
-				c.handleIndex(msg)
+				c.handleIndex(*msg)
 				state = stateReady
 
 			case messageTypeIndexUpdate:
 				if state != stateReady {
 					return fmt.Errorf("protocol error: index update message in state %d", state)
 				}
-				c.handleIndexUpdate(msg)
+				c.handleIndexUpdate(*msg)
 				state = stateReady
 			}
 
-		case RequestMessage:
+		case *RequestMessage:
 			if state != stateReady {
 				return fmt.Errorf("protocol error: request message in state %d", state)
 			}
 			// Requests are handled asynchronously
-			go c.handleRequest(hdr.msgID, msg)
+			go c.handleRequest(hdr.msgID, *msg)
 
-		case ResponseMessage:
+		case *ResponseMessage:
 			if state != stateReady {
 				return fmt.Errorf("protocol error: response message in state %d", state)
 			}
-			c.handleResponse(hdr.msgID, msg)
+			c.handleResponse(hdr.msgID, *msg)
 
-		case DownloadProgressMessage:
+		case *DownloadProgressMessage:
 			if state != stateReady {
 				return fmt.Errorf("protocol error: response message in state %d", state)
 			}
 			c.receiver.DownloadProgress(c.id, msg.Folder, msg.Updates, msg.Flags, msg.Options)
 
-		case pingMessage:
+		case *pingMessage:
 			if state != stateReady {
 				return fmt.Errorf("protocol error: ping message in state %d", state)
 			}
 			// Nothing
 
-		case CloseMessage:
+		case *CloseMessage:
 			return errors.New(msg.Reason)
 
 		default:
@@ -472,39 +471,36 @@ func (c *rawConnection) readMessage() (hdr header, msg encodable, err error) {
 	switch hdr.msgType {
 	case messageTypeIndex, messageTypeIndexUpdate:
 		var idx IndexMessage
-		err = idx.UnmarshalXDR(msgBuf)
-		msg = idx
+		err = idx.Unmarshal(msgBuf)
+		msg = &idx
 
 	case messageTypeRequest:
 		var req RequestMessage
-		err = req.UnmarshalXDR(msgBuf)
-		msg = req
+		err = req.Unmarshal(msgBuf)
+		msg = &req
 
 	case messageTypeResponse:
 		var resp ResponseMessage
-		err = resp.UnmarshalXDR(msgBuf)
-		msg = resp
+		err = resp.Unmarshal(msgBuf)
+		msg = &resp
 
 	case messageTypePing:
-		msg = pingMessage{}
+		msg = &pingMessage{}
 
 	case messageTypeClusterConfig:
 		var cc ClusterConfigMessage
-		err = cc.UnmarshalXDR(msgBuf)
-		msg = cc
+		err = cc.Unmarshal(msgBuf)
+		msg = &cc
 
 	case messageTypeClose:
 		var cm CloseMessage
-		err = cm.UnmarshalXDR(msgBuf)
-		msg = cm
+		err = cm.Unmarshal(msgBuf)
+		msg = &cm
 
 	case messageTypeDownloadProgress:
 		var dp DownloadProgressMessage
-		err := dp.UnmarshalXDR(msgBuf)
-		if xdrErr, ok := err.(isEofer); ok && xdrErr.IsEOF() {
-			err = nil
-		}
-		msg = dp
+		err = dp.Unmarshal(msgBuf)
+		msg = &dp
 
 	default:
 		err = fmt.Errorf("protocol error: %s: unknown message type %#x", c.id, hdr.msgType)
@@ -561,7 +557,7 @@ func filterIndexMessageFiles(fs []FileInfo) []FileInfo {
 }
 
 func (c *rawConnection) handleRequest(msgID int, req RequestMessage) {
-	size := int(req.Size)
+	size := int(req.Length)
 	usePool := size <= BlockSize
 
 	var buf []byte
@@ -576,12 +572,12 @@ func (c *rawConnection) handleRequest(msgID int, req RequestMessage) {
 
 	err := c.receiver.Request(c.id, req.Folder, req.Name, int64(req.Offset), req.Hash, req.Flags, req.Options, buf)
 	if err != nil {
-		c.send(msgID, messageTypeResponse, ResponseMessage{
+		c.send(msgID, messageTypeResponse, &ResponseMessage{
 			Data: nil,
 			Code: errorToCode(err),
 		}, done)
 	} else {
-		c.send(msgID, messageTypeResponse, ResponseMessage{
+		c.send(msgID, messageTypeResponse, &ResponseMessage{
 			Data: buf,
 			Code: errorToCode(err),
 		}, done)
@@ -638,14 +634,13 @@ func (c *rawConnection) writerLoop() {
 		case hm := <-c.outbox:
 			if hm.msg != nil {
 				// Uncompressed message in uncBuf
-				msgLen := hm.msg.XDRSize()
+				msgLen := hm.msg.Size()
 				if cap(uncBuf) >= msgLen {
 					uncBuf = uncBuf[:msgLen]
 				} else {
 					uncBuf = make([]byte, msgLen)
 				}
-				m := &xdr.Marshaller{Data: uncBuf}
-				err = hm.msg.MarshalXDRInto(m)
+				_, err = hm.msg.MarshalTo(uncBuf)
 				if hm.done != nil {
 					close(hm.done)
 				}

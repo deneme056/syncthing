@@ -6,35 +6,30 @@ package protocol
 // version vector. The vector has slice semantics and some operations on it
 // are "append-like" in that they may return the same vector modified, or v
 // new allocated Vector with the modified contents.
-type Vector []Counter
 
 // Counter represents a single counter in the version vector.
-type Counter struct {
-	ID    ShortID
-	Value uint64
-}
 
 // Update returns a Vector with the index for the specific ID incremented by
 // one. If it is possible, the vector v is updated and returned. If it is not,
 // a copy will be created, updated and returned.
 func (v Vector) Update(id ShortID) Vector {
-	for i := range v {
-		if v[i].ID == id {
+	for i := range v.Counters {
+		if v.Counters[i].ID == uint64(id) {
 			// Update an existing index
-			v[i].Value++
+			v.Counters[i].Value++
 			return v
-		} else if v[i].ID > id {
+		} else if v.Counters[i].ID > uint64(id) {
 			// Insert a new index
-			nv := make(Vector, len(v)+1)
-			copy(nv, v[:i])
-			nv[i].ID = id
+			nv := make([]Counter, len(v.Counters)+1)
+			copy(nv, v.Counters[:i])
+			nv[i].ID = uint64(id)
 			nv[i].Value = 1
-			copy(nv[i+1:], v[i:])
-			return nv
+			copy(nv[i+1:], v.Counters[i:])
+			return Vector{nv}
 		}
 	}
 	// Append a new index
-	return append(v, Counter{id, 1})
+	return Vector{append(v.Counters, Counter{uint64(id), 1})}
 }
 
 // Merge returns the vector containing the maximum indexes from v and b. If it
@@ -42,28 +37,28 @@ func (v Vector) Update(id ShortID) Vector {
 // will be created, updated and returned.
 func (v Vector) Merge(b Vector) Vector {
 	var vi, bi int
-	for bi < len(b) {
-		if vi == len(v) {
+	for bi < len(b.Counters) {
+		if vi == len(v.Counters) {
 			// We've reach the end of v, all that remains are appends
-			return append(v, b[bi:]...)
+			return Vector{append(v.Counters, b.Counters[bi:]...)}
 		}
 
-		if v[vi].ID > b[bi].ID {
+		if v.Counters[vi].ID > b.Counters[bi].ID {
 			// The index from b should be inserted here
-			n := make(Vector, len(v)+1)
-			copy(n, v[:vi])
-			n[vi] = b[bi]
-			copy(n[vi+1:], v[vi:])
-			v = n
+			n := make([]Counter, len(v.Counters)+1)
+			copy(n, v.Counters[:vi])
+			n[vi] = b.Counters[bi]
+			copy(n[vi+1:], v.Counters[vi:])
+			v.Counters = n
 		}
 
-		if v[vi].ID == b[bi].ID {
-			if val := b[bi].Value; val > v[vi].Value {
-				v[vi].Value = val
+		if v.Counters[vi].ID == b.Counters[bi].ID {
+			if val := b.Counters[bi].Value; val > v.Counters[vi].Value {
+				v.Counters[vi].Value = val
 			}
 		}
 
-		if bi < len(b) && v[vi].ID == b[bi].ID {
+		if bi < len(b.Counters) && v.Counters[vi].ID == b.Counters[bi].ID {
 			bi++
 		}
 		vi++
@@ -74,9 +69,9 @@ func (v Vector) Merge(b Vector) Vector {
 
 // Copy returns an identical vector that is not shared with v.
 func (v Vector) Copy() Vector {
-	nv := make(Vector, len(v))
-	copy(nv, v)
-	return nv
+	nv := make([]Counter, len(v.Counters))
+	copy(nv, v.Counters)
+	return Vector{nv}
 }
 
 // Equal returns true when the two vectors are equivalent.
@@ -106,8 +101,8 @@ func (v Vector) Concurrent(b Vector) bool {
 
 // Counter returns the current value of the given counter ID.
 func (v Vector) Counter(id ShortID) uint64 {
-	for _, c := range v {
-		if c.ID == id {
+	for _, c := range v.Counters {
+		if c.ID == uint64(id) {
 			return c.Value
 		}
 	}

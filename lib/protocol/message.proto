@@ -1,3 +1,5 @@
+// protoc --proto_path=../../../../../:../../../../gogo/protobuf/protobuf:. --gogofast_out=. message.proto
+
 syntax = "proto2";
 
 package protocol;
@@ -42,8 +44,8 @@ message BlockInfo {
 
 message Option {
 	option (gogoproto.goproto_unrecognized) = false;
-        optional string key = 1 [(gogoproto.nullable) = false];
-        optional string value = 2 [(gogoproto.nullable) = false];
+    optional string key = 1 [(gogoproto.nullable) = false];
+    optional string value = 2 [(gogoproto.nullable) = false];
 }
 
 message RequestMessage {

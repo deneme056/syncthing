@@ -1,3 +1,5 @@
+//+build ignore for now
+
 // Copyright (C) 2015 The Protocol Authors.
 
 package protocol

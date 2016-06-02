@@ -41,9 +41,9 @@ var _ = proto.Marshal
 var _ = math.Inf
 
 type HelloMessage struct {
-	DeviceName    string `protobuf:"bytes,1,opt,name=deviceName" json:"deviceName"`
-	ClientName    string `protobuf:"bytes,2,opt,name=clientName" json:"clientName"`
-	ClientVersion string `protobuf:"bytes,3,opt,name=clientVersion" json:"clientVersion"`
+	DeviceName    string `protobuf:"bytes,1,opt" json:"DeviceName"`
+	ClientName    string `protobuf:"bytes,2,opt" json:"ClientName"`
+	ClientVersion string `protobuf:"bytes,3,opt" json:"ClientVersion"`
 }
 
 func (m *HelloMessage) Reset()      { *m = HelloMessage{} }
@@ -51,121 +51,121 @@ func (*HelloMessage) ProtoMessage() {}
 
 type IndexMessage struct {
 	Folder  string     `protobuf:"bytes,1,opt,name=folder" json:"folder"`
-	Files   []FileInfo `protobuf:"bytes,2,rep,name=files" json:"files"`
-	Flags   uint32     `protobuf:"varint,3,opt,name=flags" json:"flags"`
-	Options []Option   `protobuf:"bytes,4,rep,name=options" json:"options"`
+	Files   []FileInfo `protobuf:"bytes,2,rep" json:"Files"`
+	Flags   uint32     `protobuf:"varint,3,opt" json:"Flags"`
+	Options []Option   `protobuf:"bytes,4,rep" json:"Options"`
 }
 
 func (m *IndexMessage) Reset()      { *m = IndexMessage{} }
 func (*IndexMessage) ProtoMessage() {}
 
 type FileInfo struct {
-	Name         string      `protobuf:"bytes,1,opt,name=name" json:"name"`
-	Flags        uint32      `protobuf:"varint,2,opt,name=flags" json:"flags"`
-	Modified     int64       `protobuf:"varint,3,opt,name=modified" json:"modified"`
-	Version      Vector      `protobuf:"bytes,4,opt,name=version" json:"version"`
-	LocalVersion int64       `protobuf:"varint,5,opt,name=localVersion" json:"localVersion"`
-	Length       int64       `protobuf:"varint,6,opt,name=length" json:"length"`
-	Blocks       []BlockInfo `protobuf:"bytes,7,rep,name=blocks" json:"blocks"`
+	Name         string      `protobuf:"bytes,1,opt" json:"Name"`
+	Flags        uint32      `protobuf:"varint,2,opt" json:"Flags"`
+	Modified     int64       `protobuf:"varint,3,opt" json:"Modified"`
+	Version      Vector      `protobuf:"bytes,4,opt" json:"Version"`
+	LocalVersion int64       `protobuf:"varint,5,opt" json:"LocalVersion"`
+	Length       int64       `protobuf:"varint,6,opt" json:"Length"`
+	Blocks       []BlockInfo `protobuf:"bytes,7,rep" json:"Blocks"`
 }
 
 func (m *FileInfo) Reset()      { *m = FileInfo{} }
 func (*FileInfo) ProtoMessage() {}
 
 type BlockInfo struct {
-	Offset int64  `protobuf:"varint,1,opt,name=offset" json:"offset"`
-	Length int32  `protobuf:"varint,2,opt,name=length" json:"length"`
-	Hash   []byte `protobuf:"bytes,3,opt,name=hash" json:"hash"`
+	Offset int64  `protobuf:"varint,1,opt" json:"Offset"`
+	Length int32  `protobuf:"varint,2,opt" json:"Length"`
+	Hash   []byte `protobuf:"bytes,3,opt" json:"Hash"`
 }
 
 func (m *BlockInfo) Reset()      { *m = BlockInfo{} }
 func (*BlockInfo) ProtoMessage() {}
 
 type Option struct {
-	Key   string `protobuf:"bytes,1,opt,name=key" json:"key"`
-	Value string `protobuf:"bytes,2,opt,name=value" json:"value"`
+	Key   string `protobuf:"bytes,1,opt" json:"Key"`
+	Value string `protobuf:"bytes,2,opt" json:"Value"`
 }
 
 func (m *Option) Reset()      { *m = Option{} }
 func (*Option) ProtoMessage() {}
 
 type RequestMessage struct {
-	Folder  string   `protobuf:"bytes,1,opt,name=folder" json:"folder"`
-	Name    string   `protobuf:"bytes,2,opt,name=name" json:"name"`
-	Offset  int64    `protobuf:"varint,3,opt,name=offset" json:"offset"`
-	Length  int32    `protobuf:"varint,4,opt,name=length" json:"length"`
-	Hash    []byte   `protobuf:"bytes,5,opt,name=hash" json:"hash"`
-	Flags   uint32   `protobuf:"varint,6,opt,name=flags" json:"flags"`
-	Options []Option `protobuf:"bytes,7,rep,name=options" json:"options"`
+	Folder  string   `protobuf:"bytes,1,opt" json:"Folder"`
+	Name    string   `protobuf:"bytes,2,opt" json:"Name"`
+	Offset  int64    `protobuf:"varint,3,opt" json:"Offset"`
+	Length  int32    `protobuf:"varint,4,opt" json:"Length"`
+	Hash    []byte   `protobuf:"bytes,5,opt" json:"Hash"`
+	Flags   uint32   `protobuf:"varint,6,opt" json:"Flags"`
+	Options []Option `protobuf:"bytes,7,rep" json:"Options"`
 }
 
 func (m *RequestMessage) Reset()      { *m = RequestMessage{} }
 func (*RequestMessage) ProtoMessage() {}
 
 type ResponseMessage struct {
-	Data []byte `protobuf:"bytes,1,opt,name=data" json:"data"`
-	Code int32  `protobuf:"varint,2,opt,name=code" json:"code"`
+	Data []byte `protobuf:"bytes,1,opt" json:"Data"`
+	Code int32  `protobuf:"varint,2,opt" json:"Code"`
 }
 
 func (m *ResponseMessage) Reset()      { *m = ResponseMessage{} }
 func (*ResponseMessage) ProtoMessage() {}
 
 type ClusterConfigMessage struct {
-	Folders []Folder `protobuf:"bytes,1,rep,name=folders" json:"folders"`
-	Options []Option `protobuf:"bytes,2,rep,name=options" json:"options"`
+	Folders []Folder `protobuf:"bytes,1,rep" json:"Folders"`
+	Options []Option `protobuf:"bytes,2,rep" json:"Options"`
 }
 
 func (m *ClusterConfigMessage) Reset()      { *m = ClusterConfigMessage{} }
 func (*ClusterConfigMessage) ProtoMessage() {}
 
 type DownloadProgressMessage struct {
-	Folder  string                       `protobuf:"bytes,1,opt,name=folder" json:"folder"`
-	Updates []FileDownloadProgressUpdate `protobuf:"bytes,2,rep,name=updates" json:"updates"`
-	Flags   uint32                       `protobuf:"varint,3,opt,name=flags" json:"flags"`
-	Options []Option                     `protobuf:"bytes,4,rep,name=options" json:"options"`
+	Folder  string                       `protobuf:"bytes,1,opt" json:"Folder"`
+	Updates []FileDownloadProgressUpdate `protobuf:"bytes,2,rep" json:"Updates"`
+	Flags   uint32                       `protobuf:"varint,3,opt" json:"Flags"`
+	Options []Option                     `protobuf:"bytes,4,rep" json:"Options"`
 }
 
 func (m *DownloadProgressMessage) Reset()      { *m = DownloadProgressMessage{} }
 func (*DownloadProgressMessage) ProtoMessage() {}
 
 type Folder struct {
-	ID      string   `protobuf:"bytes,1,opt,name=id" json:"id"`
-	Label   string   `protobuf:"bytes,2,opt,name=label" json:"label"`
-	Devices []Device `protobuf:"bytes,3,rep,name=devices" json:"devices"`
-	Flags   uint32   `protobuf:"varint,4,opt,name=flags" json:"flags"`
-	Options []Option `protobuf:"bytes,5,rep,name=options" json:"options"`
+	ID      string   `protobuf:"bytes,1,opt" json:"ID"`
+	Label   string   `protobuf:"bytes,2,opt" json:"Label"`
+	Devices []Device `protobuf:"bytes,3,rep" json:"Devices"`
+	Flags   uint32   `protobuf:"varint,4,opt" json:"Flags"`
+	Options []Option `protobuf:"bytes,5,rep" json:"Options"`
 }
 
 func (m *Folder) Reset()      { *m = Folder{} }
 func (*Folder) ProtoMessage() {}
 
 type Device struct {
-	ID              []byte   `protobuf:"bytes,1,opt,name=id" json:"id"`
-	Name            string   `protobuf:"bytes,2,opt,name=name" json:"name"`
-	Addresses       []string `protobuf:"bytes,3,rep,name=addresses" json:"addresses,omitempty"`
-	Compression     uint32   `protobuf:"varint,4,opt,name=compression" json:"compression"`
-	CertName        string   `protobuf:"bytes,5,opt,name=certName" json:"certName"`
-	MaxLocalVersion int64    `protobuf:"varint,6,opt,name=maxLocalVersion" json:"maxLocalVersion"`
-	Flags           uint32   `protobuf:"varint,7,opt,name=flags" json:"flags"`
-	Options         []Option `protobuf:"bytes,8,rep,name=options" json:"options"`
+	ID              []byte   `protobuf:"bytes,1,opt" json:"ID"`
+	Name            string   `protobuf:"bytes,2,opt" json:"Name"`
+	Addresses       []string `protobuf:"bytes,3,rep" json:"Addresses,omitempty"`
+	Compression     uint32   `protobuf:"varint,4,opt" json:"Compression"`
+	CertName        string   `protobuf:"bytes,5,opt" json:"CertName"`
+	MaxLocalVersion int64    `protobuf:"varint,6,opt" json:"MaxLocalVersion"`
+	Flags           uint32   `protobuf:"varint,7,opt" json:"Flags"`
+	Options         []Option `protobuf:"bytes,8,rep" json:"Options"`
 }
 
 func (m *Device) Reset()      { *m = Device{} }
 func (*Device) ProtoMessage() {}
 
 type FileDownloadProgressUpdate struct {
-	OpdateType   uint32  `protobuf:"varint,1,opt,name=opdateType" json:"opdateType"`
-	Name         string  `protobuf:"bytes,2,opt,name=name" json:"name"`
-	Version      Vector  `protobuf:"bytes,3,opt,name=version" json:"version"`
-	BlockIndexes []int32 `protobuf:"varint,4,rep,name=blockIndexes" json:"blockIndexes,omitempty"`
+	UpdateType   uint32  `protobuf:"varint,1,opt" json:"UpdateType"`
+	Name         string  `protobuf:"bytes,2,opt" json:"Name"`
+	Version      Vector  `protobuf:"bytes,3,opt" json:"Version"`
+	BlockIndexes []int32 `protobuf:"varint,4,rep" json:"BlockIndexes,omitempty"`
 }
 
 func (m *FileDownloadProgressUpdate) Reset()      { *m = FileDownloadProgressUpdate{} }
 func (*FileDownloadProgressUpdate) ProtoMessage() {}
 
 type CloseMessage struct {
-	Reason string `protobuf:"bytes,1,opt,name=reason" json:"reason"`
-	Code   int32  `protobuf:"varint,2,opt,name=code" json:"code"`
+	Reason string `protobuf:"bytes,1,opt" json:"Reason"`
+	Code   int32  `protobuf:"varint,2,opt" json:"Code"`
 }
 
 func (m *CloseMessage) Reset()      { *m = CloseMessage{} }
@@ -178,15 +178,15 @@ func (m *EmptyMessage) Reset()      { *m = EmptyMessage{} }
 func (*EmptyMessage) ProtoMessage() {}
 
 type Vector struct {
-	Counters []Counter `protobuf:"bytes,1,rep,name=counters" json:"counters"`
+	Counters []Counter `protobuf:"bytes,1,rep" json:"Counters"`
 }
 
 func (m *Vector) Reset()      { *m = Vector{} }
 func (*Vector) ProtoMessage() {}
 
 type Counter struct {
-	ID    uint64 `protobuf:"varint,1,opt,name=id" json:"id"`
-	Value uint64 `protobuf:"varint,2,opt,name=value" json:"value"`
+	ID    uint64 `protobuf:"varint,1,opt" json:"ID"`
+	Value uint64 `protobuf:"varint,2,opt" json:"Value"`
 }
 
 func (m *Counter) Reset()      { *m = Counter{} }
@@ -1634,7 +1634,7 @@ func (m *FileDownloadProgressUpdate) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OpdateType", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdateType", wireType)
 			}
 			for shift := uint(0); ; shift += 7 {
 				if index >= l {
@@ -1642,7 +1642,7 @@ func (m *FileDownloadProgressUpdate) Unmarshal(data []byte) error {
 				}
 				b := data[index]
 				index++
-				m.OpdateType |= (uint32(b) & 0x7F) << shift
+				m.UpdateType |= (uint32(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2279,7 +2279,7 @@ func (m *Device) Size() (n int) {
 func (m *FileDownloadProgressUpdate) Size() (n int) {
 	var l int
 	_ = l
-	n += 1 + sovMessage(uint64(m.OpdateType))
+	n += 1 + sovMessage(uint64(m.UpdateType))
 	l = len(m.Name)
 	n += 1 + l + sovMessage(uint64(l))
 	l = m.Version.Size()
@@ -2838,7 +2838,7 @@ func (m *FileDownloadProgressUpdate) MarshalTo(data []byte) (n int, err error) {
 	_ = l
 	data[i] = 0x8
 	i++
-	i = encodeVarintMessage(data, i, uint64(m.OpdateType))
+	i = encodeVarintMessage(data, i, uint64(m.UpdateType))
 	data[i] = 0x12
 	i++
 	i = encodeVarintMessage(data, i, uint64(len(m.Name)))

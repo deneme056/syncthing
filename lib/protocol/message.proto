@@ -11,107 +11,107 @@ option (gogoproto.goproto_stringer_all) = false;
 
 message HelloMessage {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional string deviceName = 1 [(gogoproto.nullable) = false];
-	optional string clientName = 2 [(gogoproto.nullable) = false];
-	optional string clientVersion = 3 [(gogoproto.nullable) = false];
+	optional string DeviceName = 1 [(gogoproto.nullable) = false];
+	optional string ClientName = 2 [(gogoproto.nullable) = false];
+	optional string ClientVersion = 3 [(gogoproto.nullable) = false];
 }
 
 message IndexMessage {
 	option (gogoproto.goproto_unrecognized) = false;
 	optional string folder = 1 [(gogoproto.nullable) = false];
-	repeated FileInfo files = 2 [(gogoproto.nullable) = false];
-	optional uint32 flags = 3 [(gogoproto.nullable) = false];
-	repeated Option options = 4 [(gogoproto.nullable) = false];
+	repeated FileInfo Files = 2 [(gogoproto.nullable) = false];
+	optional uint32 Flags = 3 [(gogoproto.nullable) = false];
+	repeated Option Options = 4 [(gogoproto.nullable) = false];
 }
 
 message FileInfo {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional string name = 1 [(gogoproto.nullable) = false];
-	optional uint32 flags = 2 [(gogoproto.nullable) = false];
-	optional int64 modified = 3 [(gogoproto.nullable) = false];
-	optional Vector version = 4 [(gogoproto.nullable) = false];
-	optional int64 localVersion = 5 [(gogoproto.nullable) = false];
-	optional int64 length = 6 [(gogoproto.nullable) = false];
-	repeated BlockInfo blocks = 7 [(gogoproto.nullable) = false];
+	optional string Name = 1 [(gogoproto.nullable) = false];
+	optional uint32 Flags = 2 [(gogoproto.nullable) = false];
+	optional int64 Modified = 3 [(gogoproto.nullable) = false];
+	optional Vector Version = 4 [(gogoproto.nullable) = false];
+	optional int64 LocalVersion = 5 [(gogoproto.nullable) = false];
+	optional int64 Length = 6 [(gogoproto.nullable) = false];
+	repeated BlockInfo Blocks = 7 [(gogoproto.nullable) = false];
 }
 
 message BlockInfo {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional int64 offset = 1 [(gogoproto.nullable) = false];
-	optional int32 length = 2 [(gogoproto.nullable) = false];
-	optional bytes hash = 3 [(gogoproto.nullable) = false];
+	optional int64 Offset = 1 [(gogoproto.nullable) = false];
+	optional int32 Length = 2 [(gogoproto.nullable) = false];
+	optional bytes Hash = 3 [(gogoproto.nullable) = false];
 }
 
 message Option {
 	option (gogoproto.goproto_unrecognized) = false;
-    optional string key = 1 [(gogoproto.nullable) = false];
-    optional string value = 2 [(gogoproto.nullable) = false];
+    optional string Key = 1 [(gogoproto.nullable) = false];
+    optional string Value = 2 [(gogoproto.nullable) = false];
 }
 
 message RequestMessage {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional string folder = 1 [(gogoproto.nullable) = false];
-	optional string name = 2 [(gogoproto.nullable) = false];
-	optional int64 offset = 3 [(gogoproto.nullable) = false];
-	optional int32 length = 4 [(gogoproto.nullable) = false];
-	optional bytes hash = 5 [(gogoproto.nullable) = false];
-	optional uint32 flags = 6 [(gogoproto.nullable) = false];
-	repeated Option options = 7 [(gogoproto.nullable) = false];
+	optional string Folder = 1 [(gogoproto.nullable) = false];
+	optional string Name = 2 [(gogoproto.nullable) = false];
+	optional int64 Offset = 3 [(gogoproto.nullable) = false];
+	optional int32 Length = 4 [(gogoproto.nullable) = false];
+	optional bytes Hash = 5 [(gogoproto.nullable) = false];
+	optional uint32 Flags = 6 [(gogoproto.nullable) = false];
+	repeated Option Options = 7 [(gogoproto.nullable) = false];
 }
 
 message ResponseMessage {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional bytes data = 1 [(gogoproto.nullable) = false];
-	optional int32 code = 2 [(gogoproto.nullable) = false];
+	optional bytes Data = 1 [(gogoproto.nullable) = false];
+	optional int32 Code = 2 [(gogoproto.nullable) = false];
 }
 
 message ClusterConfigMessage {
 	option (gogoproto.goproto_unrecognized) = false;
-	repeated Folder folders = 1 [(gogoproto.nullable) = false];
-	repeated Option options = 2 [(gogoproto.nullable) = false];
+	repeated Folder Folders = 1 [(gogoproto.nullable) = false];
+	repeated Option Options = 2 [(gogoproto.nullable) = false];
 }
 
 message DownloadProgressMessage {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional string folder = 1 [(gogoproto.nullable) = false];
-	repeated FileDownloadProgressUpdate updates = 2 [(gogoproto.nullable) = false];
-	optional uint32 flags = 3 [(gogoproto.nullable) = false];
-	repeated Option options = 4 [(gogoproto.nullable) = false];
+	optional string Folder = 1 [(gogoproto.nullable) = false];
+	repeated FileDownloadProgressUpdate Updates = 2 [(gogoproto.nullable) = false];
+	optional uint32 Flags = 3 [(gogoproto.nullable) = false];
+	repeated Option Options = 4 [(gogoproto.nullable) = false];
 }
 
 message Folder {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional string id = 1 [(gogoproto.customname) = "ID", (gogoproto.nullable) = false];
-	optional string label = 2 [(gogoproto.nullable) = false];
-	repeated Device devices = 3 [(gogoproto.nullable) = false];
-	optional uint32 flags = 4 [(gogoproto.nullable) = false];
-	repeated Option options = 5 [(gogoproto.nullable) = false];
+	optional string ID = 1 [(gogoproto.nullable) = false];
+	optional string Label = 2 [(gogoproto.nullable) = false];
+	repeated Device Devices = 3 [(gogoproto.nullable) = false];
+	optional uint32 Flags = 4 [(gogoproto.nullable) = false];
+	repeated Option Options = 5 [(gogoproto.nullable) = false];
 }
 
 message Device {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional bytes id = 1 [(gogoproto.customname) = "ID", (gogoproto.nullable) = false];
-	optional string name = 2 [(gogoproto.nullable) = false];
-	repeated string addresses = 3;
-	optional uint32 compression = 4 [(gogoproto.nullable) = false];
-	optional string certName = 5 [(gogoproto.nullable) = false];
-	optional int64 maxLocalVersion = 6 [(gogoproto.nullable) = false];
-	optional uint32 flags = 7 [(gogoproto.nullable) = false];
-	repeated Option options = 8 [(gogoproto.nullable) = false];
+	optional bytes ID = 1 [(gogoproto.nullable) = false];
+	optional string Name = 2 [(gogoproto.nullable) = false];
+	repeated string Addresses = 3;
+	optional uint32 Compression = 4 [(gogoproto.nullable) = false];
+	optional string CertName = 5 [(gogoproto.nullable) = false];
+	optional int64 MaxLocalVersion = 6 [(gogoproto.nullable) = false];
+	optional uint32 Flags = 7 [(gogoproto.nullable) = false];
+	repeated Option Options = 8 [(gogoproto.nullable) = false];
 }
 
 message FileDownloadProgressUpdate {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional uint32 opdateType = 1 [(gogoproto.nullable) = false];
-	optional string name = 2 [(gogoproto.nullable) = false];
-	optional Vector version = 3 [(gogoproto.nullable) = false];
-	repeated int32 blockIndexes = 4;
+	optional uint32 UpdateType = 1 [(gogoproto.nullable) = false];
+	optional string Name = 2 [(gogoproto.nullable) = false];
+	optional Vector Version = 3 [(gogoproto.nullable) = false];
+	repeated int32 BlockIndexes = 4;
 }
 
 message CloseMessage {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional string reason = 1 [(gogoproto.nullable) = false];
-	optional int32 code = 2 [(gogoproto.nullable) = false];
+	optional string Reason = 1 [(gogoproto.nullable) = false];
+	optional int32 Code = 2 [(gogoproto.nullable) = false];
 }
 
 message EmptyMessage {
@@ -120,11 +120,11 @@ message EmptyMessage {
 
 message Vector {
 	option (gogoproto.goproto_unrecognized) = false;
-	repeated Counter counters = 1 [(gogoproto.nullable) = false];
+	repeated Counter Counters = 1 [(gogoproto.nullable) = false];
 }
 
 message Counter {
 	option (gogoproto.goproto_unrecognized) = false;
-	optional uint64 id = 1 [(gogoproto.customname) = "ID", (gogoproto.nullable) = false];
-	optional uint64 value = 2 [(gogoproto.nullable) = false];
+	optional uint64 ID = 1 [(gogoproto.nullable) = false];
+	optional uint64 Value = 2 [(gogoproto.nullable) = false];
 }

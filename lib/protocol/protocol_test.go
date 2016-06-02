@@ -3,15 +3,12 @@
 package protocol
 
 import (
+	"bytes"
 	"encoding/binary"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
-	"reflect"
 	"strings"
 	"testing"
 	"testing/quick"
@@ -188,16 +185,6 @@ func TestClose(t *testing.T) {
 	}
 }
 
-func TestElementSizeExceededNested(t *testing.T) {
-	m := HelloMessage{
-		ClientName: "longstringlongstringlongstringinglongstringlongstringlonlongstringlongstringlon",
-	}
-	_, err := m.MarshalXDR()
-	if err == nil {
-		t.Errorf("ID length %d > max 64, but no error", len(m.ClientName))
-	}
-}
-
 func TestMarshalIndexMessage(t *testing.T) {
 	if testing.Short() {
 		quickCfg.MaxCount = 10
@@ -211,7 +198,6 @@ func TestMarshalIndexMessage(t *testing.T) {
 			m1.Files = nil
 		}
 		for i, f := range m1.Files {
-			m1.Files[i].CachedSize = 0
 			if len(f.Blocks) == 0 {
 				m1.Files[i].Blocks = nil
 			} else {
@@ -221,6 +207,9 @@ func TestMarshalIndexMessage(t *testing.T) {
 						f.Blocks[j].Hash = nil
 					}
 				}
+			}
+			if len(f.Version.Counters) == 0 {
+				m1.Files[i].Version.Counters = nil
 			}
 		}
 
@@ -288,6 +277,11 @@ func TestMarshalClusterConfigMessage(t *testing.T) {
 			if len(m1.Folders[i].Options) == 0 {
 				m1.Folders[i].Options = nil
 			}
+			for j := range m1.Folders[i].Devices {
+				if len(m1.Folders[i].Devices[j].Options) == 0 {
+					m1.Folders[i].Devices[j].Options = nil
+				}
+			}
 		}
 		return testMarshal(t, "clusterconfig", &m1, &ClusterConfigMessage{})
 	}
@@ -312,43 +306,31 @@ func TestMarshalCloseMessage(t *testing.T) {
 }
 
 type message interface {
-	MarshalXDR() ([]byte, error)
-	UnmarshalXDR([]byte) error
+	Marshal() ([]byte, error)
+	Unmarshal([]byte) error
 }
 
 func testMarshal(t *testing.T, prefix string, m1, m2 message) bool {
-	failed := func(bc []byte) {
-		bs, _ := json.MarshalIndent(m1, "", "  ")
-		ioutil.WriteFile(prefix+"-1.txt", bs, 0644)
-		bs, _ = json.MarshalIndent(m2, "", "  ")
-		ioutil.WriteFile(prefix+"-2.txt", bs, 0644)
-		if len(bc) > 0 {
-			f, _ := os.Create(prefix + "-data.txt")
-			fmt.Fprint(f, hex.Dump(bc))
-			f.Close()
-		}
-	}
 
-	buf, err := m1.MarshalXDR()
-	if err != nil && strings.Contains(err.Error(), "exceeds size") {
-		return true
-	}
+	buf, err := m1.Marshal()
 	if err != nil {
-		failed(nil)
 		t.Fatal(err)
 	}
 
-	err = m2.UnmarshalXDR(buf)
+	err = m2.Unmarshal(buf)
 	if err != nil {
-		failed(buf)
 		t.Fatal(err)
 	}
 
-	ok := reflect.DeepEqual(m1, m2)
-	if !ok {
-		failed(buf)
+	bs1, _ := json.MarshalIndent(m1, "", "  ")
+	bs2, _ := json.MarshalIndent(m2, "", "  ")
+	if !bytes.Equal(bs1, bs2) {
+		ioutil.WriteFile(prefix+"-1.txt", bs1, 0644)
+		ioutil.WriteFile(prefix+"-2.txt", bs1, 0644)
+		return false
 	}
-	return ok
+
+	return true
 }
 
 func timeoutWriteHeader(w io.Writer, hdr header) {
@@ -370,49 +352,5 @@ func timeoutWriteHeader(w io.Writer, hdr header) {
 	select {
 	case <-done:
 	case <-time.After(250 * time.Millisecond):
-	}
-}
-
-func TestFileInfoSize(t *testing.T) {
-	fi := FileInfo{
-		Blocks: []BlockInfo{
-			{Size: 42},
-			{Offset: 42, Size: 23},
-			{Offset: 42 + 23, Size: 34},
-		},
-	}
-
-	size := fi.Size()
-	want := int64(42 + 23 + 34)
-	if size != want {
-		t.Errorf("Incorrect size reported, got %d, want %d", size, want)
-	}
-
-	size = fi.Size() // Cached, this time
-	if size != want {
-		t.Errorf("Incorrect cached size reported, got %d, want %d", size, want)
-	}
-
-	fi.CachedSize = 8
-	want = 8
-	size = fi.Size() // Ensure it came from the cache
-	if size != want {
-		t.Errorf("Incorrect cached size reported, got %d, want %d", size, want)
-	}
-
-	fi.CachedSize = 0
-	fi.Flags = FlagDirectory
-	want = 128
-	size = fi.Size() // Directories are 128 bytes large
-	if size != want {
-		t.Errorf("Incorrect cached size reported, got %d, want %d", size, want)
-	}
-
-	fi.CachedSize = 0
-	fi.Flags = FlagDeleted
-	want = 128
-	size = fi.Size() // Also deleted files
-	if size != want {
-		t.Errorf("Incorrect cached size reported, got %d, want %d", size, want)
 	}
 }

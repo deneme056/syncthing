@@ -13,8 +13,6 @@ import (
 	"testing"
 	"testing/quick"
 	"time"
-
-	"github.com/calmh/xdr"
 )
 
 var (
@@ -45,10 +43,10 @@ func TestHeaderMarshalUnmarshal(t *testing.T) {
 		buf := make([]byte, 4)
 
 		h0 := header{version: ver, msgID: id, msgType: typ}
-		h0.MarshalXDRInto(&xdr.Marshaller{Data: buf})
+		h0.MarshalTo(buf)
 
 		var h1 header
-		h1.UnmarshalXDRFrom(&xdr.Unmarshaller{Data: buf})
+		h1.Unmarshal(buf)
 		return h0 == h1
 	}
 	if err := quick.Check(f, nil); err != nil {
@@ -311,7 +309,6 @@ type message interface {
 }
 
 func testMarshal(t *testing.T, prefix string, m1, m2 message) bool {
-
 	buf, err := m1.Marshal()
 	if err != nil {
 		t.Fatal(err)

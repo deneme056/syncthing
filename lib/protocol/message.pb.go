@@ -12,6 +12,7 @@
 		HelloMessage
 		IndexMessage
 		FileInfo
+		FileInfoTruncated
 		BlockInfo
 		Option
 		RequestMessage
@@ -66,11 +67,24 @@ type FileInfo struct {
 	Version      Vector      `protobuf:"bytes,4,opt" json:"Version"`
 	LocalVersion int64       `protobuf:"varint,5,opt" json:"LocalVersion"`
 	Length       int64       `protobuf:"varint,6,opt" json:"Length"`
-	Blocks       []BlockInfo `protobuf:"bytes,7,rep" json:"Blocks"`
+	Blocks       []BlockInfo `protobuf:"bytes,16,rep" json:"Blocks"`
 }
 
 func (m *FileInfo) Reset()      { *m = FileInfo{} }
 func (*FileInfo) ProtoMessage() {}
+
+// Should be the same as FileInfo but without the blocks field
+type FileInfoTruncated struct {
+	Name         string `protobuf:"bytes,1,opt" json:"Name"`
+	Flags        uint32 `protobuf:"varint,2,opt" json:"Flags"`
+	Modified     int64  `protobuf:"varint,3,opt" json:"Modified"`
+	Version      Vector `protobuf:"bytes,4,opt" json:"Version"`
+	LocalVersion int64  `protobuf:"varint,5,opt" json:"LocalVersion"`
+	Length       int64  `protobuf:"varint,6,opt" json:"Length"`
+}
+
+func (m *FileInfoTruncated) Reset()      { *m = FileInfoTruncated{} }
+func (*FileInfoTruncated) ProtoMessage() {}
 
 type BlockInfo struct {
 	Offset int64  `protobuf:"varint,1,opt" json:"Offset"`
@@ -556,7 +570,7 @@ func (m *FileInfo) Unmarshal(data []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 16:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Blocks", wireType)
 			}
@@ -581,6 +595,154 @@ func (m *FileInfo) Unmarshal(data []byte) error {
 				return err
 			}
 			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := skipMessage(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			index += skippy
+		}
+	}
+
+	return nil
+}
+func (m *FileInfoTruncated) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + int(stringLen)
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(data[index:postIndex])
+			index = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				m.Flags |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Modified", wireType)
+			}
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				m.Modified |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Version.Unmarshal(data[index:postIndex]); err != nil {
+				return err
+			}
+			index = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LocalVersion", wireType)
+			}
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				m.LocalVersion |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Length", wireType)
+			}
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				m.Length |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			var sizeOfWire int
 			for {
@@ -2123,9 +2285,23 @@ func (m *FileInfo) Size() (n int) {
 	if len(m.Blocks) > 0 {
 		for _, e := range m.Blocks {
 			l = e.Size()
-			n += 1 + l + sovMessage(uint64(l))
+			n += 2 + l + sovMessage(uint64(l))
 		}
 	}
+	return n
+}
+
+func (m *FileInfoTruncated) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Name)
+	n += 1 + l + sovMessage(uint64(l))
+	n += 1 + sovMessage(uint64(m.Flags))
+	n += 1 + sovMessage(uint64(m.Modified))
+	l = m.Version.Size()
+	n += 1 + l + sovMessage(uint64(l))
+	n += 1 + sovMessage(uint64(m.LocalVersion))
+	n += 1 + sovMessage(uint64(m.Length))
 	return n
 }
 
@@ -2460,7 +2636,9 @@ func (m *FileInfo) MarshalTo(data []byte) (n int, err error) {
 	i = encodeVarintMessage(data, i, uint64(m.Length))
 	if len(m.Blocks) > 0 {
 		for _, msg := range m.Blocks {
-			data[i] = 0x3a
+			data[i] = 0x82
+			i++
+			data[i] = 0x1
 			i++
 			i = encodeVarintMessage(data, i, uint64(msg.Size()))
 			n, err := msg.MarshalTo(data[i:])
@@ -2470,6 +2648,48 @@ func (m *FileInfo) MarshalTo(data []byte) (n int, err error) {
 			i += n
 		}
 	}
+	return i, nil
+}
+
+func (m *FileInfoTruncated) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *FileInfoTruncated) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0xa
+	i++
+	i = encodeVarintMessage(data, i, uint64(len(m.Name)))
+	i += copy(data[i:], m.Name)
+	data[i] = 0x10
+	i++
+	i = encodeVarintMessage(data, i, uint64(m.Flags))
+	data[i] = 0x18
+	i++
+	i = encodeVarintMessage(data, i, uint64(m.Modified))
+	data[i] = 0x22
+	i++
+	i = encodeVarintMessage(data, i, uint64(m.Version.Size()))
+	n2, err := m.Version.MarshalTo(data[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n2
+	data[i] = 0x28
+	i++
+	i = encodeVarintMessage(data, i, uint64(m.LocalVersion))
+	data[i] = 0x30
+	i++
+	i = encodeVarintMessage(data, i, uint64(m.Length))
 	return i, nil
 }
 
@@ -2846,11 +3066,11 @@ func (m *FileDownloadProgressUpdate) MarshalTo(data []byte) (n int, err error) {
 	data[i] = 0x1a
 	i++
 	i = encodeVarintMessage(data, i, uint64(m.Version.Size()))
-	n2, err := m.Version.MarshalTo(data[i:])
+	n3, err := m.Version.MarshalTo(data[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n2
+	i += n3
 	if len(m.BlockIndexes) > 0 {
 		for _, num := range m.BlockIndexes {
 			data[i] = 0x20

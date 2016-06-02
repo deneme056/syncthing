@@ -32,7 +32,18 @@ message FileInfo {
 	optional Vector Version = 4 [(gogoproto.nullable) = false];
 	optional int64 LocalVersion = 5 [(gogoproto.nullable) = false];
 	optional int64 Length = 6 [(gogoproto.nullable) = false];
-	repeated BlockInfo Blocks = 7 [(gogoproto.nullable) = false];
+	repeated BlockInfo Blocks = 16 [(gogoproto.nullable) = false];
+}
+
+// Should be the same as FileInfo but without the blocks field
+message FileInfoTruncated {
+	option (gogoproto.goproto_unrecognized) = false;
+	optional string Name = 1 [(gogoproto.nullable) = false];
+	optional uint32 Flags = 2 [(gogoproto.nullable) = false];
+	optional int64 Modified = 3 [(gogoproto.nullable) = false];
+	optional Vector Version = 4 [(gogoproto.nullable) = false];
+	optional int64 LocalVersion = 5 [(gogoproto.nullable) = false];
+	optional int64 Length = 6 [(gogoproto.nullable) = false];
 }
 
 message BlockInfo {

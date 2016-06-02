@@ -2,7 +2,7 @@
 
 package protocol
 
-import "github.com/calmh/xdr"
+import "encoding/binary"
 
 type header struct {
 	version     int
@@ -11,16 +11,21 @@ type header struct {
 	compression bool
 }
 
-func (h header) MarshalXDRInto(m *xdr.Marshaller) error {
-	v := encodeHeader(h)
-	m.MarshalUint32(v)
-	return m.Error
+func (h header) Marshal() ([]byte, error) {
+	var bs [4]byte
+	err := h.MarshalTo(bs[:])
+	return bs[:], err
 }
 
-func (h *header) UnmarshalXDRFrom(u *xdr.Unmarshaller) error {
-	v := u.UnmarshalUint32()
-	*h = decodeHeader(v)
-	return u.Error
+func (h header) MarshalTo(bs []byte) error {
+	v := encodeHeader(h)
+	binary.BigEndian.PutUint32(bs, v)
+	return nil
+}
+
+func (h *header) Unmarshal(bs []byte) error {
+	*h = decodeHeader(binary.BigEndian.Uint32(bs))
+	return nil
 }
 
 func encodeHeader(h header) uint32 {

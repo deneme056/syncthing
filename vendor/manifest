@@ -52,6 +52,22 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/gogo/protobuf/proto",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "7883e1468d48d969e1c3ce4bcde89b6a7dd4adc4",
+			"branch": "master",
+			"path": "/proto",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/proto/testdata",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "7883e1468d48d969e1c3ce4bcde89b6a7dd4adc4",
+			"branch": "master",
+			"path": "/proto/testdata",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/golang/snappy",
 			"repository": "https://github.com/golang/snappy",
 			"revision": "5f1c01d9f64b941dd9582c638279d046eda6ca31",

@@ -107,25 +107,17 @@ func (c *localClient) Error() error {
 }
 
 func (c *localClient) announcementPkt() Announce {
-	var addrs []Address
-	for _, addr := range c.addrList.AllAddresses() {
-		addrs = append(addrs, Address{
-			URL: addr,
-		})
-	}
-
 	return Announce{
-		Magic: AnnouncementMagic,
 		This: Device{
 			ID:        c.myID[:],
-			Addresses: addrs,
+			Addresses: c.addrList.AllAddresses(),
 		},
 	}
 }
 
 func (c *localClient) sendLocalAnnouncements() {
 	var pkt = c.announcementPkt()
-	msg := pkt.MustMarshalXDR()
+	msg, _ := pkt.Marshal()
 
 	for {
 		c.beacon.Send(msg)
@@ -142,14 +134,9 @@ func (c *localClient) recvAnnouncements(b beacon.Interface) {
 		buf, addr := b.Recv()
 
 		var pkt Announce
-		err := pkt.UnmarshalXDR(buf)
+		err := pkt.Unmarshal(buf)
 		if err != nil && err != io.EOF {
 			l.Debugf("discover: Failed to unmarshal local announcement from %s:\n%s", addr, hex.Dump(buf))
-			continue
-		}
-
-		if pkt.Magic != AnnouncementMagic {
-			l.Debugf("discover: Incorrect magic from %s: %s != %s", addr, pkt.Magic, AnnouncementMagic)
 			continue
 		}
 
@@ -186,7 +173,7 @@ func (c *localClient) registerDevice(src net.Addr, device Device) bool {
 	l.Debugln("discover: Registering addresses for", id)
 	var validAddresses []string
 	for _, addr := range device.Addresses {
-		u, err := url.Parse(addr.URL)
+		u, err := url.Parse(addr)
 		if err != nil {
 			continue
 		}
@@ -204,10 +191,10 @@ func (c *localClient) registerDevice(src net.Addr, device Device) bool {
 			u.Host = net.JoinHostPort(host, strconv.Itoa(tcpAddr.Port))
 			l.Debugf("discover: Reconstructed URL is %#v", u)
 			validAddresses = append(validAddresses, u.String())
-			l.Debugf("discover: Replaced address %v in %s to get %s", tcpAddr.IP, addr.URL, u.String())
+			l.Debugf("discover: Replaced address %v in %s to get %s", tcpAddr.IP, addr, u.String())
 		} else {
-			validAddresses = append(validAddresses, addr.URL)
-			l.Debugf("discover: Accepted address %s verbatim", addr.URL)
+			validAddresses = append(validAddresses, addr)
+			l.Debugf("discover: Accepted address %s verbatim", addr)
 		}
 	}
 

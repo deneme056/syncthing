@@ -531,6 +531,7 @@ func proto() {
 	runPrint("go", "get", "github.com/gogo/protobuf/protoc-gen-gogofast")
 	runPrint("protoc", "--proto_path=../../../:../../gogo/protobuf/protobuf:.", "--gogofast_out=.", "lib/protocol/message.proto")
 	runPrint("protoc", "--proto_path=../../../:../../gogo/protobuf/protobuf:.", "--gogofast_out=.", "lib/db/db.proto")
+	runPrint("protoc", "--proto_path=../../../:../../gogo/protobuf/protobuf:.", "--gogofast_out=.", "lib/discover/packets.proto")
 }
 
 func translate() {

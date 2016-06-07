@@ -67,7 +67,7 @@ func recv(bc beacon.Interface) {
 	for {
 		data, src := bc.Recv()
 		var ann discover.Announce
-		ann.UnmarshalXDR(data)
+		ann.Unmarshal(data)
 
 		if bytes.Equal(ann.This.ID, myID) {
 			// This is one of our own fake packets, don't print it.
@@ -79,10 +79,10 @@ func recv(bc beacon.Interface) {
 		key := string(ann.This.ID) + src.String()
 		if all || !seen[key] {
 			log.Printf("Announcement from %v\n", src)
-			log.Printf(" %v at %s\n", protocol.DeviceIDFromBytes(ann.This.ID), strings.Join(addrStrs(ann.This), ", "))
+			log.Printf(" %v at %s\n", protocol.DeviceIDFromBytes(ann.This.ID), strings.Join(ann.This.Addresses, ", "))
 
 			for _, dev := range ann.Extra {
-				log.Printf(" %v at %s\n", protocol.DeviceIDFromBytes(dev.ID), strings.Join(addrStrs(dev), ", "))
+				log.Printf(" %v at %s\n", protocol.DeviceIDFromBytes(dev.ID), strings.Join(dev.Addresses, ", "))
 			}
 			seen[key] = true
 		}
@@ -92,29 +92,17 @@ func recv(bc beacon.Interface) {
 // sends fake discovery announcements once every second
 func send(bc beacon.Interface) {
 	ann := discover.Announce{
-		Magic: discover.AnnouncementMagic,
 		This: discover.Device{
-			ID: myID,
-			Addresses: []discover.Address{
-				{URL: "tcp://fake.example.com:12345"},
-			},
+			ID:        myID,
+			Addresses: []string{"tcp://fake.example.com:12345"},
 		},
 	}
-	bs, _ := ann.MarshalXDR()
+	bs, _ := ann.Marshal()
 
 	for {
 		bc.Send(bs)
 		time.Sleep(time.Second)
 	}
-}
-
-// returns the list of address URLs
-func addrStrs(dev discover.Device) []string {
-	ss := make([]string, len(dev.Addresses))
-	for i, addr := range dev.Addresses {
-		ss[i] = addr.URL
-	}
-	return ss
 }
 
 // returns a random but recognizable device ID

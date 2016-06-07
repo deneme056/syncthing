@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package discover;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.sizer_all) = false;
+option (gogoproto.protosizer_all) = true;
+
+message Announce {
+    Device This = 1 [(gogoproto.nullable) = false];
+    repeated Device Extra = 2 [(gogoproto.nullable) = false];
+}
+
+message Device {
+    bytes ID = 1 [(gogoproto.customname) = "ID"];
+    repeated string Addresses = 2;
+}

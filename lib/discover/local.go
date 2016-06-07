@@ -108,10 +108,8 @@ func (c *localClient) Error() error {
 
 func (c *localClient) announcementPkt() Announce {
 	return Announce{
-		This: Device{
-			ID:        c.myID[:],
-			Addresses: c.addrList.AllAddresses(),
-		},
+		ID:        c.myID[:],
+		Addresses: c.addrList.AllAddresses(),
 	}
 }
 
@@ -140,11 +138,11 @@ func (c *localClient) recvAnnouncements(b beacon.Interface) {
 			continue
 		}
 
-		l.Debugf("discover: Received local announcement from %s for %s", addr, protocol.DeviceIDFromBytes(pkt.This.ID))
+		l.Debugf("discover: Received local announcement from %s for %s", addr, protocol.DeviceIDFromBytes(pkt.ID))
 
 		var newDevice bool
-		if !bytes.Equal(pkt.This.ID, c.myID[:]) {
-			newDevice = c.registerDevice(addr, pkt.This)
+		if !bytes.Equal(pkt.ID, c.myID[:]) {
+			newDevice = c.registerDevice(addr, pkt)
 		}
 
 		if newDevice {
@@ -158,7 +156,7 @@ func (c *localClient) recvAnnouncements(b beacon.Interface) {
 	}
 }
 
-func (c *localClient) registerDevice(src net.Addr, device Device) bool {
+func (c *localClient) registerDevice(src net.Addr, device Announce) bool {
 	var id protocol.DeviceID
 	copy(id[:], device.ID)
 

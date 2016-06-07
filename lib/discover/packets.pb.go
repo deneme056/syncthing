@@ -10,7 +10,6 @@
 
 	It has these top-level messages:
 		Announce
-		Device
 */
 package discover
 
@@ -31,8 +30,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion1
 
 type Announce struct {
-	This  Device   `protobuf:"bytes,1,opt,name=This,json=this" json:"This"`
-	Extra []Device `protobuf:"bytes,2,rep,name=Extra,json=extra" json:"Extra"`
+	ID        []byte   `protobuf:"bytes,1,opt,name=ID,json=iD,proto3" json:"ID,omitempty"`
+	Addresses []string `protobuf:"bytes,2,rep,name=Addresses,json=addresses" json:"Addresses,omitempty"`
 }
 
 func (m *Announce) Reset()                    { *m = Announce{} }
@@ -40,19 +39,8 @@ func (m *Announce) String() string            { return proto.CompactTextString(m
 func (*Announce) ProtoMessage()               {}
 func (*Announce) Descriptor() ([]byte, []int) { return fileDescriptorPackets, []int{0} }
 
-type Device struct {
-	ID        []byte   `protobuf:"bytes,1,opt,name=ID,json=iD,proto3" json:"ID,omitempty"`
-	Addresses []string `protobuf:"bytes,2,rep,name=Addresses,json=addresses" json:"Addresses,omitempty"`
-}
-
-func (m *Device) Reset()                    { *m = Device{} }
-func (m *Device) String() string            { return proto.CompactTextString(m) }
-func (*Device) ProtoMessage()               {}
-func (*Device) Descriptor() ([]byte, []int) { return fileDescriptorPackets, []int{1} }
-
 func init() {
 	proto.RegisterType((*Announce)(nil), "discover.Announce")
-	proto.RegisterType((*Device)(nil), "discover.Device")
 }
 func (m *Announce) Marshal() (data []byte, err error) {
 	size := m.ProtoSize()
@@ -65,44 +53,6 @@ func (m *Announce) Marshal() (data []byte, err error) {
 }
 
 func (m *Announce) MarshalTo(data []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintPackets(data, i, uint64(m.This.ProtoSize()))
-	n1, err := m.This.MarshalTo(data[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n1
-	if len(m.Extra) > 0 {
-		for _, msg := range m.Extra {
-			data[i] = 0x12
-			i++
-			i = encodeVarintPackets(data, i, uint64(msg.ProtoSize()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	return i, nil
-}
-
-func (m *Device) Marshal() (data []byte, err error) {
-	size := m.ProtoSize()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *Device) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -161,20 +111,6 @@ func encodeVarintPackets(data []byte, offset int, v uint64) int {
 func (m *Announce) ProtoSize() (n int) {
 	var l int
 	_ = l
-	l = m.This.ProtoSize()
-	n += 1 + l + sovPackets(uint64(l))
-	if len(m.Extra) > 0 {
-		for _, e := range m.Extra {
-			l = e.ProtoSize()
-			n += 1 + l + sovPackets(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *Device) ProtoSize() (n int) {
-	var l int
-	_ = l
 	l = len(m.ID)
 	if l > 0 {
 		n += 1 + l + sovPackets(uint64(l))
@@ -228,117 +164,6 @@ func (m *Announce) Unmarshal(data []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: Announce: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field This", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPackets
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthPackets
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.This.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Extra", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowPackets
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthPackets
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Extra = append(m.Extra, Device{})
-			if err := m.Extra[len(m.Extra)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipPackets(data[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthPackets
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *Device) Unmarshal(data []byte) error {
-	l := len(data)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowPackets
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Device: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Device: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -528,20 +353,16 @@ var (
 )
 
 var fileDescriptorPackets = []byte{
-	// 229 bytes of a gzipped FileDescriptorProto
+	// 172 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0x92, 0xca, 0xc9, 0x4c, 0xd2,
 	0x4f, 0xc9, 0x2c, 0x4e, 0xce, 0x2f, 0x4b, 0x2d, 0xd2, 0x2f, 0x48, 0x4c, 0xce, 0x4e, 0x2d, 0x29,
 	0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x80, 0x89, 0x4b, 0xe9, 0xa6, 0x67, 0x96, 0x64,
 	0x94, 0x26, 0xe9, 0x25, 0xe7, 0xe7, 0xea, 0xa7, 0xe7, 0xa7, 0xe7, 0xeb, 0x83, 0x15, 0x24, 0x95,
-	0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98, 0x05, 0xd1, 0xa8, 0x94, 0xc2, 0xc5, 0xe1, 0x98, 0x97, 0x97,
-	0x5f, 0x9a, 0x97, 0x9c, 0x2a, 0xa4, 0xc5, 0xc5, 0x12, 0x92, 0x91, 0x59, 0x2c, 0xc1, 0xa8, 0xc0,
-	0xa8, 0xc1, 0x6d, 0x24, 0xa0, 0x07, 0x33, 0x53, 0xcf, 0x25, 0xb5, 0x2c, 0x33, 0x39, 0xd5, 0x89,
-	0xe5, 0xc4, 0x3d, 0x79, 0x86, 0x20, 0x96, 0x12, 0xa0, 0x1a, 0x21, 0x1d, 0x2e, 0x56, 0xd7, 0x8a,
-	0x92, 0xa2, 0x44, 0x09, 0x26, 0x05, 0x66, 0x3c, 0x8a, 0x59, 0x53, 0x41, 0x8a, 0x94, 0xec, 0xb8,
-	0xd8, 0x20, 0xc2, 0x42, 0x62, 0x5c, 0x4c, 0x9e, 0x2e, 0x60, 0x1b, 0x78, 0x9c, 0xd8, 0x1e, 0xdd,
-	0x93, 0x07, 0xf2, 0x82, 0x98, 0x32, 0x5d, 0x84, 0x64, 0xb8, 0x38, 0x1d, 0x53, 0x52, 0x8a, 0x52,
-	0x8b, 0x8b, 0x53, 0x8b, 0xc1, 0x66, 0x72, 0x06, 0x71, 0x26, 0xc2, 0x04, 0x9c, 0x44, 0x4e, 0x3c,
-	0x94, 0x63, 0x38, 0xf1, 0x48, 0x8e, 0xf1, 0x02, 0x10, 0x3f, 0x78, 0x24, 0xc7, 0xb0, 0xe0, 0xb1,
-	0x1c, 0x63, 0x12, 0x1b, 0xd8, 0x0b, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xd4, 0x16, 0x6a,
-	0x9a, 0x19, 0x01, 0x00, 0x00,
+	0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98, 0x05, 0xd1, 0xa8, 0xe4, 0xc0, 0xc5, 0xe1, 0x98, 0x97, 0x97,
+	0x5f, 0x9a, 0x97, 0x9c, 0x2a, 0x24, 0xc6, 0xc5, 0xe4, 0xe9, 0x22, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1,
+	0xe3, 0xc4, 0xf6, 0xe8, 0x9e, 0x3c, 0x90, 0x17, 0xc4, 0x94, 0xe9, 0x22, 0x24, 0xc3, 0xc5, 0xe9,
+	0x98, 0x92, 0x52, 0x94, 0x5a, 0x5c, 0x9c, 0x5a, 0x2c, 0xc1, 0xa4, 0xc0, 0xac, 0xc1, 0x19, 0xc4,
+	0x99, 0x08, 0x13, 0x70, 0x12, 0x39, 0xf1, 0x50, 0x8e, 0xe1, 0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x40,
+	0xfc, 0xe0, 0x91, 0x1c, 0xc3, 0x82, 0xc7, 0x72, 0x8c, 0x49, 0x6c, 0x60, 0xe3, 0x8d, 0x01, 0x01,
+	0x00, 0x00, 0xff, 0xff, 0xd2, 0x87, 0xe7, 0xc1, 0xb5, 0x00, 0x00, 0x00,
 }

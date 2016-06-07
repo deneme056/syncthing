@@ -46,9 +46,9 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion1
 
 type HelloMessage struct {
-	DeviceName    string `protobuf:"bytes,1,opt,name=DeviceName" json:"DeviceName"`
-	ClientName    string `protobuf:"bytes,2,opt,name=ClientName" json:"ClientName"`
-	ClientVersion string `protobuf:"bytes,3,opt,name=ClientVersion" json:"ClientVersion"`
+	DeviceName    string `protobuf:"bytes,1,opt,name=DeviceName,json=deviceName,proto3" json:"DeviceName,omitempty"`
+	ClientName    string `protobuf:"bytes,2,opt,name=ClientName,json=clientName,proto3" json:"ClientName,omitempty"`
+	ClientVersion string `protobuf:"bytes,3,opt,name=ClientVersion,json=clientVersion,proto3" json:"ClientVersion,omitempty"`
 }
 
 func (m *HelloMessage) Reset()                    { *m = HelloMessage{} }
@@ -57,10 +57,10 @@ func (*HelloMessage) ProtoMessage()               {}
 func (*HelloMessage) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{0} }
 
 type IndexMessage struct {
-	Folder  string     `protobuf:"bytes,1,opt,name=folder" json:"folder"`
-	Files   []FileInfo `protobuf:"bytes,2,rep,name=Files" json:"Files"`
-	Flags   uint32     `protobuf:"varint,3,opt,name=Flags" json:"Flags"`
-	Options []Option   `protobuf:"bytes,4,rep,name=Options" json:"Options"`
+	Folder  string     `protobuf:"bytes,1,opt,name=folder,proto3" json:"folder,omitempty"`
+	Files   []FileInfo `protobuf:"bytes,2,rep,name=Files,json=files" json:"Files"`
+	Flags   uint32     `protobuf:"varint,3,opt,name=Flags,json=flags,proto3" json:"Flags,omitempty"`
+	Options []Option   `protobuf:"bytes,4,rep,name=Options,json=options" json:"Options"`
 }
 
 func (m *IndexMessage) Reset()                    { *m = IndexMessage{} }
@@ -69,13 +69,13 @@ func (*IndexMessage) ProtoMessage()               {}
 func (*IndexMessage) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{1} }
 
 type FileInfo struct {
-	Name         string      `protobuf:"bytes,1,opt,name=Name" json:"Name"`
-	Flags        uint32      `protobuf:"varint,2,opt,name=Flags" json:"Flags"`
-	Modified     int64       `protobuf:"varint,3,opt,name=Modified" json:"Modified"`
-	Version      Vector      `protobuf:"bytes,4,opt,name=Version" json:"Version"`
-	LocalVersion int64       `protobuf:"varint,5,opt,name=LocalVersion" json:"LocalVersion"`
-	Size         int64       `protobuf:"varint,6,opt,name=Size" json:"Size"`
-	Blocks       []BlockInfo `protobuf:"bytes,16,rep,name=Blocks" json:"Blocks"`
+	Name         string      `protobuf:"bytes,1,opt,name=Name,json=name,proto3" json:"Name,omitempty"`
+	Flags        uint32      `protobuf:"varint,2,opt,name=Flags,json=flags,proto3" json:"Flags,omitempty"`
+	Modified     int64       `protobuf:"varint,3,opt,name=Modified,json=modified,proto3" json:"Modified,omitempty"`
+	Version      Vector      `protobuf:"bytes,4,opt,name=Version,json=version" json:"Version"`
+	LocalVersion int64       `protobuf:"varint,5,opt,name=LocalVersion,json=localVersion,proto3" json:"LocalVersion,omitempty"`
+	Size         int64       `protobuf:"varint,6,opt,name=Size,json=size,proto3" json:"Size,omitempty"`
+	Blocks       []BlockInfo `protobuf:"bytes,16,rep,name=Blocks,json=blocks" json:"Blocks"`
 }
 
 func (m *FileInfo) Reset()                    { *m = FileInfo{} }
@@ -84,12 +84,12 @@ func (*FileInfo) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []
 
 // Must be the same as FileInfo but without the blocks field
 type FileInfoTruncated struct {
-	Name         string `protobuf:"bytes,1,opt,name=Name" json:"Name"`
-	Flags        uint32 `protobuf:"varint,2,opt,name=Flags" json:"Flags"`
-	Modified     int64  `protobuf:"varint,3,opt,name=Modified" json:"Modified"`
-	Version      Vector `protobuf:"bytes,4,opt,name=Version" json:"Version"`
-	LocalVersion int64  `protobuf:"varint,5,opt,name=LocalVersion" json:"LocalVersion"`
-	Size         int64  `protobuf:"varint,6,opt,name=Size" json:"Size"`
+	Name         string `protobuf:"bytes,1,opt,name=Name,json=name,proto3" json:"Name,omitempty"`
+	Flags        uint32 `protobuf:"varint,2,opt,name=Flags,json=flags,proto3" json:"Flags,omitempty"`
+	Modified     int64  `protobuf:"varint,3,opt,name=Modified,json=modified,proto3" json:"Modified,omitempty"`
+	Version      Vector `protobuf:"bytes,4,opt,name=Version,json=version" json:"Version"`
+	LocalVersion int64  `protobuf:"varint,5,opt,name=LocalVersion,json=localVersion,proto3" json:"LocalVersion,omitempty"`
+	Size         int64  `protobuf:"varint,6,opt,name=Size,json=size,proto3" json:"Size,omitempty"`
 }
 
 func (m *FileInfoTruncated) Reset()                    { *m = FileInfoTruncated{} }
@@ -97,9 +97,9 @@ func (*FileInfoTruncated) ProtoMessage()               {}
 func (*FileInfoTruncated) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{3} }
 
 type BlockInfo struct {
-	Offset int64  `protobuf:"varint,1,opt,name=Offset" json:"Offset"`
-	Size   int32  `protobuf:"varint,2,opt,name=Size" json:"Size"`
-	Hash   []byte `protobuf:"bytes,3,opt,name=Hash" json:"Hash,omitempty"`
+	Offset int64  `protobuf:"varint,1,opt,name=Offset,json=offset,proto3" json:"Offset,omitempty"`
+	Size   int32  `protobuf:"varint,2,opt,name=Size,json=size,proto3" json:"Size,omitempty"`
+	Hash   []byte `protobuf:"bytes,3,opt,name=Hash,json=hash,proto3" json:"Hash,omitempty"`
 }
 
 func (m *BlockInfo) Reset()                    { *m = BlockInfo{} }
@@ -107,8 +107,8 @@ func (*BlockInfo) ProtoMessage()               {}
 func (*BlockInfo) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{4} }
 
 type Option struct {
-	Key   string `protobuf:"bytes,1,opt,name=Key" json:"Key"`
-	Value string `protobuf:"bytes,2,opt,name=Value" json:"Value"`
+	Key   string `protobuf:"bytes,1,opt,name=Key,json=key,proto3" json:"Key,omitempty"`
+	Value string `protobuf:"bytes,2,opt,name=Value,json=value,proto3" json:"Value,omitempty"`
 }
 
 func (m *Option) Reset()                    { *m = Option{} }
@@ -117,13 +117,13 @@ func (*Option) ProtoMessage()               {}
 func (*Option) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{5} }
 
 type RequestMessage struct {
-	Folder  string   `protobuf:"bytes,1,opt,name=Folder" json:"Folder"`
-	Name    string   `protobuf:"bytes,2,opt,name=Name" json:"Name"`
-	Offset  int64    `protobuf:"varint,3,opt,name=Offset" json:"Offset"`
-	Size    int32    `protobuf:"varint,4,opt,name=Size" json:"Size"`
-	Hash    []byte   `protobuf:"bytes,5,opt,name=Hash" json:"Hash,omitempty"`
-	Flags   uint32   `protobuf:"varint,6,opt,name=Flags" json:"Flags"`
-	Options []Option `protobuf:"bytes,7,rep,name=Options" json:"Options"`
+	Folder  string   `protobuf:"bytes,1,opt,name=Folder,json=folder,proto3" json:"Folder,omitempty"`
+	Name    string   `protobuf:"bytes,2,opt,name=Name,json=name,proto3" json:"Name,omitempty"`
+	Offset  int64    `protobuf:"varint,3,opt,name=Offset,json=offset,proto3" json:"Offset,omitempty"`
+	Size    int32    `protobuf:"varint,4,opt,name=Size,json=size,proto3" json:"Size,omitempty"`
+	Hash    []byte   `protobuf:"bytes,5,opt,name=Hash,json=hash,proto3" json:"Hash,omitempty"`
+	Flags   uint32   `protobuf:"varint,6,opt,name=Flags,json=flags,proto3" json:"Flags,omitempty"`
+	Options []Option `protobuf:"bytes,7,rep,name=Options,json=options" json:"Options"`
 }
 
 func (m *RequestMessage) Reset()                    { *m = RequestMessage{} }
@@ -132,8 +132,8 @@ func (*RequestMessage) ProtoMessage()               {}
 func (*RequestMessage) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{6} }
 
 type ResponseMessage struct {
-	Data []byte `protobuf:"bytes,1,opt,name=Data" json:"Data,omitempty"`
-	Code int32  `protobuf:"varint,2,opt,name=Code" json:"Code"`
+	Data []byte `protobuf:"bytes,1,opt,name=Data,json=data,proto3" json:"Data,omitempty"`
+	Code int32  `protobuf:"varint,2,opt,name=Code,json=code,proto3" json:"Code,omitempty"`
 }
 
 func (m *ResponseMessage) Reset()                    { *m = ResponseMessage{} }
@@ -142,8 +142,8 @@ func (*ResponseMessage) ProtoMessage()               {}
 func (*ResponseMessage) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{7} }
 
 type ClusterConfigMessage struct {
-	Folders []Folder `protobuf:"bytes,1,rep,name=Folders" json:"Folders"`
-	Options []Option `protobuf:"bytes,2,rep,name=Options" json:"Options"`
+	Folders []Folder `protobuf:"bytes,1,rep,name=Folders,json=folders" json:"Folders"`
+	Options []Option `protobuf:"bytes,2,rep,name=Options,json=options" json:"Options"`
 }
 
 func (m *ClusterConfigMessage) Reset()                    { *m = ClusterConfigMessage{} }
@@ -152,10 +152,10 @@ func (*ClusterConfigMessage) ProtoMessage()               {}
 func (*ClusterConfigMessage) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{8} }
 
 type DownloadProgressMessage struct {
-	Folder  string                       `protobuf:"bytes,1,opt,name=Folder" json:"Folder"`
-	Updates []FileDownloadProgressUpdate `protobuf:"bytes,2,rep,name=Updates" json:"Updates"`
-	Flags   uint32                       `protobuf:"varint,3,opt,name=Flags" json:"Flags"`
-	Options []Option                     `protobuf:"bytes,4,rep,name=Options" json:"Options"`
+	Folder  string                       `protobuf:"bytes,1,opt,name=Folder,json=folder,proto3" json:"Folder,omitempty"`
+	Updates []FileDownloadProgressUpdate `protobuf:"bytes,2,rep,name=Updates,json=updates" json:"Updates"`
+	Flags   uint32                       `protobuf:"varint,3,opt,name=Flags,json=flags,proto3" json:"Flags,omitempty"`
+	Options []Option                     `protobuf:"bytes,4,rep,name=Options,json=options" json:"Options"`
 }
 
 func (m *DownloadProgressMessage) Reset()                    { *m = DownloadProgressMessage{} }
@@ -164,11 +164,11 @@ func (*DownloadProgressMessage) ProtoMessage()               {}
 func (*DownloadProgressMessage) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{9} }
 
 type Folder struct {
-	ID      string   `protobuf:"bytes,1,opt,name=ID" json:"ID"`
-	Label   string   `protobuf:"bytes,2,opt,name=Label" json:"Label"`
-	Devices []Device `protobuf:"bytes,3,rep,name=Devices" json:"Devices"`
-	Flags   uint32   `protobuf:"varint,4,opt,name=Flags" json:"Flags"`
-	Options []Option `protobuf:"bytes,5,rep,name=Options" json:"Options"`
+	ID      string   `protobuf:"bytes,1,opt,name=ID,json=iD,proto3" json:"ID,omitempty"`
+	Label   string   `protobuf:"bytes,2,opt,name=Label,json=label,proto3" json:"Label,omitempty"`
+	Devices []Device `protobuf:"bytes,3,rep,name=Devices,json=devices" json:"Devices"`
+	Flags   uint32   `protobuf:"varint,4,opt,name=Flags,json=flags,proto3" json:"Flags,omitempty"`
+	Options []Option `protobuf:"bytes,5,rep,name=Options,json=options" json:"Options"`
 }
 
 func (m *Folder) Reset()                    { *m = Folder{} }
@@ -177,14 +177,14 @@ func (*Folder) ProtoMessage()               {}
 func (*Folder) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{10} }
 
 type Device struct {
-	ID              []byte   `protobuf:"bytes,1,opt,name=ID" json:"ID,omitempty"`
-	Name            string   `protobuf:"bytes,2,opt,name=Name" json:"Name"`
-	Addresses       []string `protobuf:"bytes,3,rep,name=Addresses" json:"Addresses,omitempty"`
-	Compression     uint32   `protobuf:"varint,4,opt,name=Compression" json:"Compression"`
-	CertName        string   `protobuf:"bytes,5,opt,name=CertName" json:"CertName"`
-	MaxLocalVersion int64    `protobuf:"varint,6,opt,name=MaxLocalVersion" json:"MaxLocalVersion"`
-	Flags           uint32   `protobuf:"varint,7,opt,name=Flags" json:"Flags"`
-	Options         []Option `protobuf:"bytes,8,rep,name=Options" json:"Options"`
+	ID              []byte   `protobuf:"bytes,1,opt,name=ID,json=iD,proto3" json:"ID,omitempty"`
+	Name            string   `protobuf:"bytes,2,opt,name=Name,json=name,proto3" json:"Name,omitempty"`
+	Addresses       []string `protobuf:"bytes,3,rep,name=Addresses,json=addresses" json:"Addresses,omitempty"`
+	Compression     uint32   `protobuf:"varint,4,opt,name=Compression,json=compression,proto3" json:"Compression,omitempty"`
+	CertName        string   `protobuf:"bytes,5,opt,name=CertName,json=certName,proto3" json:"CertName,omitempty"`
+	MaxLocalVersion int64    `protobuf:"varint,6,opt,name=MaxLocalVersion,json=maxLocalVersion,proto3" json:"MaxLocalVersion,omitempty"`
+	Flags           uint32   `protobuf:"varint,7,opt,name=Flags,json=flags,proto3" json:"Flags,omitempty"`
+	Options         []Option `protobuf:"bytes,8,rep,name=Options,json=options" json:"Options"`
 }
 
 func (m *Device) Reset()                    { *m = Device{} }
@@ -193,10 +193,10 @@ func (*Device) ProtoMessage()               {}
 func (*Device) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{11} }
 
 type FileDownloadProgressUpdate struct {
-	UpdateType   uint32  `protobuf:"varint,1,opt,name=UpdateType" json:"UpdateType"`
-	Name         string  `protobuf:"bytes,2,opt,name=Name" json:"Name"`
-	Version      Vector  `protobuf:"bytes,3,opt,name=Version" json:"Version"`
-	BlockIndexes []int32 `protobuf:"varint,4,rep,name=BlockIndexes" json:"BlockIndexes,omitempty"`
+	UpdateType   uint32  `protobuf:"varint,1,opt,name=UpdateType,json=updateType,proto3" json:"UpdateType,omitempty"`
+	Name         string  `protobuf:"bytes,2,opt,name=Name,json=name,proto3" json:"Name,omitempty"`
+	Version      Vector  `protobuf:"bytes,3,opt,name=Version,json=version" json:"Version"`
+	BlockIndexes []int32 `protobuf:"varint,4,rep,name=BlockIndexes,json=blockIndexes" json:"BlockIndexes,omitempty"`
 }
 
 func (m *FileDownloadProgressUpdate) Reset()         { *m = FileDownloadProgressUpdate{} }
@@ -207,8 +207,8 @@ func (*FileDownloadProgressUpdate) Descriptor() ([]byte, []int) {
 }
 
 type CloseMessage struct {
-	Reason string `protobuf:"bytes,1,opt,name=Reason" json:"Reason"`
-	Code   int32  `protobuf:"varint,2,opt,name=Code" json:"Code"`
+	Reason string `protobuf:"bytes,1,opt,name=Reason,json=reason,proto3" json:"Reason,omitempty"`
+	Code   int32  `protobuf:"varint,2,opt,name=Code,json=code,proto3" json:"Code,omitempty"`
 }
 
 func (m *CloseMessage) Reset()                    { *m = CloseMessage{} }
@@ -225,7 +225,7 @@ func (*EmptyMessage) ProtoMessage()               {}
 func (*EmptyMessage) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{14} }
 
 type Vector struct {
-	Counters []Counter `protobuf:"bytes,1,rep,name=Counters" json:"Counters"`
+	Counters []Counter `protobuf:"bytes,1,rep,name=Counters,json=counters" json:"Counters"`
 }
 
 func (m *Vector) Reset()                    { *m = Vector{} }
@@ -234,8 +234,8 @@ func (*Vector) ProtoMessage()               {}
 func (*Vector) Descriptor() ([]byte, []int) { return fileDescriptorMessage, []int{15} }
 
 type Counter struct {
-	ID    uint64 `protobuf:"varint,1,opt,name=ID" json:"ID"`
-	Value uint64 `protobuf:"varint,2,opt,name=Value" json:"Value"`
+	ID    uint64 `protobuf:"varint,1,opt,name=ID,json=iD,proto3" json:"ID,omitempty"`
+	Value uint64 `protobuf:"varint,2,opt,name=Value,json=value,proto3" json:"Value,omitempty"`
 }
 
 func (m *Counter) Reset()                    { *m = Counter{} }
@@ -277,18 +277,24 @@ func (m *HelloMessage) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.DeviceName)))
-	i += copy(data[i:], m.DeviceName)
-	data[i] = 0x12
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.ClientName)))
-	i += copy(data[i:], m.ClientName)
-	data[i] = 0x1a
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.ClientVersion)))
-	i += copy(data[i:], m.ClientVersion)
+	if len(m.DeviceName) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.DeviceName)))
+		i += copy(data[i:], m.DeviceName)
+	}
+	if len(m.ClientName) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.ClientName)))
+		i += copy(data[i:], m.ClientName)
+	}
+	if len(m.ClientVersion) > 0 {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.ClientVersion)))
+		i += copy(data[i:], m.ClientVersion)
+	}
 	return i, nil
 }
 
@@ -307,10 +313,12 @@ func (m *IndexMessage) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Folder)))
-	i += copy(data[i:], m.Folder)
+	if len(m.Folder) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Folder)))
+		i += copy(data[i:], m.Folder)
+	}
 	if len(m.Files) > 0 {
 		for _, msg := range m.Files {
 			data[i] = 0x12
@@ -323,9 +331,11 @@ func (m *IndexMessage) MarshalTo(data []byte) (int, error) {
 			i += n
 		}
 	}
-	data[i] = 0x18
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Flags))
+	if m.Flags != 0 {
+		data[i] = 0x18
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, msg := range m.Options {
 			data[i] = 0x22
@@ -356,16 +366,22 @@ func (m *FileInfo) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Name)))
-	i += copy(data[i:], m.Name)
-	data[i] = 0x10
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Flags))
-	data[i] = 0x18
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Modified))
+	if len(m.Name) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.Flags != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Flags))
+	}
+	if m.Modified != 0 {
+		data[i] = 0x18
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Modified))
+	}
 	data[i] = 0x22
 	i++
 	i = encodeVarintMessage(data, i, uint64(m.Version.ProtoSize()))
@@ -374,12 +390,16 @@ func (m *FileInfo) MarshalTo(data []byte) (int, error) {
 		return 0, err
 	}
 	i += n1
-	data[i] = 0x28
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.LocalVersion))
-	data[i] = 0x30
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Size))
+	if m.LocalVersion != 0 {
+		data[i] = 0x28
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.LocalVersion))
+	}
+	if m.Size != 0 {
+		data[i] = 0x30
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Size))
+	}
 	if len(m.Blocks) > 0 {
 		for _, msg := range m.Blocks {
 			data[i] = 0x82
@@ -412,16 +432,22 @@ func (m *FileInfoTruncated) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Name)))
-	i += copy(data[i:], m.Name)
-	data[i] = 0x10
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Flags))
-	data[i] = 0x18
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Modified))
+	if len(m.Name) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.Flags != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Flags))
+	}
+	if m.Modified != 0 {
+		data[i] = 0x18
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Modified))
+	}
 	data[i] = 0x22
 	i++
 	i = encodeVarintMessage(data, i, uint64(m.Version.ProtoSize()))
@@ -430,12 +456,16 @@ func (m *FileInfoTruncated) MarshalTo(data []byte) (int, error) {
 		return 0, err
 	}
 	i += n2
-	data[i] = 0x28
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.LocalVersion))
-	data[i] = 0x30
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Size))
+	if m.LocalVersion != 0 {
+		data[i] = 0x28
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.LocalVersion))
+	}
+	if m.Size != 0 {
+		data[i] = 0x30
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Size))
+	}
 	return i, nil
 }
 
@@ -454,13 +484,17 @@ func (m *BlockInfo) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0x8
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Offset))
-	data[i] = 0x10
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Size))
-	if m.Hash != nil {
+	if m.Offset != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Offset))
+	}
+	if m.Size != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Size))
+	}
+	if len(m.Hash) > 0 {
 		data[i] = 0x1a
 		i++
 		i = encodeVarintMessage(data, i, uint64(len(m.Hash)))
@@ -484,14 +518,18 @@ func (m *Option) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Key)))
-	i += copy(data[i:], m.Key)
-	data[i] = 0x12
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Value)))
-	i += copy(data[i:], m.Value)
+	if len(m.Key) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if len(m.Value) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Value)))
+		i += copy(data[i:], m.Value)
+	}
 	return i, nil
 }
 
@@ -510,29 +548,39 @@ func (m *RequestMessage) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Folder)))
-	i += copy(data[i:], m.Folder)
-	data[i] = 0x12
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Name)))
-	i += copy(data[i:], m.Name)
-	data[i] = 0x18
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Offset))
-	data[i] = 0x20
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Size))
-	if m.Hash != nil {
+	if len(m.Folder) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Folder)))
+		i += copy(data[i:], m.Folder)
+	}
+	if len(m.Name) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.Offset != 0 {
+		data[i] = 0x18
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Offset))
+	}
+	if m.Size != 0 {
+		data[i] = 0x20
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Size))
+	}
+	if len(m.Hash) > 0 {
 		data[i] = 0x2a
 		i++
 		i = encodeVarintMessage(data, i, uint64(len(m.Hash)))
 		i += copy(data[i:], m.Hash)
 	}
-	data[i] = 0x30
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Flags))
+	if m.Flags != 0 {
+		data[i] = 0x30
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, msg := range m.Options {
 			data[i] = 0x3a
@@ -563,15 +611,17 @@ func (m *ResponseMessage) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Data != nil {
+	if len(m.Data) > 0 {
 		data[i] = 0xa
 		i++
 		i = encodeVarintMessage(data, i, uint64(len(m.Data)))
 		i += copy(data[i:], m.Data)
 	}
-	data[i] = 0x10
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Code))
+	if m.Code != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Code))
+	}
 	return i, nil
 }
 
@@ -632,10 +682,12 @@ func (m *DownloadProgressMessage) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Folder)))
-	i += copy(data[i:], m.Folder)
+	if len(m.Folder) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Folder)))
+		i += copy(data[i:], m.Folder)
+	}
 	if len(m.Updates) > 0 {
 		for _, msg := range m.Updates {
 			data[i] = 0x12
@@ -648,9 +700,11 @@ func (m *DownloadProgressMessage) MarshalTo(data []byte) (int, error) {
 			i += n
 		}
 	}
-	data[i] = 0x18
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Flags))
+	if m.Flags != 0 {
+		data[i] = 0x18
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, msg := range m.Options {
 			data[i] = 0x22
@@ -681,14 +735,18 @@ func (m *Folder) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.ID)))
-	i += copy(data[i:], m.ID)
-	data[i] = 0x12
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Label)))
-	i += copy(data[i:], m.Label)
+	if len(m.ID) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.ID)))
+		i += copy(data[i:], m.ID)
+	}
+	if len(m.Label) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Label)))
+		i += copy(data[i:], m.Label)
+	}
 	if len(m.Devices) > 0 {
 		for _, msg := range m.Devices {
 			data[i] = 0x1a
@@ -701,9 +759,11 @@ func (m *Folder) MarshalTo(data []byte) (int, error) {
 			i += n
 		}
 	}
-	data[i] = 0x20
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Flags))
+	if m.Flags != 0 {
+		data[i] = 0x20
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, msg := range m.Options {
 			data[i] = 0x2a
@@ -734,16 +794,18 @@ func (m *Device) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.ID != nil {
+	if len(m.ID) > 0 {
 		data[i] = 0xa
 		i++
 		i = encodeVarintMessage(data, i, uint64(len(m.ID)))
 		i += copy(data[i:], m.ID)
 	}
-	data[i] = 0x12
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Name)))
-	i += copy(data[i:], m.Name)
+	if len(m.Name) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
 	if len(m.Addresses) > 0 {
 		for _, s := range m.Addresses {
 			data[i] = 0x1a
@@ -759,19 +821,27 @@ func (m *Device) MarshalTo(data []byte) (int, error) {
 			i += copy(data[i:], s)
 		}
 	}
-	data[i] = 0x20
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Compression))
-	data[i] = 0x2a
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.CertName)))
-	i += copy(data[i:], m.CertName)
-	data[i] = 0x30
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.MaxLocalVersion))
-	data[i] = 0x38
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Flags))
+	if m.Compression != 0 {
+		data[i] = 0x20
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Compression))
+	}
+	if len(m.CertName) > 0 {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.CertName)))
+		i += copy(data[i:], m.CertName)
+	}
+	if m.MaxLocalVersion != 0 {
+		data[i] = 0x30
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.MaxLocalVersion))
+	}
+	if m.Flags != 0 {
+		data[i] = 0x38
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, msg := range m.Options {
 			data[i] = 0x42
@@ -802,13 +872,17 @@ func (m *FileDownloadProgressUpdate) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0x8
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.UpdateType))
-	data[i] = 0x12
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Name)))
-	i += copy(data[i:], m.Name)
+	if m.UpdateType != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.UpdateType))
+	}
+	if len(m.Name) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
 	data[i] = 0x1a
 	i++
 	i = encodeVarintMessage(data, i, uint64(m.Version.ProtoSize()))
@@ -842,13 +916,17 @@ func (m *CloseMessage) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintMessage(data, i, uint64(len(m.Reason)))
-	i += copy(data[i:], m.Reason)
-	data[i] = 0x10
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Code))
+	if len(m.Reason) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintMessage(data, i, uint64(len(m.Reason)))
+		i += copy(data[i:], m.Reason)
+	}
+	if m.Code != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Code))
+	}
 	return i, nil
 }
 
@@ -915,12 +993,16 @@ func (m *Counter) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0x8
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.ID))
-	data[i] = 0x10
-	i++
-	i = encodeVarintMessage(data, i, uint64(m.Value))
+	if m.ID != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.ID))
+	}
+	if m.Value != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintMessage(data, i, uint64(m.Value))
+	}
 	return i, nil
 }
 
@@ -955,11 +1037,17 @@ func (m *HelloMessage) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.DeviceName)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	l = len(m.ClientName)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	l = len(m.ClientVersion)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	return n
 }
 
@@ -967,14 +1055,18 @@ func (m *IndexMessage) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.Folder)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	if len(m.Files) > 0 {
 		for _, e := range m.Files {
 			l = e.ProtoSize()
 			n += 1 + l + sovMessage(uint64(l))
 		}
 	}
-	n += 1 + sovMessage(uint64(m.Flags))
+	if m.Flags != 0 {
+		n += 1 + sovMessage(uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, e := range m.Options {
 			l = e.ProtoSize()
@@ -988,13 +1080,23 @@ func (m *FileInfo) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.Name)
-	n += 1 + l + sovMessage(uint64(l))
-	n += 1 + sovMessage(uint64(m.Flags))
-	n += 1 + sovMessage(uint64(m.Modified))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	if m.Flags != 0 {
+		n += 1 + sovMessage(uint64(m.Flags))
+	}
+	if m.Modified != 0 {
+		n += 1 + sovMessage(uint64(m.Modified))
+	}
 	l = m.Version.ProtoSize()
 	n += 1 + l + sovMessage(uint64(l))
-	n += 1 + sovMessage(uint64(m.LocalVersion))
-	n += 1 + sovMessage(uint64(m.Size))
+	if m.LocalVersion != 0 {
+		n += 1 + sovMessage(uint64(m.LocalVersion))
+	}
+	if m.Size != 0 {
+		n += 1 + sovMessage(uint64(m.Size))
+	}
 	if len(m.Blocks) > 0 {
 		for _, e := range m.Blocks {
 			l = e.ProtoSize()
@@ -1008,23 +1110,37 @@ func (m *FileInfoTruncated) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.Name)
-	n += 1 + l + sovMessage(uint64(l))
-	n += 1 + sovMessage(uint64(m.Flags))
-	n += 1 + sovMessage(uint64(m.Modified))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	if m.Flags != 0 {
+		n += 1 + sovMessage(uint64(m.Flags))
+	}
+	if m.Modified != 0 {
+		n += 1 + sovMessage(uint64(m.Modified))
+	}
 	l = m.Version.ProtoSize()
 	n += 1 + l + sovMessage(uint64(l))
-	n += 1 + sovMessage(uint64(m.LocalVersion))
-	n += 1 + sovMessage(uint64(m.Size))
+	if m.LocalVersion != 0 {
+		n += 1 + sovMessage(uint64(m.LocalVersion))
+	}
+	if m.Size != 0 {
+		n += 1 + sovMessage(uint64(m.Size))
+	}
 	return n
 }
 
 func (m *BlockInfo) ProtoSize() (n int) {
 	var l int
 	_ = l
-	n += 1 + sovMessage(uint64(m.Offset))
-	n += 1 + sovMessage(uint64(m.Size))
-	if m.Hash != nil {
-		l = len(m.Hash)
+	if m.Offset != 0 {
+		n += 1 + sovMessage(uint64(m.Offset))
+	}
+	if m.Size != 0 {
+		n += 1 + sovMessage(uint64(m.Size))
+	}
+	l = len(m.Hash)
+	if l > 0 {
 		n += 1 + l + sovMessage(uint64(l))
 	}
 	return n
@@ -1034,9 +1150,13 @@ func (m *Option) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.Key)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	l = len(m.Value)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	return n
 }
 
@@ -1044,16 +1164,26 @@ func (m *RequestMessage) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.Folder)
-	n += 1 + l + sovMessage(uint64(l))
-	l = len(m.Name)
-	n += 1 + l + sovMessage(uint64(l))
-	n += 1 + sovMessage(uint64(m.Offset))
-	n += 1 + sovMessage(uint64(m.Size))
-	if m.Hash != nil {
-		l = len(m.Hash)
+	if l > 0 {
 		n += 1 + l + sovMessage(uint64(l))
 	}
-	n += 1 + sovMessage(uint64(m.Flags))
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	if m.Offset != 0 {
+		n += 1 + sovMessage(uint64(m.Offset))
+	}
+	if m.Size != 0 {
+		n += 1 + sovMessage(uint64(m.Size))
+	}
+	l = len(m.Hash)
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	if m.Flags != 0 {
+		n += 1 + sovMessage(uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, e := range m.Options {
 			l = e.ProtoSize()
@@ -1066,11 +1196,13 @@ func (m *RequestMessage) ProtoSize() (n int) {
 func (m *ResponseMessage) ProtoSize() (n int) {
 	var l int
 	_ = l
-	if m.Data != nil {
-		l = len(m.Data)
+	l = len(m.Data)
+	if l > 0 {
 		n += 1 + l + sovMessage(uint64(l))
 	}
-	n += 1 + sovMessage(uint64(m.Code))
+	if m.Code != 0 {
+		n += 1 + sovMessage(uint64(m.Code))
+	}
 	return n
 }
 
@@ -1096,14 +1228,18 @@ func (m *DownloadProgressMessage) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.Folder)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	if len(m.Updates) > 0 {
 		for _, e := range m.Updates {
 			l = e.ProtoSize()
 			n += 1 + l + sovMessage(uint64(l))
 		}
 	}
-	n += 1 + sovMessage(uint64(m.Flags))
+	if m.Flags != 0 {
+		n += 1 + sovMessage(uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, e := range m.Options {
 			l = e.ProtoSize()
@@ -1117,16 +1253,22 @@ func (m *Folder) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.ID)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	l = len(m.Label)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	if len(m.Devices) > 0 {
 		for _, e := range m.Devices {
 			l = e.ProtoSize()
 			n += 1 + l + sovMessage(uint64(l))
 		}
 	}
-	n += 1 + sovMessage(uint64(m.Flags))
+	if m.Flags != 0 {
+		n += 1 + sovMessage(uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, e := range m.Options {
 			l = e.ProtoSize()
@@ -1139,23 +1281,33 @@ func (m *Folder) ProtoSize() (n int) {
 func (m *Device) ProtoSize() (n int) {
 	var l int
 	_ = l
-	if m.ID != nil {
-		l = len(m.ID)
+	l = len(m.ID)
+	if l > 0 {
 		n += 1 + l + sovMessage(uint64(l))
 	}
 	l = len(m.Name)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	if len(m.Addresses) > 0 {
 		for _, s := range m.Addresses {
 			l = len(s)
 			n += 1 + l + sovMessage(uint64(l))
 		}
 	}
-	n += 1 + sovMessage(uint64(m.Compression))
+	if m.Compression != 0 {
+		n += 1 + sovMessage(uint64(m.Compression))
+	}
 	l = len(m.CertName)
-	n += 1 + l + sovMessage(uint64(l))
-	n += 1 + sovMessage(uint64(m.MaxLocalVersion))
-	n += 1 + sovMessage(uint64(m.Flags))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	if m.MaxLocalVersion != 0 {
+		n += 1 + sovMessage(uint64(m.MaxLocalVersion))
+	}
+	if m.Flags != 0 {
+		n += 1 + sovMessage(uint64(m.Flags))
+	}
 	if len(m.Options) > 0 {
 		for _, e := range m.Options {
 			l = e.ProtoSize()
@@ -1168,9 +1320,13 @@ func (m *Device) ProtoSize() (n int) {
 func (m *FileDownloadProgressUpdate) ProtoSize() (n int) {
 	var l int
 	_ = l
-	n += 1 + sovMessage(uint64(m.UpdateType))
+	if m.UpdateType != 0 {
+		n += 1 + sovMessage(uint64(m.UpdateType))
+	}
 	l = len(m.Name)
-	n += 1 + l + sovMessage(uint64(l))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
 	l = m.Version.ProtoSize()
 	n += 1 + l + sovMessage(uint64(l))
 	if len(m.BlockIndexes) > 0 {
@@ -1185,8 +1341,12 @@ func (m *CloseMessage) ProtoSize() (n int) {
 	var l int
 	_ = l
 	l = len(m.Reason)
-	n += 1 + l + sovMessage(uint64(l))
-	n += 1 + sovMessage(uint64(m.Code))
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	if m.Code != 0 {
+		n += 1 + sovMessage(uint64(m.Code))
+	}
 	return n
 }
 
@@ -1211,8 +1371,12 @@ func (m *Vector) ProtoSize() (n int) {
 func (m *Counter) ProtoSize() (n int) {
 	var l int
 	_ = l
-	n += 1 + sovMessage(uint64(m.ID))
-	n += 1 + sovMessage(uint64(m.Value))
+	if m.ID != 0 {
+		n += 1 + sovMessage(uint64(m.ID))
+	}
+	if m.Value != 0 {
+		n += 1 + sovMessage(uint64(m.Value))
+	}
 	return n
 }
 
@@ -3769,53 +3933,61 @@ var (
 )
 
 var fileDescriptorMessage = []byte{
-	// 765 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xcc, 0x55, 0x4d, 0x6f, 0xd3, 0x4a,
-	0x14, 0x8d, 0x13, 0xe7, 0xeb, 0xd6, 0xfd, 0x88, 0x5b, 0xbd, 0x97, 0x97, 0xa7, 0x97, 0x87, 0x22,
-	0x24, 0xca, 0x82, 0xb4, 0x82, 0x0d, 0x82, 0x15, 0x75, 0xa8, 0x1a, 0xd1, 0x52, 0x54, 0x4a, 0xb7,
-	0xc8, 0x89, 0x27, 0xae, 0xc5, 0xc4, 0x63, 0x3c, 0x36, 0xb4, 0xfc, 0x03, 0xc4, 0x86, 0x15, 0x62,
-	0xd9, 0x35, 0x2b, 0x24, 0xfe, 0x44, 0x25, 0x36, 0x6c, 0xd8, 0x22, 0x68, 0xff, 0x08, 0xe3, 0x19,
-	0x3b, 0xfe, 0x88, 0xf1, 0x8a, 0x05, 0x8b, 0x48, 0xf1, 0xbd, 0x73, 0xcf, 0x3d, 0x67, 0x7c, 0xee,
-	0x35, 0x74, 0xb0, 0x35, 0xda, 0x70, 0x5c, 0xe2, 0x91, 0x31, 0xc1, 0x1b, 0x53, 0x44, 0xa9, 0x6e,
-	0xa2, 0x3e, 0x0f, 0xa8, 0x8d, 0x28, 0xde, 0xb9, 0x61, 0x5a, 0xde, 0xb1, 0x3f, 0xea, 0x8f, 0xc9,
-	0x74, 0xc3, 0x24, 0x26, 0x11, 0x15, 0x23, 0x7f, 0xc2, 0x9f, 0xf8, 0x03, 0xff, 0x27, 0x0a, 0x7b,
-	0x4f, 0x41, 0xd9, 0x41, 0x18, 0x93, 0x3d, 0x01, 0xa7, 0xb6, 0x01, 0x06, 0xe8, 0x85, 0x35, 0x46,
-	0x0f, 0xf5, 0x29, 0x6a, 0x4b, 0x57, 0xa4, 0xf5, 0xe6, 0x96, 0x7c, 0xfe, 0xed, 0xff, 0x52, 0x90,
-	0xd1, 0xb0, 0x85, 0x6c, 0x8f, 0x67, 0xca, 0x89, 0xcc, 0xbf, 0xb0, 0x28, 0x32, 0x47, 0xc8, 0xa5,
-	0x16, 0xb1, 0xdb, 0x95, 0x38, 0xd9, 0x7b, 0x23, 0x81, 0x32, 0xb4, 0x0d, 0x74, 0x12, 0x75, 0x58,
-	0x83, 0xda, 0x84, 0x60, 0x03, 0xb9, 0x29, 0xf4, 0x6b, 0x50, 0xdd, 0xb6, 0x30, 0xa2, 0x0c, 0xb8,
-	0xb2, 0xbe, 0x70, 0x53, 0xed, 0x47, 0x82, 0xfa, 0x41, 0x78, 0x68, 0x4f, 0x48, 0x78, 0x70, 0x95,
-	0x1d, 0xc4, 0xba, 0x49, 0x79, 0x93, 0xc5, 0x59, 0x75, 0x7d, 0xdf, 0xf1, 0x58, 0x6b, 0xda, 0x96,
-	0x79, 0xfd, 0x4a, 0x5c, 0x2f, 0x12, 0x21, 0x9b, 0xaf, 0x12, 0x34, 0x22, 0x40, 0x55, 0x05, 0x79,
-	0x4e, 0xe5, 0x0c, 0xbe, 0x9c, 0x80, 0xff, 0x0b, 0x1a, 0x7b, 0xc4, 0xb0, 0x26, 0x16, 0x32, 0x78,
-	0xdb, 0x4a, 0xdc, 0x36, 0x92, 0x2c, 0xb3, 0x70, 0xaa, 0xed, 0x11, 0x1a, 0x7b, 0xc4, 0x0d, 0x0f,
-	0x76, 0x40, 0xd9, 0x25, 0x63, 0x1d, 0x47, 0xa7, 0xab, 0x09, 0x10, 0xc6, 0xe2, 0xb1, 0xf5, 0x0a,
-	0xb5, 0x6b, 0x89, 0xd8, 0x75, 0xa8, 0x6d, 0x61, 0x32, 0x7e, 0x46, 0xdb, 0x2b, 0x5c, 0xce, 0x6a,
-	0x8c, 0xcb, 0xe3, 0xf1, 0x7d, 0xdc, 0x91, 0xdf, 0x9f, 0x31, 0x5d, 0x9f, 0x24, 0x68, 0x45, 0xba,
-	0x0e, 0x5d, 0xdf, 0x1e, 0xeb, 0x1e, 0x32, 0xfe, 0x5c, 0x81, 0x21, 0xeb, 0x21, 0x34, 0x67, 0x72,
-	0x02, 0x5f, 0xec, 0x4f, 0x26, 0x14, 0x79, 0x9c, 0x6e, 0xb6, 0x38, 0x60, 0x5b, 0x0d, 0x63, 0x0a,
-	0xc8, 0x3b, 0x3a, 0x3d, 0xe6, 0x4c, 0x95, 0x10, 0x6a, 0x93, 0x55, 0xf3, 0x17, 0xad, 0xb6, 0xa0,
-	0xf2, 0x00, 0x9d, 0x66, 0x35, 0x1f, 0xe9, 0xd8, 0x4f, 0xb9, 0xb6, 0xf7, 0x51, 0x82, 0xa5, 0x03,
-	0xf4, 0xdc, 0x47, 0xd4, 0x4b, 0x58, 0x73, 0x7b, 0xde, 0x9a, 0xd1, 0x2d, 0x26, 0x2d, 0x1f, 0x93,
-	0xad, 0xe4, 0x90, 0x95, 0x73, 0xc8, 0x06, 0x37, 0xa2, 0xc4, 0xb7, 0x5f, 0xcb, 0x77, 0x6f, 0xbd,
-	0xd0, 0xbd, 0xb7, 0x60, 0xf9, 0x00, 0x51, 0x87, 0x1d, 0x44, 0x11, 0x65, 0x06, 0x3f, 0xd0, 0x3d,
-	0x9d, 0x13, 0x56, 0x02, 0x02, 0x1a, 0x31, 0x52, 0xb7, 0xd5, 0x3b, 0x86, 0x35, 0x0d, 0xfb, 0xd4,
-	0x43, 0xae, 0x46, 0xec, 0x89, 0x65, 0x46, 0x95, 0xac, 0xab, 0x10, 0x4b, 0x59, 0x71, 0xa6, 0xab,
-	0x48, 0xcc, 0xd3, 0x2b, 0x17, 0xd2, 0xfb, 0x20, 0xc1, 0xdf, 0x03, 0xf2, 0xd2, 0xc6, 0x44, 0x37,
-	0x1e, 0xb9, 0xc4, 0x74, 0x59, 0xa7, 0xe2, 0xab, 0xbd, 0x0b, 0xf5, 0x27, 0x8e, 0xc1, 0xbc, 0x1a,
-	0x41, 0x5f, 0x4d, 0xcf, 0x7d, 0x16, 0x4d, 0x1c, 0xfe, 0x2d, 0x9b, 0xe0, 0x9d, 0x14, 0x31, 0x52,
-	0x57, 0xa0, 0x3c, 0x1c, 0x64, 0x0d, 0xb3, 0xab, 0x8f, 0x10, 0x4e, 0xbd, 0x73, 0x06, 0x2d, 0x56,
-	0x63, 0xd0, 0x31, 0x03, 0x2d, 0x12, 0x59, 0x62, 0x72, 0x3e, 0xb1, 0x6a, 0x21, 0xb1, 0xcf, 0x8c,
-	0x98, 0x80, 0x53, 0x61, 0x46, 0x4c, 0xc9, 0x75, 0x61, 0x0b, 0x9a, 0xf7, 0x0c, 0x23, 0xb8, 0x98,
-	0x90, 0x53, 0x53, 0xfd, 0x07, 0x16, 0x34, 0x32, 0x75, 0x82, 0x58, 0x34, 0xb5, 0x89, 0x21, 0xd7,
-	0x90, 0x2b, 0xd6, 0x77, 0x35, 0x81, 0xf2, 0x1f, 0x2c, 0xef, 0xe9, 0x27, 0xa9, 0xf1, 0x4d, 0xee,
-	0xa2, 0x99, 0x9a, 0x7a, 0xbe, 0x9a, 0x46, 0xa1, 0x9a, 0xd7, 0x12, 0x74, 0x7e, 0xfd, 0x26, 0x83,
-	0x8f, 0x8a, 0xf8, 0x77, 0x78, 0xea, 0x88, 0x3d, 0xb5, 0x58, 0x30, 0x75, 0x89, 0x75, 0x54, 0x29,
-	0x5c, 0x47, 0x6b, 0xa0, 0x84, 0x8b, 0x85, 0x7d, 0x78, 0x90, 0xb0, 0x42, 0xb5, 0x77, 0x1b, 0x14,
-	0x0d, 0x93, 0x78, 0x76, 0x98, 0x27, 0x0f, 0x90, 0x4e, 0x19, 0x5a, 0x66, 0xdc, 0xe7, 0x66, 0x68,
-	0x09, 0x94, 0xfb, 0x53, 0xc7, 0x3b, 0x0d, 0x2b, 0xd9, 0x20, 0xd6, 0x44, 0x3f, 0xb6, 0xa9, 0x1b,
-	0x1a, 0xf1, 0x6d, 0x2f, 0x1e, 0xa3, 0x56, 0xcc, 0x29, 0xcc, 0x84, 0x20, 0x9b, 0x50, 0x0f, 0x03,
-	0x09, 0xc7, 0xc9, 0x79, 0x2b, 0x2a, 0x0c, 0x6e, 0xb5, 0xcf, 0x7f, 0x74, 0x4b, 0xe7, 0x17, 0x5d,
-	0xe9, 0x0b, 0xfb, 0x7d, 0xbf, 0xe8, 0x96, 0xde, 0x5e, 0x76, 0x4b, 0x67, 0x97, 0x5d, 0xe9, 0x67,
-	0x00, 0x00, 0x00, 0xff, 0xff, 0x9b, 0xc3, 0xbf, 0x88, 0x0c, 0x08, 0x00, 0x00,
+	// 882 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xd4, 0x55, 0xcd, 0x8e, 0xdb, 0x54,
+	0x14, 0x8e, 0xe3, 0x9f, 0x24, 0x67, 0x9c, 0x99, 0xe9, 0x65, 0x04, 0x51, 0x84, 0xd2, 0xca, 0xea,
+	0x62, 0x36, 0x24, 0x85, 0xae, 0xa8, 0xc4, 0x82, 0x49, 0xa8, 0x3a, 0xa2, 0x43, 0xc1, 0x94, 0xd9,
+	0x3b, 0xf6, 0x75, 0xc6, 0xea, 0x8d, 0x6f, 0xf0, 0xcf, 0xd0, 0xf4, 0x49, 0x58, 0xa1, 0xae, 0x10,
+	0x6f, 0xc1, 0x86, 0xc5, 0xb0, 0xe3, 0x09, 0x10, 0x94, 0x47, 0x60, 0xc7, 0x8a, 0xfb, 0x6b, 0x3b,
+	0xa3, 0x44, 0x64, 0xc1, 0xa6, 0x8b, 0x48, 0xf7, 0xfc, 0xdc, 0xf3, 0x7d, 0xdf, 0xc9, 0xb9, 0xc7,
+	0x30, 0x24, 0xc9, 0x7c, 0xb2, 0xca, 0x68, 0x41, 0x43, 0x4a, 0x26, 0x4b, 0x9c, 0xe7, 0xc1, 0x02,
+	0x8f, 0x85, 0x03, 0x75, 0xb5, 0x7f, 0xf8, 0xc1, 0x22, 0x29, 0xae, 0xca, 0xf9, 0x38, 0xa4, 0xcb,
+	0xc9, 0x82, 0x2e, 0xa8, 0xbc, 0x31, 0x2f, 0x63, 0x61, 0x09, 0x43, 0x9c, 0xe4, 0x45, 0xaf, 0x00,
+	0xf7, 0x09, 0x26, 0x84, 0x5e, 0xc8, 0x72, 0x68, 0x04, 0x30, 0xc3, 0xd7, 0x49, 0x88, 0xbf, 0x08,
+	0x96, 0x78, 0x60, 0xdc, 0x33, 0x4e, 0x7b, 0x3e, 0x44, 0x95, 0x87, 0xc7, 0xa7, 0x24, 0xc1, 0x69,
+	0x21, 0xe2, 0x6d, 0x19, 0x0f, 0x2b, 0x0f, 0xba, 0x0f, 0x7d, 0x19, 0xbf, 0xc4, 0x59, 0x9e, 0xd0,
+	0x74, 0x60, 0x8a, 0x94, 0x7e, 0xd8, 0x74, 0x7a, 0x3f, 0x18, 0xe0, 0x9e, 0xa7, 0x11, 0x7e, 0xa9,
+	0x61, 0xdf, 0x05, 0x27, 0xa6, 0x24, 0xc2, 0x99, 0x82, 0x54, 0x16, 0x1a, 0x83, 0xfd, 0x38, 0x21,
+	0x38, 0x67, 0x48, 0xe6, 0xe9, 0xc1, 0x47, 0x68, 0xac, 0x75, 0x8e, 0xb9, 0xfb, 0x3c, 0x8d, 0xe9,
+	0x99, 0x75, 0xf3, 0xfb, 0xdd, 0x96, 0x6f, 0xc7, 0x3c, 0x0d, 0x9d, 0xb0, 0x7c, 0x12, 0x2c, 0x72,
+	0x01, 0xdb, 0x67, 0x5e, 0x6e, 0xa0, 0x07, 0xd0, 0x79, 0xb6, 0x2a, 0x18, 0x70, 0x3e, 0xb0, 0x44,
+	0x9d, 0xe3, 0xba, 0x8e, 0x0c, 0xa8, 0x2a, 0x1d, 0x2a, 0xd3, 0xbc, 0xbf, 0x0d, 0xe8, 0x6a, 0x04,
+	0x84, 0xc0, 0x6a, 0x74, 0xc3, 0x4a, 0xb9, 0xce, 0x0a, 0xa8, 0xdd, 0x04, 0x1a, 0x42, 0xf7, 0x82,
+	0x46, 0x49, 0x9c, 0xe0, 0x48, 0x30, 0x30, 0xfd, 0xee, 0x52, 0xd9, 0x9c, 0x84, 0xee, 0x89, 0xc5,
+	0x42, 0x1b, 0x24, 0x2e, 0x71, 0x58, 0xd0, 0x4c, 0x93, 0xb8, 0x96, 0x69, 0xc8, 0x03, 0xf7, 0x29,
+	0x0d, 0x03, 0xa2, 0xaf, 0xd9, 0xa2, 0xa2, 0x4b, 0x1a, 0x3e, 0xce, 0xed, 0xeb, 0xe4, 0x15, 0x1e,
+	0x38, 0x22, 0x66, 0xe5, 0xec, 0x8c, 0x3e, 0x04, 0xe7, 0x8c, 0x25, 0xbd, 0xc8, 0x07, 0xc7, 0x42,
+	0xed, 0x3b, 0x35, 0x90, 0xf0, 0x37, 0xda, 0xe6, 0xcc, 0x45, 0xe2, 0x23, 0xeb, 0xfb, 0xd7, 0x77,
+	0x5b, 0xde, 0xaf, 0x06, 0xdc, 0xd1, 0xaa, 0x9f, 0x67, 0x65, 0x1a, 0x06, 0x05, 0x23, 0xfe, 0x96,
+	0xc9, 0x57, 0x5a, 0xbe, 0x82, 0x5e, 0x25, 0x96, 0x8f, 0xd7, 0xb3, 0x38, 0xce, 0x71, 0x21, 0x44,
+	0x98, 0xbe, 0x43, 0x85, 0x55, 0x5d, 0xe7, 0x2a, 0x6c, 0xd5, 0x3d, 0xe6, 0x7b, 0x12, 0xe4, 0x57,
+	0x42, 0x80, 0xeb, 0x5b, 0x57, 0xec, 0xac, 0x4a, 0x3e, 0x60, 0x55, 0xc4, 0x7c, 0xa0, 0x63, 0x30,
+	0x3f, 0xc7, 0x6b, 0xd5, 0x11, 0xf3, 0x05, 0x5e, 0xf3, 0x86, 0x5c, 0x06, 0xa4, 0xd4, 0x4f, 0xc2,
+	0xbe, 0xe6, 0x86, 0xf7, 0x8b, 0x01, 0x87, 0x3e, 0xfe, 0xb6, 0xc4, 0x79, 0xd1, 0x98, 0xf4, 0xc7,
+	0xdb, 0x26, 0x5d, 0x77, 0xb9, 0xdd, 0xe8, 0x72, 0x4d, 0xdb, 0xdc, 0x4a, 0xdb, 0xda, 0x42, 0xdb,
+	0xae, 0x69, 0xd7, 0xff, 0x92, 0xb3, 0xe3, 0x35, 0x74, 0xf6, 0x7b, 0x0d, 0x1f, 0xc3, 0x91, 0x8f,
+	0xf3, 0x15, 0x3b, 0x62, 0x2d, 0x83, 0xc1, 0xcd, 0x82, 0x22, 0x10, 0x22, 0x18, 0x5c, 0xc4, 0xce,
+	0xdc, 0x37, 0xa5, 0x51, 0xd5, 0xcd, 0x90, 0x9d, 0xbd, 0x57, 0x70, 0x32, 0x25, 0x65, 0x5e, 0xe0,
+	0x6c, 0x4a, 0xd3, 0x38, 0x59, 0xe8, 0xfb, 0x8c, 0x84, 0x6c, 0x43, 0xce, 0x4a, 0xdc, 0x22, 0x21,
+	0x03, 0x9a, 0x84, 0xec, 0xcf, 0x06, 0xed, 0xf6, 0x7e, 0xb4, 0x7f, 0x36, 0xe0, 0xbd, 0x19, 0xfd,
+	0x2e, 0x25, 0x34, 0x88, 0xbe, 0xcc, 0xe8, 0x22, 0x63, 0xd8, 0xff, 0xf5, 0x37, 0xcc, 0xa0, 0xf3,
+	0xcd, 0x8a, 0xa9, 0xa9, 0x56, 0xce, 0xfd, 0xcd, 0x95, 0x73, 0xbb, 0x9e, 0x4c, 0xd6, 0xc8, 0xa5,
+	0xbc, 0xfa, 0xbf, 0xad, 0xa1, 0x9f, 0x0c, 0x4d, 0x13, 0x1d, 0x42, 0xfb, 0x7c, 0xa6, 0xc8, 0xb6,
+	0x93, 0x19, 0x87, 0x78, 0x1a, 0xcc, 0x31, 0xd1, 0x03, 0x47, 0xb8, 0xc1, 0x21, 0xe4, 0xfa, 0xe6,
+	0xd0, 0xb7, 0x20, 0x64, 0x40, 0x43, 0xc8, 0x9d, 0xde, 0xa0, 0x6a, 0xed, 0xa0, 0x6a, 0xef, 0x47,
+	0xf5, 0x1f, 0x46, 0x55, 0x22, 0x34, 0xa8, 0xba, 0x82, 0xea, 0xb6, 0xd1, 0x7e, 0x1f, 0x7a, 0x9f,
+	0x46, 0x11, 0xef, 0xa0, 0xa2, 0xda, 0xf3, 0x7b, 0x81, 0x76, 0xa0, 0x7b, 0x70, 0x30, 0xa5, 0xcb,
+	0x15, 0xb7, 0xf4, 0xc2, 0xe8, 0xfb, 0x07, 0x61, 0xed, 0xe2, 0xab, 0x66, 0x8a, 0x33, 0xf9, 0x15,
+	0xb2, 0x45, 0xdd, 0x6e, 0xa8, 0x6c, 0x74, 0x0a, 0x47, 0x17, 0xc1, 0xcb, 0x8d, 0xdd, 0x21, 0xf7,
+	0xc3, 0xd1, 0x72, 0xd3, 0x5d, 0x8b, 0xef, 0xec, 0x10, 0xdf, 0xdd, 0x4f, 0xfc, 0x8f, 0x06, 0x0c,
+	0x77, 0x4f, 0x07, 0xff, 0x68, 0xca, 0xd3, 0xf3, 0xf5, 0x4a, 0xee, 0xd1, 0xbe, 0x0f, 0x65, 0xe5,
+	0xd9, 0xda, 0xa0, 0xc6, 0xbe, 0x34, 0xf7, 0xde, 0x97, 0x6a, 0xe3, 0xb1, 0x0f, 0x2b, 0x96, 0x33,
+	0x66, 0xfb, 0xee, 0xbc, 0xe1, 0xf3, 0x1e, 0x81, 0x3b, 0x25, 0xb4, 0x7e, 0xc6, 0xec, 0x19, 0xf8,
+	0x38, 0xc8, 0x19, 0x88, 0x7a, 0x06, 0x99, 0xb0, 0xb6, 0x3e, 0xe5, 0x43, 0x70, 0x3f, 0x5b, 0xae,
+	0x8a, 0xb5, 0xba, 0xeb, 0x7d, 0x02, 0x8e, 0x24, 0x82, 0x1e, 0xb2, 0x3f, 0x83, 0x96, 0x69, 0x51,
+	0xbf, 0xe6, 0x3b, 0x35, 0x59, 0x15, 0x51, 0x6c, 0xbb, 0xa1, 0x4a, 0xf4, 0x26, 0xd0, 0x51, 0xa1,
+	0xc6, 0xc0, 0x58, 0x7a, 0xb6, 0xeb, 0x65, 0x6a, 0xa9, 0x65, 0x7a, 0x76, 0x72, 0xf3, 0xe7, 0xa8,
+	0x75, 0xf3, 0x66, 0x64, 0xfc, 0xc6, 0x7e, 0x7f, 0xbc, 0x19, 0xb5, 0x5e, 0xff, 0x35, 0x32, 0xe6,
+	0x8e, 0x00, 0x7a, 0xf8, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x72, 0xf0, 0xda, 0x40, 0x1e, 0x09,
+	0x00, 0x00,
 }

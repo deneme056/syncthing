@@ -1,6 +1,6 @@
 // protoc --proto_path=../../../../../:../../../../gogo/protobuf/protobuf:. --gogofast_out=. message.proto
 
-syntax = "proto2";
+syntax = "proto3";
 
 package protocol;
 
@@ -9,68 +9,67 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 option (gogoproto.goproto_getters_all) = false;
 option (gogoproto.sizer_all) = false;
 option (gogoproto.protosizer_all) = true;
-option (gogoproto.goproto_unrecognized_all) = false;
 
 message HelloMessage {
-	optional string DeviceName = 1 [(gogoproto.nullable) = false];
-	optional string ClientName = 2 [(gogoproto.nullable) = false];
-	optional string ClientVersion = 3 [(gogoproto.nullable) = false];
+	string DeviceName = 1;
+	string ClientName = 2;
+	string ClientVersion = 3;
 }
 
 message IndexMessage {
-	optional string folder = 1 [(gogoproto.nullable) = false];
+	string folder = 1;
 	repeated FileInfo Files = 2 [(gogoproto.nullable) = false];
-	optional uint32 Flags = 3 [(gogoproto.nullable) = false];
+	uint32 Flags = 3;
 	repeated Option Options = 4 [(gogoproto.nullable) = false];
 }
 
 message FileInfo {
     option (gogoproto.goproto_stringer) = false;
-	optional string Name = 1 [(gogoproto.nullable) = false];
-	optional uint32 Flags = 2 [(gogoproto.nullable) = false];
-	optional int64 Modified = 3 [(gogoproto.nullable) = false];
-	optional Vector Version = 4 [(gogoproto.nullable) = false];
-	optional int64 LocalVersion = 5 [(gogoproto.nullable) = false];
-	optional int64 Size = 6 [(gogoproto.nullable) = false];
+	string Name = 1;
+	uint32 Flags = 2;
+	int64 Modified = 3;
+	Vector Version = 4 [(gogoproto.nullable) = false];
+	int64 LocalVersion = 5;
+	int64 Size = 6;
 	repeated BlockInfo Blocks = 16 [(gogoproto.nullable) = false];
 }
 
 // Must be the same as FileInfo but without the blocks field
 message FileInfoTruncated {
     option (gogoproto.goproto_stringer) = false;
-	optional string Name = 1 [(gogoproto.nullable) = false];
-	optional uint32 Flags = 2 [(gogoproto.nullable) = false];
-	optional int64 Modified = 3 [(gogoproto.nullable) = false];
-	optional Vector Version = 4 [(gogoproto.nullable) = false];
-	optional int64 LocalVersion = 5 [(gogoproto.nullable) = false];
-	optional int64 Size = 6 [(gogoproto.nullable) = false];
+	string Name = 1;
+	uint32 Flags = 2;
+	int64 Modified = 3;
+	Vector Version = 4 [(gogoproto.nullable) = false];
+	int64 LocalVersion = 5;
+	int64 Size = 6;
 }
 
 message BlockInfo {
     option (gogoproto.goproto_stringer) = false;
-	optional int64 Offset = 1 [(gogoproto.nullable) = false];
-	optional int32 Size = 2 [(gogoproto.nullable) = false];
-	optional bytes Hash = 3;
+	int64 Offset = 1;
+	int32 Size = 2;
+	bytes Hash = 3;
 }
 
 message Option {
-    optional string Key = 1 [(gogoproto.nullable) = false];
-    optional string Value = 2 [(gogoproto.nullable) = false];
+    string Key = 1;
+    string Value = 2;
 }
 
 message RequestMessage {
-	optional string Folder = 1 [(gogoproto.nullable) = false];
-	optional string Name = 2 [(gogoproto.nullable) = false];
-	optional int64 Offset = 3 [(gogoproto.nullable) = false];
-	optional int32 Size = 4 [(gogoproto.nullable) = false];
-	optional bytes Hash = 5;
-	optional uint32 Flags = 6 [(gogoproto.nullable) = false];
+	string Folder = 1;
+	string Name = 2;
+	int64 Offset = 3;
+	int32 Size = 4;
+	bytes Hash = 5;
+	uint32 Flags = 6;
 	repeated Option Options = 7 [(gogoproto.nullable) = false];
 }
 
 message ResponseMessage {
-	optional bytes Data = 1;
-	optional int32 Code = 2 [(gogoproto.nullable) = false];
+	bytes Data = 1;
+	int32 Code = 2;
 }
 
 message ClusterConfigMessage {
@@ -79,41 +78,41 @@ message ClusterConfigMessage {
 }
 
 message DownloadProgressMessage {
-	optional string Folder = 1 [(gogoproto.nullable) = false];
+	string Folder = 1;
 	repeated FileDownloadProgressUpdate Updates = 2 [(gogoproto.nullable) = false];
-	optional uint32 Flags = 3 [(gogoproto.nullable) = false];
+	uint32 Flags = 3;
 	repeated Option Options = 4 [(gogoproto.nullable) = false];
 }
 
 message Folder {
-	optional string ID = 1 [(gogoproto.nullable) = false];
-	optional string Label = 2 [(gogoproto.nullable) = false];
+	string ID = 1;
+	string Label = 2;
 	repeated Device Devices = 3 [(gogoproto.nullable) = false];
-	optional uint32 Flags = 4 [(gogoproto.nullable) = false];
+	uint32 Flags = 4;
 	repeated Option Options = 5 [(gogoproto.nullable) = false];
 }
 
 message Device {
-	optional bytes ID = 1;
-	optional string Name = 2 [(gogoproto.nullable) = false];
+	bytes ID = 1;
+	string Name = 2;
 	repeated string Addresses = 3;
-	optional uint32 Compression = 4 [(gogoproto.nullable) = false];
-	optional string CertName = 5 [(gogoproto.nullable) = false];
-	optional int64 MaxLocalVersion = 6 [(gogoproto.nullable) = false];
-	optional uint32 Flags = 7 [(gogoproto.nullable) = false];
+	uint32 Compression = 4;
+	string CertName = 5;
+	int64 MaxLocalVersion = 6;
+	uint32 Flags = 7;
 	repeated Option Options = 8 [(gogoproto.nullable) = false];
 }
 
 message FileDownloadProgressUpdate {
-	optional uint32 UpdateType = 1 [(gogoproto.nullable) = false];
-	optional string Name = 2 [(gogoproto.nullable) = false];
-	optional Vector Version = 3 [(gogoproto.nullable) = false];
+	uint32 UpdateType = 1;
+	string Name = 2;
+	Vector Version = 3 [(gogoproto.nullable) = false];
 	repeated int32 BlockIndexes = 4;
 }
 
 message CloseMessage {
-	optional string Reason = 1 [(gogoproto.nullable) = false];
-	optional int32 Code = 2 [(gogoproto.nullable) = false];
+	string Reason = 1;
+	int32 Code = 2;
 }
 
 message EmptyMessage {
@@ -124,6 +123,6 @@ message Vector {
 }
 
 message Counter {
-	optional uint64 ID = 1 [(gogoproto.nullable) = false];
-	optional uint64 Value = 2 [(gogoproto.nullable) = false];
+	uint64 ID = 1;
+	uint64 Value = 2;
 }

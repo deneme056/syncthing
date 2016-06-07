@@ -1,22 +1,19 @@
-syntax = "proto2";
+syntax = "proto3";
 
 package db;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-//import "github.com/syncthing/syncthing/lib/protocol";
 
 option (gogoproto.goproto_getters_all) = false;
 option (gogoproto.sizer_all) = false;
 option (gogoproto.protosizer_all) = true;
-option (gogoproto.goproto_unrecognized_all) = false;
 
 message FileVersion {
-	optional bytes Version = 1 [(gogoproto.customtype) = "github.com/syncthing/syncthing/lib/protocol.Vector", (gogoproto.nullable) = false];
-	optional bytes Device = 2;
+	bytes Version = 1 [(gogoproto.customtype) = "github.com/syncthing/syncthing/lib/protocol.Vector", (gogoproto.nullable) = false];
+	bytes Device = 2;
 }
 
 message VersionList {
     option (gogoproto.goproto_stringer) = false;
-	option (gogoproto.goproto_unrecognized) = false;
     repeated FileVersion Versions = 1 [(gogoproto.nullable) = false];
 }

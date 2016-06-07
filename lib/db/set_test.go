@@ -34,7 +34,7 @@ func genBlocks(n int) []protocol.BlockInfo {
 		for j := range h {
 			h[j] = byte(i + j)
 		}
-		b[i].Length = int32(i)
+		b[i].Size = int32(i)
 		b[i].Hash = h
 	}
 	return b
@@ -88,7 +88,7 @@ func (l fileList) String() string {
 	var b bytes.Buffer
 	b.WriteString("[]protocol.FileList{\n")
 	for _, f := range l {
-		fmt.Fprintf(&b, "  %q: #%d, %d bytes, %d blocks, flags=%o\n", f.Name, f.Version, f.Size(), len(f.Blocks), f.Flags)
+		fmt.Fprintf(&b, "  %q: #%d, %d bytes, %d blocks, flags=%o\n", f.Name, f.Version, f.Size, len(f.Blocks), f.Flags)
 	}
 	b.WriteString("}")
 	return b.String()

@@ -18,7 +18,7 @@ var (
 
 func (f FileInfo) String() string {
 	return fmt.Sprintf("File{Name:%q, Flags:0%o, Modified:%d, Version:%v, Length:%d, Blocks:%v}",
-		f.Name, f.Flags, f.Modified, f.Version, f.Length, f.Blocks)
+		f.Name, f.Flags, f.Modified, f.Version, f.Size, f.Blocks)
 }
 
 func (f FileInfo) IsDeleted() bool {
@@ -45,7 +45,7 @@ func (f FileInfo) FileLength() int64 {
 	if f.IsDirectory() || f.IsDeleted() {
 		return 128
 	}
-	return f.Length
+	return f.Size
 }
 
 func (f FileInfo) FileName() string {
@@ -54,7 +54,7 @@ func (f FileInfo) FileName() string {
 
 func (f FileInfoTruncated) String() string {
 	return fmt.Sprintf("File{Name:%q, Flags:0%o, Modified:%d, Version:%v, Length:%d}",
-		f.Name, f.Flags, f.Modified, f.Version, f.Length)
+		f.Name, f.Flags, f.Modified, f.Version, f.Size)
 }
 
 func (f FileInfoTruncated) IsDeleted() bool {
@@ -81,7 +81,7 @@ func (f FileInfoTruncated) FileLength() int64 {
 	if f.IsDirectory() || f.IsDeleted() {
 		return 128
 	}
-	return f.Length
+	return f.Size
 }
 
 func (f FileInfoTruncated) FileName() string {
@@ -114,10 +114,10 @@ func (f FileInfo) WinsConflict(other FileInfo) bool {
 }
 
 func (b BlockInfo) String() string {
-	return fmt.Sprintf("Block{%d/%d/%x}", b.Offset, b.Length, b.Hash)
+	return fmt.Sprintf("Block{%d/%d/%x}", b.Offset, b.Size, b.Hash)
 }
 
 // IsEmpty returns true if the block is a full block of zeroes.
 func (b BlockInfo) IsEmpty() bool {
-	return b.Length == BlockSize && bytes.Equal(b.Hash, sha256OfEmptyBlock[:])
+	return b.Size == BlockSize && bytes.Equal(b.Hash, sha256OfEmptyBlock[:])
 }

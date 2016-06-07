@@ -34,7 +34,7 @@ func dump(ldb *leveldb.DB) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Printf("  N:%q\n  F:%#o\n  M:%d\n  V:%v\n  S:%d\n  B:%d\n", f.Name, f.Flags, f.Modified, f.Version, f.Size(), len(f.Blocks))
+			fmt.Printf("  N:%q\n  F:%#o\n  M:%d\n  V:%v\n  S:%d\n  B:%d\n", f.Name, f.Flags, f.Modified, f.Version, f.Size, len(f.Blocks))
 
 		case db.KeyTypeGlobal:
 			folder := nulString(key[1 : 1+64])

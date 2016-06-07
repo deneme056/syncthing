@@ -62,7 +62,7 @@ func Blocks(r io.Reader, blocksize int, sizehint int64, counter Counter) ([]prot
 		thisHash, hashes = hashes[:hashLength], hashes[hashLength:]
 
 		b := protocol.BlockInfo{
-			Length: int32(n),
+			Size:   int32(n),
 			Offset: offset,
 			Hash:   thisHash,
 		}
@@ -77,7 +77,7 @@ func Blocks(r io.Reader, blocksize int, sizehint int64, counter Counter) ([]prot
 		// Empty file
 		blocks = append(blocks, protocol.BlockInfo{
 			Offset: 0,
-			Length: 0,
+			Size:   0,
 			Hash:   SHA256OfNothing,
 		})
 	}
@@ -90,7 +90,7 @@ func PopulateOffsets(blocks []protocol.BlockInfo) {
 	var offset int64
 	for i := range blocks {
 		blocks[i].Offset = offset
-		offset += int64(blocks[i].Length)
+		offset += int64(blocks[i].Size)
 	}
 }
 
@@ -148,8 +148,8 @@ func Verify(r io.Reader, blocksize int, blocks []protocol.BlockInfo) error {
 }
 
 func VerifyBuffer(buf []byte, block protocol.BlockInfo) ([]byte, error) {
-	if len(buf) != int(block.Length) {
-		return nil, fmt.Errorf("length mismatch %d != %d", len(buf), block.Length)
+	if len(buf) != int(block.Size) {
+		return nil, fmt.Errorf("length mismatch %d != %d", len(buf), block.Size)
 	}
 	hf := sha256.New()
 	_, err := hf.Write(buf)

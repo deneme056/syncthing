@@ -149,7 +149,7 @@ func (s *sharedPullerState) tempFile() (io.WriterAt, error) {
 	if s.sparse && !s.file.IsSymlink() {
 		// Truncate sets the size of the file. This creates a sparse file or a
 		// space reservation, depending on the underlying filesystem.
-		if err := fd.Truncate(s.file.Length); err != nil {
+		if err := fd.Truncate(s.file.Size); err != nil {
 			s.failLocked("dst truncate", err)
 			return nil, err
 		}

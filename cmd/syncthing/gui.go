@@ -1345,7 +1345,7 @@ type jsonFileInfo protocol.FileInfo
 func (f jsonFileInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"name":         f.Name,
-		"size":         f.Length,
+		"size":         f.Size,
 		"flags":        fmt.Sprintf("%#o", f.Flags),
 		"modified":     time.Unix(f.Modified, 0),
 		"localVersion": f.LocalVersion,
@@ -1359,7 +1359,7 @@ type jsonDBFileInfo protocol.FileInfoTruncated
 func (f jsonDBFileInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"name":         f.Name,
-		"size":         f.Length,
+		"size":         f.Size,
 		"flags":        fmt.Sprintf("%#o", f.Flags),
 		"modified":     time.Unix(f.Modified, 0),
 		"localVersion": f.LocalVersion,

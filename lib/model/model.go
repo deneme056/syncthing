@@ -385,7 +385,7 @@ func (m *Model) Completion(device protocol.DeviceID, folder string) float64 {
 		// This might might be more than it really is, because some blocks can be of a smaller size.
 		downloaded = int64(counts[ft.Name] * protocol.BlockSize)
 
-		fileNeed = ft.Length - downloaded
+		fileNeed = ft.Size - downloaded
 		if fileNeed < 0 {
 			fileNeed = 0
 		}

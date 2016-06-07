@@ -168,7 +168,7 @@ func (w *walker) walk() (chan protocol.FileInfo, error) {
 
 		for file := range toHashChan {
 			filesToHash = append(filesToHash, file)
-			total += int64(file.Length)
+			total += int64(file.Size)
 		}
 
 		realToHashChan := make(chan protocol.FileInfo)
@@ -311,7 +311,7 @@ func (w *walker) walkRegular(relPath string, info os.FileInfo, mtime time.Time, 
 	cf, ok := w.CurrentFiler.CurrentFile(relPath)
 	permUnchanged := w.IgnorePerms || !cf.HasPermissionBits() || PermsEqual(cf.Flags, curMode)
 	if ok && permUnchanged && !cf.IsDeleted() && cf.Modified == mtime.Unix() && !cf.IsDirectory() &&
-		!cf.IsSymlink() && !cf.IsInvalid() && cf.Length == info.Size() {
+		!cf.IsSymlink() && !cf.IsInvalid() && cf.Size == info.Size() {
 		return nil
 	}
 
@@ -327,7 +327,7 @@ func (w *walker) walkRegular(relPath string, info os.FileInfo, mtime time.Time, 
 		Version:  cf.Version.Update(w.ShortID),
 		Flags:    flags,
 		Modified: mtime.Unix(),
-		Length:   info.Size(),
+		Size:     info.Size(),
 	}
 	l.Debugln("to hash:", relPath, f)
 

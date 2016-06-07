@@ -153,7 +153,7 @@ type hdrMsg struct {
 
 type encodable interface {
 	MarshalTo([]byte) (int, error)
-	Size() int
+	ProtoSize() int
 }
 
 type isEofer interface {
@@ -274,7 +274,7 @@ func (c *rawConnection) Request(folder string, name string, offset int64, size i
 		Folder:  folder,
 		Name:    name,
 		Offset:  offset,
-		Length:  int32(size),
+		Size:    int32(size),
 		Hash:    hash,
 		Flags:   flags,
 		Options: nil,
@@ -557,7 +557,7 @@ func filterIndexMessageFiles(fs []FileInfo) []FileInfo {
 }
 
 func (c *rawConnection) handleRequest(msgID int, req RequestMessage) {
-	size := int(req.Length)
+	size := int(req.Size)
 	usePool := size <= BlockSize
 
 	var buf []byte
@@ -634,7 +634,7 @@ func (c *rawConnection) writerLoop() {
 		case hm := <-c.outbox:
 			if hm.msg != nil {
 				// Uncompressed message in uncBuf
-				msgLen := hm.msg.Size()
+				msgLen := hm.msg.ProtoSize()
 				if cap(uncBuf) >= msgLen {
 					uncBuf = uncBuf[:msgLen]
 				} else {

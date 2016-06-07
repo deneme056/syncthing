@@ -443,7 +443,7 @@ func (f *rwFolder) pullerIteration(ignores *ignore.Matcher) int {
 		if !handleFile(file) {
 			// A new or changed file or symlink. This is the only case where we
 			// do stuff concurrently in the background
-			f.queue.Push(file.Name, file.Size(), file.Modified)
+			f.queue.Push(file.Name, file.Length, file.Modified)
 		}
 
 		changed++
@@ -917,7 +917,7 @@ func (f *rwFolder) handleFile(file protocol.FileInfo, copyChan chan<- copyBlocks
 		// touching the file. If we can't stat the file we'll just pull it.
 		if info, err := osutil.Lstat(realName); err == nil {
 			mtime := f.virtualMtimeRepo.GetMtime(file.Name, info.ModTime())
-			if mtime.Unix() != curFile.Modified || info.Size() != curFile.Size() {
+			if mtime.Unix() != curFile.Modified || info.Size() != curFile.Length {
 				l.Debugln("file modified but not rescanned; not pulling:", realName)
 				// Scan() is synchronous (i.e. blocks until the scan is
 				// completed and returns an error), but a scan can't happen
@@ -956,7 +956,7 @@ func (f *rwFolder) handleFile(file protocol.FileInfo, copyChan chan<- copyBlocks
 			_, ok := existingBlocks[block.String()]
 			if !ok {
 				blocks = append(blocks, block)
-				blocksSize += int64(block.Size)
+				blocksSize += int64(block.Length)
 			} else {
 				reused = append(reused, int32(i))
 			}
@@ -973,7 +973,7 @@ func (f *rwFolder) handleFile(file protocol.FileInfo, copyChan chan<- copyBlocks
 	} else {
 		// Copy the blocks, as we don't want to shuffle them on the FileInfo
 		blocks = append(blocks, file.Blocks...)
-		blocksSize = file.Size()
+		blocksSize = file.Length
 	}
 
 	if f.checkFreeSpace {
@@ -1111,7 +1111,7 @@ func (f *rwFolder) copierRoutine(in <-chan copyBlocksState, pullChan chan<- pull
 				continue
 			}
 
-			buf = buf[:int(block.Size)]
+			buf = buf[:int(block.Length)]
 			found := f.model.finder.Iterate(folders, block.Hash, func(folder, file string, index int32) bool {
 				fd, err := os.Open(filepath.Join(folderRoots[folder], file))
 				if err != nil {
@@ -1212,7 +1212,7 @@ func (f *rwFolder) pullerRoutine(in <-chan pullBlockState, out chan<- *sharedPul
 			// Fetch the block, while marking the selected device as in use so that
 			// leastBusy can select another device when someone else asks.
 			activity.using(selected)
-			buf, lastError := f.model.requestGlobal(selected.ID, f.folderID, state.file.Name, state.block.Offset, int(state.block.Size), state.block.Hash, selected.FromTemporary)
+			buf, lastError := f.model.requestGlobal(selected.ID, f.folderID, state.file.Name, state.block.Offset, int(state.block.Length), state.block.Hash, selected.FromTemporary)
 			activity.done(selected)
 			if lastError != nil {
 				l.Debugln("request:", f.folderID, state.file.Name, state.block.Offset, state.block.Size, "returned error:", lastError)

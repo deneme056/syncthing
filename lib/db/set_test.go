@@ -178,7 +178,7 @@ func TestGlobalSet(t *testing.T) {
 		} else {
 			globalFiles++
 		}
-		globalBytes += f.Length
+		globalBytes += f.FileLength()
 	}
 	gsFiles, gsDeleted, gsBytes := m.GlobalSize()
 	if gsFiles != globalFiles {
@@ -208,7 +208,7 @@ func TestGlobalSet(t *testing.T) {
 		} else {
 			haveFiles++
 		}
-		haveBytes += f.Length
+		haveBytes += f.FileLength()
 	}
 	lsFiles, lsDeleted, lsBytes := m.LocalSize()
 	if lsFiles != haveFiles {

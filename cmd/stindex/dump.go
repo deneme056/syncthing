@@ -30,7 +30,7 @@ func dump(ldb *leveldb.DB) {
 			fmt.Printf("[device] F:%q N:%q D:%v\n", folder, name, dev)
 
 			var f protocol.FileInfo
-			err := f.UnmarshalXDR(it.Value())
+			err := f.Unmarshal(it.Value())
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -40,7 +40,7 @@ func dump(ldb *leveldb.DB) {
 			folder := nulString(key[1 : 1+64])
 			name := nulString(key[1+64:])
 			var flv db.VersionList
-			flv.UnmarshalXDR(it.Value())
+			flv.Unmarshal(it.Value())
 			fmt.Printf("[global] F:%q N:%q V: %s\n", folder, name, flv)
 
 		case db.KeyTypeBlock:

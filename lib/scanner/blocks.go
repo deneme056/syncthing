@@ -149,7 +149,7 @@ func Verify(r io.Reader, blocksize int, blocks []protocol.BlockInfo) error {
 
 func VerifyBuffer(buf []byte, block protocol.BlockInfo) ([]byte, error) {
 	if len(buf) != int(block.Length) {
-		return nil, fmt.Errorf("length mismatch %d != %d", len(buf), block.Size)
+		return nil, fmt.Errorf("length mismatch %d != %d", len(buf), block.Length)
 	}
 	hf := sha256.New()
 	_, err := hf.Write(buf)

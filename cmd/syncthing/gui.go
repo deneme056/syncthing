@@ -28,7 +28,6 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/syncthing/syncthing/lib/auto"
 	"github.com/syncthing/syncthing/lib/config"
-	"github.com/syncthing/syncthing/lib/db"
 	"github.com/syncthing/syncthing/lib/discover"
 	"github.com/syncthing/syncthing/lib/events"
 	"github.com/syncthing/syncthing/lib/logger"
@@ -77,7 +76,7 @@ type modelIntf interface {
 	GlobalDirectoryTree(folder, prefix string, levels int, dirsonly bool) map[string]interface{}
 	Completion(device protocol.DeviceID, folder string) float64
 	Override(folder string)
-	NeedFolderFiles(folder string, page, perpage int) ([]db.FileInfoTruncated, []db.FileInfoTruncated, []db.FileInfoTruncated, int)
+	NeedFolderFiles(folder string, page, perpage int) ([]protocol.FileInfoTruncated, []protocol.FileInfoTruncated, []protocol.FileInfoTruncated, int)
 	NeedSize(folder string) (nfiles int, bytes int64)
 	ConnectionStats() map[string]interface{}
 	DeviceStatistics() map[string]stats.DeviceStatistics
@@ -1331,7 +1330,7 @@ func (s *embeddedStatic) String() string {
 	return fmt.Sprintf("embeddedStatic@%p", s)
 }
 
-func (s *apiService) toNeedSlice(fs []db.FileInfoTruncated) []jsonDBFileInfo {
+func (s *apiService) toNeedSlice(fs []protocol.FileInfoTruncated) []jsonDBFileInfo {
 	res := make([]jsonDBFileInfo, len(fs))
 	for i, f := range fs {
 		res[i] = jsonDBFileInfo(f)
@@ -1346,7 +1345,7 @@ type jsonFileInfo protocol.FileInfo
 func (f jsonFileInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"name":         f.Name,
-		"size":         protocol.FileInfo(f).Size(),
+		"size":         f.Length,
 		"flags":        fmt.Sprintf("%#o", f.Flags),
 		"modified":     time.Unix(f.Modified, 0),
 		"localVersion": f.LocalVersion,
@@ -1355,12 +1354,12 @@ func (f jsonFileInfo) MarshalJSON() ([]byte, error) {
 	})
 }
 
-type jsonDBFileInfo db.FileInfoTruncated
+type jsonDBFileInfo protocol.FileInfoTruncated
 
 func (f jsonDBFileInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"name":         f.Name,
-		"size":         db.FileInfoTruncated(f).Size(),
+		"size":         f.Length,
 		"flags":        fmt.Sprintf("%#o", f.Flags),
 		"modified":     time.Unix(f.Modified, 0),
 		"localVersion": f.LocalVersion,
@@ -1371,8 +1370,8 @@ func (f jsonDBFileInfo) MarshalJSON() ([]byte, error) {
 type jsonVersionVector protocol.Vector
 
 func (v jsonVersionVector) MarshalJSON() ([]byte, error) {
-	res := make([]string, len(v))
-	for i, c := range v {
+	res := make([]string, len(v.Counters))
+	for i, c := range v.Counters {
 		res[i] = fmt.Sprintf("%v:%d", c.ID, c.Value)
 	}
 	return json.Marshal(res)

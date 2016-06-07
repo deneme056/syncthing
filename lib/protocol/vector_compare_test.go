@@ -1,5 +1,3 @@
-//+build ignore for now
-
 // Copyright (C) 2015 The Protocol Authors.
 
 package protocol
@@ -16,172 +14,162 @@ func TestCompare(t *testing.T) {
 	}{
 		// Empty vectors are identical
 		{Vector{}, Vector{}, Equal},
-		{Vector{}, nil, Equal},
-		{nil, Vector{}, Equal},
-		{nil, Vector{Counter{42, 0}}, Equal},
-		{Vector{}, Vector{Counter{42, 0}}, Equal},
-		{Vector{Counter{42, 0}}, nil, Equal},
-		{Vector{Counter{42, 0}}, Vector{}, Equal},
+		{Vector{}, Vector{[]Counter{{42, 0}}}, Equal},
+		{Vector{[]Counter{Counter{42, 0}}}, Vector{}, Equal},
 
 		// Zero is the implied value for a missing Counter
 		{
-			Vector{Counter{42, 0}},
-			Vector{Counter{77, 0}},
+			Vector{[]Counter{{42, 0}}},
+			Vector{[]Counter{{77, 0}}},
 			Equal,
 		},
 
 		// Equal vectors are equal
 		{
-			Vector{Counter{42, 33}},
-			Vector{Counter{42, 33}},
+			Vector{[]Counter{{42, 33}}},
+			Vector{[]Counter{{42, 33}}},
 			Equal,
 		},
 		{
-			Vector{Counter{42, 33}, Counter{77, 24}},
-			Vector{Counter{42, 33}, Counter{77, 24}},
+			Vector{[]Counter{{42, 33}, {77, 24}}},
+			Vector{[]Counter{{42, 33}, {77, 24}}},
 			Equal,
 		},
 
 		// These a-vectors are all greater than the b-vector
 		{
-			Vector{Counter{42, 1}},
-			nil,
-			Greater,
-		},
-		{
-			Vector{Counter{42, 1}},
+			Vector{[]Counter{{42, 1}}},
 			Vector{},
 			Greater,
 		},
 		{
-			Vector{Counter{0, 1}},
-			Vector{Counter{0, 0}},
+			Vector{[]Counter{{0, 1}}},
+			Vector{[]Counter{{0, 0}}},
 			Greater,
 		},
 		{
-			Vector{Counter{42, 1}},
-			Vector{Counter{42, 0}},
+			Vector{[]Counter{{42, 1}}},
+			Vector{[]Counter{{42, 0}}},
 			Greater,
 		},
 		{
-			Vector{Counter{math.MaxUint64, 1}},
-			Vector{Counter{math.MaxUint64, 0}},
+			Vector{[]Counter{{math.MaxUint64, 1}}},
+			Vector{[]Counter{{math.MaxUint64, 0}}},
 			Greater,
 		},
 		{
-			Vector{Counter{0, math.MaxUint64}},
-			Vector{Counter{0, 0}},
+			Vector{[]Counter{{0, math.MaxUint64}}},
+			Vector{[]Counter{{0, 0}}},
 			Greater,
 		},
 		{
-			Vector{Counter{42, math.MaxUint64}},
-			Vector{Counter{42, 0}},
+			Vector{[]Counter{{42, math.MaxUint64}}},
+			Vector{[]Counter{{42, 0}}},
 			Greater,
 		},
 		{
-			Vector{Counter{math.MaxUint64, math.MaxUint64}},
-			Vector{Counter{math.MaxUint64, 0}},
+			Vector{[]Counter{{math.MaxUint64, math.MaxUint64}}},
+			Vector{[]Counter{{math.MaxUint64, 0}}},
 			Greater,
 		},
 		{
-			Vector{Counter{0, math.MaxUint64}},
-			Vector{Counter{0, math.MaxUint64 - 1}},
+			Vector{[]Counter{{0, math.MaxUint64}}},
+			Vector{[]Counter{{0, math.MaxUint64 - 1}}},
 			Greater,
 		},
 		{
-			Vector{Counter{42, math.MaxUint64}},
-			Vector{Counter{42, math.MaxUint64 - 1}},
+			Vector{[]Counter{{42, math.MaxUint64}}},
+			Vector{[]Counter{{42, math.MaxUint64 - 1}}},
 			Greater,
 		},
 		{
-			Vector{Counter{math.MaxUint64, math.MaxUint64}},
-			Vector{Counter{math.MaxUint64, math.MaxUint64 - 1}},
+			Vector{[]Counter{{math.MaxUint64, math.MaxUint64}}},
+			Vector{[]Counter{{math.MaxUint64, math.MaxUint64 - 1}}},
 			Greater,
 		},
 		{
-			Vector{Counter{42, 2}},
-			Vector{Counter{42, 1}},
+			Vector{[]Counter{{42, 2}}},
+			Vector{[]Counter{{42, 1}}},
 			Greater,
 		},
 		{
-			Vector{Counter{22, 22}, Counter{42, 2}},
-			Vector{Counter{22, 22}, Counter{42, 1}},
+			Vector{[]Counter{{22, 22}, {42, 2}}},
+			Vector{[]Counter{{22, 22}, {42, 1}}},
 			Greater,
 		},
 		{
-			Vector{Counter{42, 2}, Counter{77, 3}},
-			Vector{Counter{42, 1}, Counter{77, 3}},
+			Vector{[]Counter{{42, 2}, {77, 3}}},
+			Vector{[]Counter{{42, 1}, {77, 3}}},
 			Greater,
 		},
 		{
-			Vector{Counter{22, 22}, Counter{42, 2}, Counter{77, 3}},
-			Vector{Counter{22, 22}, Counter{42, 1}, Counter{77, 3}},
+			Vector{[]Counter{{22, 22}, {42, 2}, {77, 3}}},
+			Vector{[]Counter{{22, 22}, {42, 1}, {77, 3}}},
 			Greater,
 		},
 		{
-			Vector{Counter{22, 23}, Counter{42, 2}, Counter{77, 4}},
-			Vector{Counter{22, 22}, Counter{42, 1}, Counter{77, 3}},
+			Vector{[]Counter{{22, 23}, {42, 2}, {77, 4}}},
+			Vector{[]Counter{{22, 22}, {42, 1}, {77, 3}}},
 			Greater,
 		},
 
 		// These a-vectors are all lesser than the b-vector
-		{nil, Vector{Counter{42, 1}}, Lesser},
-		{Vector{}, Vector{Counter{42, 1}}, Lesser},
+		{Vector{}, Vector{[]Counter{{42, 1}}}, Lesser},
 		{
-			Vector{Counter{42, 0}},
-			Vector{Counter{42, 1}},
+			Vector{[]Counter{{42, 0}}},
+			Vector{[]Counter{{42, 1}}},
 			Lesser,
 		},
 		{
-			Vector{Counter{42, 1}},
-			Vector{Counter{42, 2}},
+			Vector{[]Counter{{42, 1}}},
+			Vector{[]Counter{{42, 2}}},
 			Lesser,
 		},
 		{
-			Vector{Counter{22, 22}, Counter{42, 1}},
-			Vector{Counter{22, 22}, Counter{42, 2}},
+			Vector{[]Counter{{22, 22}, {42, 1}}},
+			Vector{[]Counter{{22, 22}, {42, 2}}},
 			Lesser,
 		},
 		{
-			Vector{Counter{42, 1}, Counter{77, 3}},
-			Vector{Counter{42, 2}, Counter{77, 3}},
+			Vector{[]Counter{{42, 1}, {77, 3}}},
+			Vector{[]Counter{{42, 2}, {77, 3}}},
 			Lesser,
 		},
 		{
-			Vector{Counter{22, 22}, Counter{42, 1}, Counter{77, 3}},
-			Vector{Counter{22, 22}, Counter{42, 2}, Counter{77, 3}},
+			Vector{[]Counter{{22, 22}, {42, 1}, {77, 3}}},
+			Vector{[]Counter{{22, 22}, {42, 2}, {77, 3}}},
 			Lesser,
 		},
 		{
-			Vector{Counter{22, 22}, Counter{42, 1}, Counter{77, 3}},
-			Vector{Counter{22, 23}, Counter{42, 2}, Counter{77, 4}},
+			Vector{[]Counter{{22, 22}, {42, 1}, {77, 3}}},
+			Vector{[]Counter{{22, 23}, {42, 2}, {77, 4}}},
 			Lesser,
 		},
 
 		// These are all in conflict
 		{
-			Vector{Counter{42, 2}},
-			Vector{Counter{43, 1}},
+			Vector{[]Counter{{42, 2}}},
+			Vector{[]Counter{{43, 1}}},
 			ConcurrentGreater,
 		},
 		{
-			Vector{Counter{43, 1}},
-			Vector{Counter{42, 2}},
+			Vector{[]Counter{{43, 1}}},
+			Vector{[]Counter{{42, 2}}},
 			ConcurrentLesser,
 		},
 		{
-			Vector{Counter{22, 23}, Counter{42, 1}},
-			Vector{Counter{22, 22}, Counter{42, 2}},
+			Vector{[]Counter{{22, 23}, {42, 1}}},
+			Vector{[]Counter{{22, 22}, {42, 2}}},
 			ConcurrentGreater,
 		},
 		{
-			Vector{Counter{22, 21}, Counter{42, 2}},
-			Vector{Counter{22, 22}, Counter{42, 1}},
+			Vector{[]Counter{{22, 21}, {42, 2}}},
+			Vector{[]Counter{{22, 22}, {42, 1}}},
 			ConcurrentLesser,
 		},
 		{
-			Vector{Counter{22, 21}, Counter{42, 2}, Counter{43, 1}},
-			Vector{Counter{20, 1}, Counter{22, 22}, Counter{42, 1}},
+			Vector{[]Counter{{22, 21}, {42, 2}, {43, 1}}},
+			Vector{[]Counter{{20, 1}, {22, 22}, {42, 1}}},
 			ConcurrentLesser,
 		},
 	}

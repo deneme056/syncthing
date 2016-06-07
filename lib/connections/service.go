@@ -560,7 +560,10 @@ func exchangeHello(c net.Conn, h protocol.HelloMessage) (protocol.HelloMessage, 
 	defer c.SetDeadline(time.Time{})
 
 	header := make([]byte, 8)
-	msg := h.MustMarshalXDR()
+	msg, err := h.Marshal()
+	if err != nil {
+		return protocol.HelloMessage{}, err
+	}
 
 	binary.BigEndian.PutUint32(header[:4], protocol.HelloMessageMagic)
 	binary.BigEndian.PutUint32(header[4:], uint32(len(msg)))
@@ -594,7 +597,7 @@ func exchangeHello(c net.Conn, h protocol.HelloMessage) (protocol.HelloMessage, 
 		return protocol.HelloMessage{}, err
 	}
 
-	if err := hello.UnmarshalXDR(buf); err != nil {
+	if err := hello.Unmarshal(buf); err != nil {
 		return protocol.HelloMessage{}, err
 	}
 

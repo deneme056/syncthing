@@ -28,9 +28,9 @@ import (
 )
 
 type testfile struct {
-	name string
-	size int
-	hash string
+	name   string
+	length int64
+	hash   string
 }
 
 type testfileList []testfile
@@ -322,7 +322,7 @@ func (l fileList) testfiles() testfileList {
 		if len(f.Blocks) > 1 {
 			panic("simple test case stuff only supports a single block per file")
 		}
-		testfiles[i] = testfile{name: f.Name, size: int(f.Size())}
+		testfiles[i] = testfile{name: f.Name, length: f.FileLength()}
 		if len(f.Blocks) == 1 {
 			testfiles[i].hash = fmt.Sprintf("%x", f.Blocks[0].Hash)
 		}
@@ -334,7 +334,7 @@ func (l testfileList) String() string {
 	var b bytes.Buffer
 	b.WriteString("{\n")
 	for _, f := range l {
-		fmt.Fprintf(&b, "  %s (%d bytes): %s\n", f.name, f.size, f.hash)
+		fmt.Fprintf(&b, "  %s (%d bytes): %s\n", f.name, f.length, f.hash)
 	}
 	b.WriteString("}")
 	return b.String()

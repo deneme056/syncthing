@@ -73,7 +73,7 @@ type FileInfo struct {
 func (m *FileInfo) Reset()      { *m = FileInfo{} }
 func (*FileInfo) ProtoMessage() {}
 
-// Should be the same as FileInfo but without the blocks field
+// Must be the same as FileInfo but without the blocks field
 type FileInfoTruncated struct {
 	Name         string `protobuf:"bytes,1,opt" json:"Name"`
 	Flags        uint32 `protobuf:"varint,2,opt" json:"Flags"`

@@ -1,5 +1,3 @@
-//+build ignore for now
-
 // Copyright (C) 2015 The Protocol Authors.
 
 package protocol
@@ -12,7 +10,7 @@ func TestUpdate(t *testing.T) {
 	// Append
 
 	v = v.Update(42)
-	expected := Vector{Counter{42, 1}}
+	expected := Vector{[]Counter{{42, 1}}}
 
 	if v.Compare(expected) != Equal {
 		t.Errorf("Update error, %+v != %+v", v, expected)
@@ -21,7 +19,7 @@ func TestUpdate(t *testing.T) {
 	// Insert at front
 
 	v = v.Update(36)
-	expected = Vector{Counter{36, 1}, Counter{42, 1}}
+	expected = Vector{[]Counter{{36, 1}, {42, 1}}}
 
 	if v.Compare(expected) != Equal {
 		t.Errorf("Update error, %+v != %+v", v, expected)
@@ -30,7 +28,7 @@ func TestUpdate(t *testing.T) {
 	// Insert in moddle
 
 	v = v.Update(37)
-	expected = Vector{Counter{36, 1}, Counter{37, 1}, Counter{42, 1}}
+	expected = Vector{[]Counter{{36, 1}, {37, 1}, {42, 1}}}
 
 	if v.Compare(expected) != Equal {
 		t.Errorf("Update error, %+v != %+v", v, expected)
@@ -39,7 +37,7 @@ func TestUpdate(t *testing.T) {
 	// Update existing
 
 	v = v.Update(37)
-	expected = Vector{Counter{36, 1}, Counter{37, 2}, Counter{42, 1}}
+	expected = Vector{[]Counter{{36, 1}, {37, 2}, {42, 1}}}
 
 	if v.Compare(expected) != Equal {
 		t.Errorf("Update error, %+v != %+v", v, expected)
@@ -47,7 +45,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestCopy(t *testing.T) {
-	v0 := Vector{Counter{42, 1}}
+	v0 := Vector{[]Counter{{42, 1}}}
 	v1 := v0.Copy()
 	v1.Update(42)
 	if v0.Compare(v1) != Lesser {
@@ -66,52 +64,52 @@ func TestMerge(t *testing.T) {
 			Vector{},
 		},
 		{
-			Vector{Counter{22, 1}, Counter{42, 1}},
-			Vector{Counter{22, 1}, Counter{42, 1}},
-			Vector{Counter{22, 1}, Counter{42, 1}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
 		},
 
 		// Appends
 		{
 			Vector{},
-			Vector{Counter{22, 1}, Counter{42, 1}},
-			Vector{Counter{22, 1}, Counter{42, 1}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
 		},
 		{
-			Vector{Counter{22, 1}},
-			Vector{Counter{42, 1}},
-			Vector{Counter{22, 1}, Counter{42, 1}},
+			Vector{[]Counter{{22, 1}}},
+			Vector{[]Counter{{42, 1}}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
 		},
 		{
-			Vector{Counter{22, 1}},
-			Vector{Counter{22, 1}, Counter{42, 1}},
-			Vector{Counter{22, 1}, Counter{42, 1}},
+			Vector{[]Counter{{22, 1}}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
 		},
 
 		// Insert
 		{
-			Vector{Counter{22, 1}, Counter{42, 1}},
-			Vector{Counter{22, 1}, Counter{23, 2}, Counter{42, 1}},
-			Vector{Counter{22, 1}, Counter{23, 2}, Counter{42, 1}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
+			Vector{[]Counter{{22, 1}, {23, 2}, {42, 1}}},
+			Vector{[]Counter{{22, 1}, {23, 2}, {42, 1}}},
 		},
 		{
-			Vector{Counter{42, 1}},
-			Vector{Counter{22, 1}},
-			Vector{Counter{22, 1}, Counter{42, 1}},
+			Vector{[]Counter{{42, 1}}},
+			Vector{[]Counter{{22, 1}}},
+			Vector{[]Counter{{22, 1}, {42, 1}}},
 		},
 
 		// Update
 		{
-			Vector{Counter{22, 1}, Counter{42, 2}},
-			Vector{Counter{22, 2}, Counter{42, 1}},
-			Vector{Counter{22, 2}, Counter{42, 2}},
+			Vector{[]Counter{{22, 1}, {42, 2}}},
+			Vector{[]Counter{{22, 2}, {42, 1}}},
+			Vector{[]Counter{{22, 2}, {42, 2}}},
 		},
 
 		// All of the above
 		{
-			Vector{Counter{10, 1}, Counter{20, 2}, Counter{30, 1}},
-			Vector{Counter{5, 1}, Counter{10, 2}, Counter{15, 1}, Counter{20, 1}, Counter{25, 1}, Counter{35, 1}},
-			Vector{Counter{5, 1}, Counter{10, 2}, Counter{15, 1}, Counter{20, 2}, Counter{25, 1}, Counter{30, 1}, Counter{35, 1}},
+			Vector{[]Counter{{10, 1}, {20, 2}, {30, 1}}},
+			Vector{[]Counter{{5, 1}, {10, 2}, {15, 1}, {20, 1}, {25, 1}, {35, 1}}},
+			Vector{[]Counter{{5, 1}, {10, 2}, {15, 1}, {20, 2}, {25, 1}, {30, 1}, {35, 1}}},
 		},
 	}
 
@@ -123,7 +121,7 @@ func TestMerge(t *testing.T) {
 }
 
 func TestCounterValue(t *testing.T) {
-	v0 := Vector{Counter{42, 1}, Counter{64, 5}}
+	v0 := Vector{[]Counter{{42, 1}, {64, 5}}}
 	if v0.Counter(42) != 1 {
 		t.Errorf("Counter error, %d != %d", v0.Counter(42), 1)
 	}

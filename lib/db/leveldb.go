@@ -46,25 +46,16 @@ const (
 	KeyTypeDeviceIdx
 )
 
-type fileVersion struct {
-	version protocol.Vector
-	device  []byte
-}
-
-type VersionList struct {
-	versions []fileVersion
-}
-
 func (l VersionList) String() string {
 	var b bytes.Buffer
 	var id protocol.DeviceID
 	b.WriteString("{")
-	for i, v := range l.versions {
+	for i, v := range l.Versions {
 		if i > 0 {
 			b.WriteString(", ")
 		}
-		copy(id[:], v.device)
-		fmt.Fprintf(&b, "{%d, %v}", v.version, id)
+		copy(id[:], v.Device)
+		fmt.Fprintf(&b, "{%d, %v}", v.Version, id)
 	}
 	b.WriteString("}")
 	return b.String()
@@ -101,7 +92,7 @@ func getFile(db dbReader, key []byte) (protocol.FileInfo, bool) {
 	}
 
 	var f protocol.FileInfo
-	err = f.UnmarshalXDR(bs)
+	err = f.Unmarshal(bs)
 	if err != nil {
 		panic(err)
 	}

@@ -33,7 +33,8 @@ type FileSet struct {
 // FileIntf is the set of methods implemented by both protocol.FileInfo and
 // protocol.FileInfoTruncated.
 type FileIntf interface {
-	Size() int64
+	FileLength() int64
+	FileName() string
 	IsDeleted() bool
 	IsInvalid() bool
 	IsDirectory() bool
@@ -64,7 +65,7 @@ func (s *sizeTracker) addFile(f FileIntf) {
 	} else {
 		s.files++
 	}
-	s.bytes += f.Size()
+	s.bytes += f.FileLength()
 	s.mut.Unlock()
 }
 
@@ -79,7 +80,7 @@ func (s *sizeTracker) removeFile(f FileIntf) {
 	} else {
 		s.files--
 	}
-	s.bytes -= f.Size()
+	s.bytes -= f.FileLength()
 	if s.deleted < 0 || s.files < 0 {
 		panic("bug: removed more than added")
 	}
@@ -104,7 +105,7 @@ func NewFileSet(folder string, db *Instance) *FileSet {
 	s.db.checkGlobals([]byte(folder), &s.globalSize)
 
 	var deviceID protocol.DeviceID
-	s.db.withAllFolderTruncated([]byte(folder), func(device []byte, f FileInfoTruncated) bool {
+	s.db.withAllFolderTruncated([]byte(folder), func(device []byte, f protocol.FileInfoTruncated) bool {
 		copy(deviceID[:], device)
 		if f.LocalVersion > s.localVersion[deviceID] {
 			s.localVersion[deviceID] = f.LocalVersion
@@ -214,12 +215,12 @@ func (s *FileSet) GetGlobal(file string) (protocol.FileInfo, bool) {
 	return f, true
 }
 
-func (s *FileSet) GetGlobalTruncated(file string) (FileInfoTruncated, bool) {
+func (s *FileSet) GetGlobalTruncated(file string) (protocol.FileInfoTruncated, bool) {
 	fi, ok := s.db.getGlobal([]byte(s.folder), []byte(osutil.NormalizedFilename(file)), true)
 	if !ok {
-		return FileInfoTruncated{}, false
+		return protocol.FileInfoTruncated{}, false
 	}
-	f := fi.(FileInfoTruncated)
+	f := fi.(protocol.FileInfoTruncated)
 	f.Name = osutil.NativeFilename(f.Name)
 	return f, true
 }
@@ -266,7 +267,7 @@ func nativeFileIterator(fn Iterator) Iterator {
 		case protocol.FileInfo:
 			f.Name = osutil.NativeFilename(f.Name)
 			return fn(f)
-		case FileInfoTruncated:
+		case protocol.FileInfoTruncated:
 			f.Name = osutil.NativeFilename(f.Name)
 			return fn(f)
 		default:

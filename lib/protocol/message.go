@@ -17,8 +17,8 @@ var (
 )
 
 func (f FileInfo) String() string {
-	return fmt.Sprintf("File{Name:%q, Flags:0%o, Modified:%d, Version:%v, Size:%d, Blocks:%v}",
-		f.Name, f.Flags, f.Modified, f.Version, f.Size(), f.Blocks)
+	return fmt.Sprintf("File{Name:%q, Flags:0%o, Modified:%d, Version:%v, Length:%d, Blocks:%v}",
+		f.Name, f.Flags, f.Modified, f.Version, f.Length, f.Blocks)
 }
 
 func (f FileInfo) IsDeleted() bool {
@@ -39,6 +39,47 @@ func (f FileInfo) IsSymlink() bool {
 
 func (f FileInfo) HasPermissionBits() bool {
 	return f.Flags&FlagNoPermBits == 0
+}
+
+func (f FileInfo) FileLength() int64 {
+	return f.Length
+}
+
+func (f FileInfo) FileName() string {
+	return f.Name
+}
+
+func (f FileInfoTruncated) String() string {
+	return fmt.Sprintf("File{Name:%q, Flags:0%o, Modified:%d, Version:%v, Length:%d}",
+		f.Name, f.Flags, f.Modified, f.Version, f.Length)
+}
+
+func (f FileInfoTruncated) IsDeleted() bool {
+	return f.Flags&FlagDeleted != 0
+}
+
+func (f FileInfoTruncated) IsInvalid() bool {
+	return f.Flags&FlagInvalid != 0
+}
+
+func (f FileInfoTruncated) IsDirectory() bool {
+	return f.Flags&FlagDirectory != 0
+}
+
+func (f FileInfoTruncated) IsSymlink() bool {
+	return f.Flags&FlagSymlink != 0
+}
+
+func (f FileInfoTruncated) HasPermissionBits() bool {
+	return f.Flags&FlagNoPermBits == 0
+}
+
+func (f FileInfoTruncated) FileLength() int64 {
+	return f.Length
+}
+
+func (f FileInfoTruncated) FileName() string {
+	return f.Name
 }
 
 // WinsConflict returns true if "f" is the one to choose when it is in

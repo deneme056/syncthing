@@ -195,8 +195,8 @@ func main() {
 	case "assets":
 		rebuildAssets()
 
-	case "xdr":
-		xdr()
+	case "proto":
+		proto()
 
 	case "translate":
 		translate()
@@ -527,8 +527,10 @@ func shouldRebuildAssets() bool {
 	return assetsAreNewer
 }
 
-func xdr() {
-	runPrint("go", "generate", "./lib/discover", "./lib/db", "./lib/protocol", "./lib/relay/protocol")
+func proto() {
+	runPrint("go", "get", "github.com/gogo/protobuf/protoc-gen-gogofast")
+	runPrint("protoc", "--proto_path=../../../:../../gogo/protobuf/protobuf:.", "--gogofast_out=.", "lib/protocol/message.proto")
+	runPrint("protoc", "--proto_path=../../../:../../gogo/protobuf/protobuf:.", "--gogofast_out=.", "lib/db/db.proto")
 }
 
 func translate() {

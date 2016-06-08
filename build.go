@@ -919,13 +919,17 @@ func lint(pkg string) {
 	}
 
 	analCommentPolicy := regexp.MustCompile(`exported (function|method|const|type|var) [^\s]+ should have comment`)
-	for _, line := range bytes.Split(bs, []byte("\n")) {
-		if analCommentPolicy.Match(line) {
+	for _, line := range strings.Split(string(bs), "\n") {
+		if line == "" {
 			continue
 		}
-		if len(line) > 0 {
-			log.Printf("%s", line)
+		if analCommentPolicy.MatchString(line) {
+			continue
 		}
+		if strings.Contains(line, ".pb.go:") {
+			continue
+		}
+		log.Println(line)
 	}
 }
 
@@ -979,12 +983,14 @@ func gometalinter(linter string, dirs []string, excludes ...string) {
 		params = append(params, dir)
 	}
 
-	bs, err := runError("gometalinter", params...)
-
-	if len(bs) > 0 {
-		log.Printf("%s", bs)
-	}
-	if err != nil {
-		log.Printf("%v", err)
+	bs, _ := runError("gometalinter", params...)
+	for _, line := range strings.Split(string(bs), "\n") {
+		if line == "" {
+			continue
+		}
+		if strings.Contains(line, ".pb.go:") {
+			continue
+		}
+		log.Println(line)
 	}
 }

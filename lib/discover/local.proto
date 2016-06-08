@@ -9,6 +9,6 @@ option (gogoproto.sizer_all) = false;
 option (gogoproto.protosizer_all) = true;
 
 message Announce {
-    bytes           ID        = 1 [(gogoproto.customname) = "ID"];
-    repeated string Addresses = 2;
+    bytes           id        = 1 [(gogoproto.customname) = "ID"];
+    repeated string addresses = 2;
 }

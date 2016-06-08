@@ -131,6 +131,7 @@ type hdrMsg struct {
 type encodable interface {
 	MarshalTo([]byte) (int, error)
 	ProtoSize() int
+	Unmarshal([]byte) error
 }
 
 type isEofer interface {
@@ -440,51 +441,33 @@ func (c *rawConnection) readMessage() (hdr header, msg encodable, err error) {
 
 	switch hdr.msgType {
 	case messageTypeIndex, messageTypeIndexUpdate:
-		var idx IndexMessage
-		err = idx.Unmarshal(msgBuf)
-		msg = &idx
+		msg = new(IndexMessage)
 
 	case messageTypeRequest:
-		var req RequestMessage
-		err = req.Unmarshal(msgBuf)
-		msg = &req
+		msg = new(RequestMessage)
 
 	case messageTypeResponse:
-		var resp ResponseMessage
-		err = resp.Unmarshal(msgBuf)
-		msg = &resp
+		msg = new(ResponseMessage)
 
 	case messageTypePing:
-		msg = &PingMessage{}
+		msg = new(PingMessage)
 
 	case messageTypeClusterConfig:
-		var cc ClusterConfigMessage
-		err = cc.Unmarshal(msgBuf)
-		msg = &cc
+		msg = new(ClusterConfigMessage)
 
 	case messageTypeClose:
-		var cm CloseMessage
-		err = cm.Unmarshal(msgBuf)
-		msg = &cm
+		msg = new(CloseMessage)
 
 	case messageTypeDownloadProgress:
-		var dp DownloadProgressMessage
-		err = dp.Unmarshal(msgBuf)
-		msg = &dp
+		msg = new(DownloadProgressMessage)
 
 	default:
 		err = fmt.Errorf("protocol error: %s: unknown message type %#x", c.id, hdr.msgType)
 	}
 
-	// We check the returned error for the XDRError.IsEOF() method.
-	// IsEOF()==true here means that the message contained fewer fields than
-	// expected. It does not signify an EOF on the socket, because we've
-	// successfully read a size value and then that many bytes from the wire.
-	// New fields we expected but the other peer didn't send should be
-	// interpreted as zero/nil, and if that's not valid we'll verify it
-	// somewhere else.
-	if xdrErr, ok := err.(isEofer); ok && xdrErr.IsEOF() {
-		err = nil
+	if msg != nil {
+		// Unmarshal the actual type selected above, unless none was selected.
+		err = msg.Unmarshal(msgBuf)
 	}
 
 	return

@@ -141,6 +141,6 @@ message Vector {
 }
 
 message Counter {
-    uint64 id    = 1 [(gogoproto.customname) = "ID"];
+    uint64 id    = 1 [(gogoproto.customname) = "ID", (gogoproto.customtype) = "ShortID", (gogoproto.nullable) = false];
     uint64 value = 2;
 }

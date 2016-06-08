@@ -14,22 +14,22 @@ package protocol
 // a copy will be created, updated and returned.
 func (v Vector) Update(id ShortID) Vector {
 	for i := range v.Counters {
-		if v.Counters[i].ID == uint64(id) {
+		if v.Counters[i].ID == id {
 			// Update an existing index
 			v.Counters[i].Value++
 			return v
-		} else if v.Counters[i].ID > uint64(id) {
+		} else if v.Counters[i].ID > id {
 			// Insert a new index
 			nv := make([]Counter, len(v.Counters)+1)
 			copy(nv, v.Counters[:i])
-			nv[i].ID = uint64(id)
+			nv[i].ID = id
 			nv[i].Value = 1
 			copy(nv[i+1:], v.Counters[i:])
 			return Vector{nv}
 		}
 	}
 	// Append a new index
-	return Vector{append(v.Counters, Counter{uint64(id), 1})}
+	return Vector{append(v.Counters, Counter{id, 1})}
 }
 
 // Merge returns the vector containing the maximum indexes from v and b. If it
@@ -102,7 +102,7 @@ func (v Vector) Concurrent(b Vector) bool {
 // Counter returns the current value of the given counter ID.
 func (v Vector) Counter(id ShortID) uint64 {
 	for _, c := range v.Counters {
-		if c.ID == uint64(id) {
+		if c.ID == id {
 			return c.Value
 		}
 	}

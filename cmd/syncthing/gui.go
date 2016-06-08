@@ -1344,13 +1344,17 @@ type jsonFileInfo protocol.FileInfo
 
 func (f jsonFileInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"name":         f.Name,
-		"size":         f.Size,
-		"flags":        fmt.Sprintf("%#o", f.Flags),
-		"modified":     time.Unix(f.Modified, 0),
-		"localVersion": f.LocalVersion,
-		"numBlocks":    len(f.Blocks),
-		"version":      jsonVersionVector(f.Version),
+		"name":          f.Name,
+		"type":          f.Type,
+		"size":          f.Size,
+		"permissions":   fmt.Sprintf("%#o", f.Permissions),
+		"deleted":       f.Deleted,
+		"invalid":       f.Invalid,
+		"noPermissions": f.NoPermissions,
+		"modified":      time.Unix(f.Modified, 0),
+		"localVersion":  f.LocalVersion,
+		"numBlocks":     len(f.Blocks),
+		"version":       jsonVersionVector(f.Version),
 	})
 }
 
@@ -1358,12 +1362,15 @@ type jsonDBFileInfo protocol.FileInfoTruncated
 
 func (f jsonDBFileInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"name":         f.Name,
-		"size":         f.Size,
-		"flags":        fmt.Sprintf("%#o", f.Flags),
-		"modified":     time.Unix(f.Modified, 0),
-		"localVersion": f.LocalVersion,
-		"version":      jsonVersionVector(f.Version),
+		"name":          f.Name,
+		"type":          f.Type,
+		"size":          f.Size,
+		"permissions":   fmt.Sprintf("%#o", f.Permissions),
+		"deleted":       f.Deleted,
+		"invalid":       f.Invalid,
+		"noPermissions": f.NoPermissions,
+		"modified":      time.Unix(f.Modified, 0),
+		"localVersion":  f.LocalVersion,
 	})
 }
 

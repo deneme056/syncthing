@@ -17,28 +17,33 @@ var (
 )
 
 func (f FileInfo) String() string {
-	return fmt.Sprintf("File{Name:%q, Flags:0%o, Modified:%d, Version:%v, Length:%d, Blocks:%v}",
-		f.Name, f.Flags, f.Modified, f.Version, f.Size, f.Blocks)
+	return fmt.Sprintf("File{Name:%q, Permissions:0%o, Modified:%d, Version:%v, Length:%d, Deleted:%v, Invalid:%v, NoPermissions:%v, Blocks:%v}",
+		f.Name, f.Permissions, f.Modified, f.Version, f.Size, f.Deleted, f.Invalid, f.NoPermissions, f.Blocks)
 }
 
 func (f FileInfo) IsDeleted() bool {
-	return f.Flags&FlagDeleted != 0
+	return f.Deleted
 }
 
 func (f FileInfo) IsInvalid() bool {
-	return f.Flags&FlagInvalid != 0
+	return f.Invalid
 }
 
 func (f FileInfo) IsDirectory() bool {
-	return f.Flags&FlagDirectory != 0
+	return f.Type == FileInfoTypeDirectory
 }
 
 func (f FileInfo) IsSymlink() bool {
-	return f.Flags&FlagSymlink != 0
+	switch f.Type {
+	case FileInfoTypeSymlinkDirectory, FileInfoTypeSymlinkFile, FileInfoTypeSymlinkUnknown:
+		return true
+	default:
+		return false
+	}
 }
 
 func (f FileInfo) HasPermissionBits() bool {
-	return f.Flags&FlagNoPermBits == 0
+	return !f.NoPermissions
 }
 
 func (f FileInfo) FileLength() int64 {
@@ -53,28 +58,33 @@ func (f FileInfo) FileName() string {
 }
 
 func (f FileInfoTruncated) String() string {
-	return fmt.Sprintf("File{Name:%q, Flags:0%o, Modified:%d, Version:%v, Length:%d}",
-		f.Name, f.Flags, f.Modified, f.Version, f.Size)
+	return fmt.Sprintf("File{Name:%q, Permissions:0%o, Modified:%d, Version:%v, Length:%d, Deleted:%v, Invalid:%v, NoPermissions:%v}",
+		f.Name, f.Permissions, f.Modified, f.Version, f.Size, f.Deleted, f.Invalid, f.NoPermissions)
 }
 
 func (f FileInfoTruncated) IsDeleted() bool {
-	return f.Flags&FlagDeleted != 0
+	return f.Deleted
 }
 
 func (f FileInfoTruncated) IsInvalid() bool {
-	return f.Flags&FlagInvalid != 0
+	return f.Invalid
 }
 
 func (f FileInfoTruncated) IsDirectory() bool {
-	return f.Flags&FlagDirectory != 0
+	return f.Type == FileInfoTypeDirectory
 }
 
 func (f FileInfoTruncated) IsSymlink() bool {
-	return f.Flags&FlagSymlink != 0
+	switch f.Type {
+	case FileInfoTypeSymlinkDirectory, FileInfoTypeSymlinkFile, FileInfoTypeSymlinkUnknown:
+		return true
+	default:
+		return false
+	}
 }
 
 func (f FileInfoTruncated) HasPermissionBits() bool {
-	return f.Flags&FlagNoPermBits == 0
+	return !f.NoPermissions
 }
 
 func (f FileInfoTruncated) FileLength() int64 {

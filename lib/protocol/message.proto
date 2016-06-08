@@ -9,6 +9,8 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 option (gogoproto.goproto_getters_all) = false;
 option (gogoproto.sizer_all) = false;
 option (gogoproto.protosizer_all) = true;
+option (gogoproto.goproto_enum_stringer_all) = true;
+option (gogoproto.goproto_enum_prefix_all) = false;
 
 message HelloMessage {
 	string DeviceName = 1;
@@ -26,23 +28,40 @@ message IndexMessage {
 message FileInfo {
     option (gogoproto.goproto_stringer) = false;
 	string Name = 1;
-	uint32 Flags = 2;
-	int64 Modified = 3;
-	Vector Version = 4 [(gogoproto.nullable) = false];
-	int64 LocalVersion = 5;
-	int64 Size = 6;
+	FileInfoType Type = 2;
+	int64 Size = 3;
+	uint32 Permissions = 4;
+	int64 Modified = 5;
+	bool Deleted = 6;
+	bool Invalid = 7;
+	bool NoPermissions = 8;
+	Vector Version = 9 [(gogoproto.nullable) = false];
+	int64 LocalVersion = 10;
+
 	repeated BlockInfo Blocks = 16 [(gogoproto.nullable) = false];
+}
+
+enum FileInfoType {
+    File                   = 0 [(gogoproto.enumvalue_customname) = "FileInfoTypeFile"];
+    Directory              = 1 [(gogoproto.enumvalue_customname) = "FileInfoTypeDirectory"];
+    SymlinkFile            = 2 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkFile"];
+    SynlinkDirectory       = 3 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkDirectory"];
+    SymlinkUnknown         = 4 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkUnknown"];
 }
 
 // Must be the same as FileInfo but without the blocks field
 message FileInfoTruncated {
     option (gogoproto.goproto_stringer) = false;
 	string Name = 1;
-	uint32 Flags = 2;
-	int64 Modified = 3;
-	Vector Version = 4 [(gogoproto.nullable) = false];
-	int64 LocalVersion = 5;
-	int64 Size = 6;
+	FileInfoType Type = 2;
+	int64 Size = 3;
+	uint32 Permissions = 4;
+	int64 Modified = 5;
+	bool Deleted = 6;
+	bool Invalid = 7;
+	bool NoPermissions = 8;
+	Vector Version = 9 [(gogoproto.nullable) = false];
+	int64 LocalVersion = 10;
 }
 
 message BlockInfo {

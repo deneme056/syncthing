@@ -132,12 +132,12 @@ func (db *Instance) genericReplace(folder, device []byte, fs []protocol.FileInfo
 
 		case moreFs && moreDb && cmp == 0:
 			// File exists on both sides - compare versions. We might get an
-			// update with the same version and different flags if a device has
-			// marked a file as invalid, so handle that too.
+			// update with the same version if a device has marked a file as
+			// invalid, so handle that too.
 			l.Debugln("generic replace; exists - compare")
 			var ef protocol.FileInfoTruncated
 			ef.Unmarshal(dbi.Value())
-			if !fs[fsi].Version.Equal(ef.Version) || fs[fsi].Flags != ef.Flags {
+			if !fs[fsi].Version.Equal(ef.Version) || fs[fsi].Invalid != ef.Invalid {
 				l.Debugln("generic replace; differs - insert")
 				if lv := t.insertFile(folder, device, fs[fsi]); lv > maxLocalVer {
 					maxLocalVer = lv
@@ -217,9 +217,8 @@ func (db *Instance) updateFiles(folder, device []byte, fs []protocol.FileInfo, l
 		if err != nil {
 			panic(err)
 		}
-		// Flags might change without the version being bumped when we set the
-		// invalid flag on an existing file.
-		if !ef.Version.Equal(f.Version) || ef.Flags != f.Flags {
+		// The Invalid flag might change without the version being bumped.
+		if !ef.Version.Equal(f.Version) || ef.Invalid != f.Invalid {
 			if isLocalDevice {
 				localSize.removeFile(ef)
 				localSize.addFile(f)

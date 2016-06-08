@@ -1558,10 +1558,13 @@ func (m *Model) internalScanFolderSubdirs(folder string, subs []string) error {
 					// File has been ignored or an unsupported symlink. Set invalid bit.
 					l.Debugln("setting invalid bit on ignored", f)
 					nf := protocol.FileInfo{
-						Name:     f.Name,
-						Flags:    f.Flags | protocol.FlagInvalid,
-						Modified: f.Modified,
-						Version:  f.Version, // The file is still the same, so don't bump version
+						Name:          f.Name,
+						Type:          f.Type,
+						Modified:      f.Modified,
+						Permissions:   f.Permissions,
+						NoPermissions: f.NoPermissions,
+						Invalid:       true,
+						Version:       f.Version, // The file is still the same, so don't bump version
 					}
 					batch = append(batch, nf)
 				} else if _, err := osutil.Lstat(filepath.Join(folderCfg.Path(), f.Name)); err != nil {
@@ -1576,15 +1579,11 @@ func (m *Model) internalScanFolderSubdirs(folder string, subs []string) error {
 
 					nf := protocol.FileInfo{
 						Name:     f.Name,
-						Flags:    f.Flags | protocol.FlagDeleted,
+						Type:     f.Type,
 						Modified: f.Modified,
+						Deleted:  true,
 						Version:  f.Version.Update(m.shortID),
 					}
-
-					// The deleted file might have been ignored at some
-					// point, but it currently isn't so we make sure to
-					// clear the invalid bit.
-					nf.Flags &^= protocol.FlagInvalid
 
 					batch = append(batch, nf)
 				}
@@ -1737,7 +1736,7 @@ func (m *Model) Override(folder string) {
 		have, ok := fs.Get(protocol.LocalDeviceID, need.Name)
 		if !ok || have.Name != need.Name {
 			// We are missing the file
-			need.Flags |= protocol.FlagDeleted
+			need.Deleted = true
 			need.Blocks = nil
 			need.Version = need.Version.Update(m.shortID)
 		} else {
@@ -2137,11 +2136,7 @@ func mapDeviceCfgs(devices []config.DeviceConfiguration) map[protocol.DeviceID]s
 
 func filterIndex(folder string, fs []protocol.FileInfo, dropDeletes bool, ignores *ignore.Matcher) []protocol.FileInfo {
 	for i := 0; i < len(fs); {
-		if fs[i].Flags&^protocol.FlagsAll != 0 {
-			l.Debugln("dropping update for file with unknown bits set", fs[i])
-			fs[i] = fs[len(fs)-1]
-			fs = fs[:len(fs)-1]
-		} else if fs[i].IsDeleted() && dropDeletes {
+		if fs[i].IsDeleted() && dropDeletes {
 			l.Debugln("dropping update for undesired delete", fs[i])
 			fs[i] = fs[len(fs)-1]
 			fs = fs[:len(fs)-1]

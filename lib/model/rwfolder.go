@@ -171,7 +171,7 @@ func (f *rwFolder) configureCopiersAndPullers(config config.FolderConfiguration)
 // set on the local host or the FlagNoPermBits has been set on the file/dir
 // which is being pulled.
 func (f *rwFolder) ignorePermissions(file protocol.FileInfo) bool {
-	return f.ignorePerms || file.Flags&protocol.FlagNoPermBits != 0
+	return f.ignorePerms || file.NoPermissions
 }
 
 // Serve will run scans and pulls. It will return when Stop()ed or on a
@@ -577,7 +577,7 @@ func (f *rwFolder) handleDir(file protocol.FileInfo) {
 	}()
 
 	realName := filepath.Join(f.dir, file.Name)
-	mode := os.FileMode(file.Flags & 0777)
+	mode := os.FileMode(file.Permissions & 0777)
 	if f.ignorePermissions(file) {
 		mode = 0777
 	}
@@ -1029,7 +1029,7 @@ func (f *rwFolder) handleFile(file protocol.FileInfo, copyChan chan<- copyBlocks
 func (f *rwFolder) shortcutFile(file protocol.FileInfo) error {
 	realName := filepath.Join(f.dir, file.Name)
 	if !f.ignorePermissions(file) {
-		if err := os.Chmod(realName, os.FileMode(file.Flags&0777)); err != nil {
+		if err := os.Chmod(realName, os.FileMode(file.Permissions&0777)); err != nil {
 			l.Infof("Puller (folder %q, file %q): shortcut: chmod: %v", f.folderID, file.Name, err)
 			f.newError(file.Name, err)
 			return err
@@ -1243,7 +1243,7 @@ func (f *rwFolder) pullerRoutine(in <-chan pullBlockState, out chan<- *sharedPul
 func (f *rwFolder) performFinish(state *sharedPullerState) error {
 	// Set the correct permission bits on the new file
 	if !f.ignorePermissions(state.file) {
-		if err := os.Chmod(state.tempName, os.FileMode(state.file.Flags&0777)); err != nil {
+		if err := os.Chmod(state.tempName, os.FileMode(state.file.Permissions&0777)); err != nil {
 			return err
 		}
 	}

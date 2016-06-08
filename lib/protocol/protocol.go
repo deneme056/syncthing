@@ -134,10 +134,6 @@ type encodable interface {
 	Unmarshal([]byte) error
 }
 
-type isEofer interface {
-	IsEOF() bool
-}
-
 const (
 	// PingSendInterval is how often we make sure to send a message, by
 	// triggering pings if necessary.

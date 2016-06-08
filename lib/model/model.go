@@ -780,7 +780,7 @@ func (m *Model) Close(device protocol.DeviceID, err error) {
 
 // Request returns the specified data segment by reading it from local disk.
 // Implements the protocol.Model interface.
-func (m *Model) Request(deviceID protocol.DeviceID, folder, name string, offset int64, hash []byte, flags uint32, options []protocol.Option, buf []byte) error {
+func (m *Model) Request(deviceID protocol.DeviceID, folder, name string, offset int64, hash []byte, fromTemporary bool, buf []byte) error {
 	if offset < 0 {
 		return protocol.ErrInvalid
 	}
@@ -789,14 +789,8 @@ func (m *Model) Request(deviceID protocol.DeviceID, folder, name string, offset 
 		l.Warnf("Request from %s for file %s in unshared folder %q", deviceID, name, folder)
 		return protocol.ErrNoSuchFile
 	}
-
-	if flags != 0 && flags != protocol.FlagFromTemporary {
-		// We currently support only no flags, or FromTemporary flag.
-		return fmt.Errorf("protocol error: unknown flags 0x%x in Request message", flags)
-	}
-
 	if deviceID != protocol.LocalDeviceID {
-		l.Debugf("%v REQ(in): %s: %q / %q o=%d s=%d f=%d", m, deviceID, folder, name, offset, len(buf), flags)
+		l.Debugf("%v REQ(in): %s: %q / %q o=%d s=%d t=%v", m, deviceID, folder, name, offset, len(buf), fromTemporary)
 	}
 	m.fmut.RLock()
 	folderCfg := m.folderCfgs[folder]
@@ -856,7 +850,7 @@ func (m *Model) Request(deviceID protocol.DeviceID, folder, name string, offset 
 
 	// Only check temp files if the flag is set, and if we are set to advertise
 	// the temp indexes.
-	if flags&protocol.FlagFromTemporary != 0 && !folderCfg.DisableTempIndexes {
+	if fromTemporary && !folderCfg.DisableTempIndexes {
 		tempFn := filepath.Join(folderPath, defTempNamer.TempName(name))
 		if err := readOffsetIntoBuf(tempFn, offset, buf); err == nil {
 			return nil

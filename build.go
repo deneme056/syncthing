@@ -529,6 +529,7 @@ func shouldRebuildAssets() bool {
 
 func proto() {
 	runPrint("go", "get", "github.com/gogo/protobuf/protoc-gen-gogofast")
+	runPrint("go", "run", "script/protofmt.go", "lib/protocol/message.proto")
 	runPrint("protoc", "--proto_path=../../../:../../gogo/protobuf/protobuf:.", "--gogofast_out=.", "lib/protocol/message.proto")
 	runPrint("protoc", "--proto_path=../../../:../../gogo/protobuf/protobuf:.", "--gogofast_out=.", "lib/db/db.proto")
 	runPrint("protoc", "--proto_path=../../../:../../gogo/protobuf/protobuf:.", "--gogofast_out=.", "lib/discover/local.proto")

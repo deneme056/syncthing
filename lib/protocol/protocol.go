@@ -81,7 +81,7 @@ type Model interface {
 	// An index update was received from the peer device
 	IndexUpdate(deviceID DeviceID, folder string, files []FileInfo, flags uint32, options []Option)
 	// A request was made by the peer device
-	Request(deviceID DeviceID, folder string, name string, offset int64, hash []byte, flags uint32, options []Option, buf []byte) error
+	Request(deviceID DeviceID, folder string, name string, offset int64, hash []byte, fromTemporary bool, buf []byte) error
 	// A cluster configuration message was received
 	ClusterConfig(deviceID DeviceID, config ClusterConfigMessage)
 	// The peer device closed the connection
@@ -257,13 +257,12 @@ func (c *rawConnection) Request(folder string, name string, offset int64, size i
 	c.awaitingMut.Unlock()
 
 	ok := c.send(id, messageTypeRequest, &RequestMessage{
-		Folder:  folder,
-		Name:    name,
-		Offset:  offset,
-		Size:    int32(size),
-		Hash:    hash,
-		Flags:   flags,
-		Options: nil,
+		Folder:        folder,
+		Name:          name,
+		Offset:        offset,
+		Size:          int32(size),
+		Hash:          hash,
+		FromTemporary: fromTemporary,
 	}, nil)
 	if !ok {
 		return nil, ErrClosed
@@ -556,7 +555,7 @@ func (c *rawConnection) handleRequest(msgID int, req RequestMessage) {
 		buf = make([]byte, size)
 	}
 
-	err := c.receiver.Request(c.id, req.Folder, req.Name, int64(req.Offset), req.Hash, req.Flags, req.Options, buf)
+	err := c.receiver.Request(c.id, req.Folder, req.Name, int64(req.Offset), req.Hash, req.FromTemporary, buf)
 	if err != nil {
 		c.send(msgID, messageTypeResponse, &ResponseMessage{
 			Data: nil,

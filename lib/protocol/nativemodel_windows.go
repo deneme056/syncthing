@@ -34,9 +34,9 @@ func (m nativeModel) IndexUpdate(deviceID DeviceID, folder string, files []FileI
 	m.Model.IndexUpdate(deviceID, folder, files, flags, options)
 }
 
-func (m nativeModel) Request(deviceID DeviceID, folder string, name string, offset int64, hash []byte, flags uint32, options []Option, buf []byte) error {
+func (m nativeModel) Request(deviceID DeviceID, folder string, name string, offset int64, hash []byte, fromTemporary bool, buf []byte) error {
 	name = filepath.FromSlash(name)
-	return m.Model.Request(deviceID, folder, name, offset, hash, flags, options, buf)
+	return m.Model.Request(deviceID, folder, name, offset, hash, fromTemporary, buf)
 }
 
 func fixupFiles(folder string, files []FileInfo) {

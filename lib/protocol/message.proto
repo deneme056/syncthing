@@ -77,13 +77,12 @@ message Option {
 }
 
 message RequestMessage {
-    string          Folder  = 1;
-    string          Name    = 2;
-    int64           Offset  = 3;
-    int32           Size    = 4;
-    bytes           Hash    = 5;
-    uint32          Flags   = 6;
-    repeated Option Options = 7 [(gogoproto.nullable) = false];
+    string          Folder        = 1;
+    string          Name          = 2;
+    int64           Offset        = 3;
+    int32           Size          = 4;
+    bytes           Hash          = 5;
+    bool            FromTemporary = 6;
 }
 
 message ResponseMessage {

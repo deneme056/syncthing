@@ -43,12 +43,6 @@ const (
 	FlagFromTemporary uint32 = 1 << iota
 )
 
-// FileDownloadProgressUpdate update types
-const (
-	UpdateTypeAppend uint32 = iota
-	UpdateTypeForget
-)
-
 // ClusterConfigMessage.Folders flags
 const (
 	FlagFolderReadOnly            uint32 = 1 << 0

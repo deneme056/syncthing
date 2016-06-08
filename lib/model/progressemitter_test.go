@@ -100,7 +100,6 @@ func TestProgressEmitter(t *testing.T) {
 }
 
 func TestSendDownloadProgressMessages(t *testing.T) {
-
 	c := config.Wrap("/tmp/test", config.Configuration{})
 	c.SetOptions(config.OptionsConfiguration{
 		ProgressUpdateIntervalS: 0,
@@ -112,7 +111,7 @@ func TestSendDownloadProgressMessages(t *testing.T) {
 	p := NewProgressEmitter(c)
 	p.temporaryIndexSubscribe(fc, []string{"folder", "folder2"})
 
-	expect := func(updateIdx int, state *sharedPullerState, updateType uint32, version protocol.Vector, blocks []int32, remove bool) {
+	expect := func(updateIdx int, state *sharedPullerState, updateType protocol.FileDownloadProgressUpdateType, version protocol.Vector, blocks []int32, remove bool) {
 		messageIdx := -1
 		for i, msg := range fc.downloadProgressMessages {
 			if msg.folder == state.folder {

@@ -122,10 +122,15 @@ message Device {
 }
 
 message FileDownloadProgressUpdate {
-    uint32         update_type   = 1;
-    string         name          = 2;
-    Vector         version       = 3 [(gogoproto.nullable) = false];
-    repeated int32 block_indexes = 4;
+    FileDownloadProgressUpdateType update_type   = 1;
+    string                         name          = 2;
+    Vector                         version       = 3 [(gogoproto.nullable) = false];
+    repeated int32                 block_indexes = 4;
+}
+
+enum FileDownloadProgressUpdateType {
+    APPEND = 0 [(gogoproto.enumvalue_customname) = "UpdateTypeAppend"];
+    FORGET = 1 [(gogoproto.enumvalue_customname) = "UpdateTypeForget"];
 }
 
 message CloseMessage {

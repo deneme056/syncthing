@@ -631,21 +631,7 @@ func (m *Model) ClusterConfig(deviceID protocol.DeviceID, cm protocol.ClusterCon
 	tempIndexFolders := make([]string, 0, len(cm.Folders))
 
 	m.fmut.Lock()
-nextFolder:
 	for _, folder := range cm.Folders {
-		cfg := m.folderCfgs[folder.ID]
-
-		if folder.Flags&^protocol.FlagFolderAll != 0 {
-			// There are flags set that we don't know what they mean. Scary!
-			l.Warnf("Device %v: unknown flags for folder %s", deviceID, folder.ID)
-			cfg.Invalid = fmt.Sprintf("Unknown flags from device %v", deviceID)
-			m.cfg.SetFolder(cfg)
-			if srv := m.folderRunners[folder.ID]; srv != nil {
-				srv.setError(fmt.Errorf(cfg.Invalid))
-			}
-			continue nextFolder
-		}
-
 		if !m.folderSharedWithUnlocked(folder.ID, deviceID) {
 			events.Default.Log(events.FolderRejected, map[string]string{
 				"folder":      folder.ID,
@@ -655,7 +641,7 @@ nextFolder:
 			l.Infof("Unexpected folder ID %q sent from device %q; ensure that the folder exists and that this device is selected under \"Share With\" in the folder configuration.", folder.ID, deviceID)
 			continue
 		}
-		if folder.Flags&protocol.FlagFolderDisabledTempIndexes == 0 {
+		if !folder.DisableTempIndexes {
 			tempIndexFolders = append(tempIndexFolders, folder.ID)
 		}
 	}
@@ -709,7 +695,7 @@ nextFolder:
 					}
 
 					// The introducers' introducers are also our introducers.
-					if device.Flags&protocol.FlagIntroducer != 0 {
+					if device.Introducer {
 						l.Infof("Device %v is now also an introducer", id)
 						newDeviceCfg.Introducer = true
 					}
@@ -1650,23 +1636,14 @@ func (m *Model) generateClusterConfig(device protocol.DeviceID) protocol.Cluster
 	for _, folder := range m.deviceFolders[device] {
 		folderCfg := m.cfg.Folders()[folder]
 		protocolFolder := protocol.Folder{
-			ID:    folder,
-			Label: folderCfg.Label,
+			ID:                 folder,
+			Label:              folderCfg.Label,
+			ReadOnly:           folderCfg.Type == config.FolderTypeReadOnly,
+			IgnorePermissions:  folderCfg.IgnorePerms,
+			IgnoreDelete:       folderCfg.IgnoreDelete,
+			DisableTempIndexes: folderCfg.DisableTempIndexes,
 		}
-		var flags uint32
-		if folderCfg.Type == config.FolderTypeReadOnly {
-			flags |= protocol.FlagFolderReadOnly
-		}
-		if folderCfg.IgnorePerms {
-			flags |= protocol.FlagFolderIgnorePerms
-		}
-		if folderCfg.IgnoreDelete {
-			flags |= protocol.FlagFolderIgnoreDelete
-		}
-		if folderCfg.DisableTempIndexes {
-			flags |= protocol.FlagFolderDisabledTempIndexes
-		}
-		protocolFolder.Flags = flags
+
 		for _, device := range m.folderDevices[folder] {
 			// DeviceID is a value type, but with an underlying array. Copy it
 			// so we don't grab aliases to the same array later on in device[:]
@@ -1680,12 +1657,9 @@ func (m *Model) generateClusterConfig(device protocol.DeviceID) protocol.Cluster
 				Addresses:   deviceCfg.Addresses,
 				Compression: uint32(deviceCfg.Compression),
 				CertName:    deviceCfg.CertName,
-				Flags:       protocol.FlagShareTrusted,
+				Introducer:  deviceCfg.Introducer,
 			}
 
-			if deviceCfg.Introducer {
-				protocolDevice.Flags |= protocol.FlagIntroducer
-			}
 			protocolFolder.Devices = append(protocolFolder.Devices, protocolDevice)
 		}
 		message.Folders = append(message.Folders, protocolFolder)

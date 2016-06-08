@@ -110,11 +110,14 @@ message DownloadProgressMessage {
 }
 
 message Folder {
-    string          id      = 1 [(gogoproto.customname) = "ID"];
-    string          label   = 2;
-    repeated Device devices = 3 [(gogoproto.nullable) = false];
-    uint32          flags   = 4;
-    repeated Option options = 5 [(gogoproto.nullable) = false];
+    string id                   = 1 [(gogoproto.customname) = "ID"];
+    string label                = 2;
+    bool   read_only            = 3;
+    bool   ignore_permissions   = 4;
+    bool   ignore_delete        = 5;
+    bool   disable_temp_indexes = 6;
+
+    repeated Device devices = 16 [(gogoproto.nullable) = false];
 }
 
 message Device {
@@ -124,8 +127,7 @@ message Device {
     uint32          compression       = 4;
     string          cert_name         = 5;
     int64           max_local_version = 6;
-    uint32          flags             = 7;
-    repeated Option options           = 8 [(gogoproto.nullable) = false];
+    bool            introducer        = 7;
 }
 
 message FileDownloadProgressUpdate {

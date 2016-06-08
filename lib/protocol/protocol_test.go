@@ -269,14 +269,6 @@ func TestMarshalClusterConfigMessage(t *testing.T) {
 			if len(m1.Folders[i].Devices) == 0 {
 				m1.Folders[i].Devices = nil
 			}
-			if len(m1.Folders[i].Options) == 0 {
-				m1.Folders[i].Options = nil
-			}
-			for j := range m1.Folders[i].Devices {
-				if len(m1.Folders[i].Devices[j].Options) == 0 {
-					m1.Folders[i].Devices[j].Options = nil
-				}
-			}
 		}
 		return testMarshal(t, "clusterconfig", &m1, &ClusterConfigMessage{})
 	}

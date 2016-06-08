@@ -86,8 +86,15 @@ message RequestMessage {
 }
 
 message ResponseMessage {
-    bytes data = 1;
-    int32 code = 2;
+    bytes     data = 1;
+    ErrorCode code = 2;
+}
+
+enum ErrorCode {
+    NO_ERROR     = 0 [(gogoproto.enumvalue_customname) = "ErrorCodeNoError"];
+    GENERIC      = 1 [(gogoproto.enumvalue_customname) = "ErrorCodeGeneric"];
+    NO_SUCH_FILE = 2 [(gogoproto.enumvalue_customname) = "ErrorCodeNoSuchFile"];
+    INVALID_FILE = 3 [(gogoproto.enumvalue_customname) = "ErrorCodeInvalidFile"];
 }
 
 message ClusterConfigMessage {

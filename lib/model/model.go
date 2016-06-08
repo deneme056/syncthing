@@ -380,7 +380,7 @@ func (m *Model) Completion(device protocol.DeviceID, folder string) float64 {
 
 	var need, fileNeed, downloaded int64
 	rf.WithNeedTruncated(device, func(f db.FileIntf) bool {
-		ft := f.(protocol.FileInfoTruncated)
+		ft := f.(db.FileInfoTruncated)
 
 		// This might might be more than it really is, because some blocks can be of a smaller size.
 		downloaded = int64(counts[ft.Name] * protocol.BlockSize)
@@ -453,7 +453,7 @@ func (m *Model) NeedSize(folder string) (nfiles int, bytes int64) {
 // NeedFolderFiles returns paginated list of currently needed files in
 // progress, queued, and to be queued on next puller iteration, as well as the
 // total number of files currently needed.
-func (m *Model) NeedFolderFiles(folder string, page, perpage int) ([]protocol.FileInfoTruncated, []protocol.FileInfoTruncated, []protocol.FileInfoTruncated, int) {
+func (m *Model) NeedFolderFiles(folder string, page, perpage int) ([]db.FileInfoTruncated, []db.FileInfoTruncated, []db.FileInfoTruncated, int) {
 	m.fmut.RLock()
 	defer m.fmut.RUnlock()
 
@@ -464,7 +464,7 @@ func (m *Model) NeedFolderFiles(folder string, page, perpage int) ([]protocol.Fi
 		return nil, nil, nil, 0
 	}
 
-	var progress, queued, rest []protocol.FileInfoTruncated
+	var progress, queued, rest []db.FileInfoTruncated
 	var seen map[string]struct{}
 
 	skip := (page - 1) * perpage
@@ -478,8 +478,8 @@ func (m *Model) NeedFolderFiles(folder string, page, perpage int) ([]protocol.Fi
 		progressNames, skip, get = getChunk(allProgressNames, skip, get)
 		queuedNames, skip, get = getChunk(allQueuedNames, skip, get)
 
-		progress = make([]protocol.FileInfoTruncated, len(progressNames))
-		queued = make([]protocol.FileInfoTruncated, len(queuedNames))
+		progress = make([]db.FileInfoTruncated, len(progressNames))
+		queued = make([]db.FileInfoTruncated, len(queuedNames))
 		seen = make(map[string]struct{}, len(progressNames)+len(queuedNames))
 
 		for i, name := range progressNames {
@@ -497,7 +497,7 @@ func (m *Model) NeedFolderFiles(folder string, page, perpage int) ([]protocol.Fi
 		}
 	}
 
-	rest = make([]protocol.FileInfoTruncated, 0, perpage)
+	rest = make([]db.FileInfoTruncated, 0, perpage)
 	rf.WithNeedTruncated(protocol.LocalDeviceID, func(f db.FileIntf) bool {
 		total++
 		if skip > 0 {
@@ -505,7 +505,7 @@ func (m *Model) NeedFolderFiles(folder string, page, perpage int) ([]protocol.Fi
 			return true
 		}
 		if get > 0 {
-			ft := f.(protocol.FileInfoTruncated)
+			ft := f.(db.FileInfoTruncated)
 			if _, ok := seen[ft.Name]; !ok {
 				rest = append(rest, ft)
 				get--
@@ -1513,7 +1513,7 @@ func (m *Model) internalScanFolderSubdirs(folder string, subs []string) error {
 		var iterError error
 
 		fs.WithPrefixedHaveTruncated(protocol.LocalDeviceID, sub, func(fi db.FileIntf) bool {
-			f := fi.(protocol.FileInfoTruncated)
+			f := fi.(db.FileInfoTruncated)
 			if !f.IsDeleted() {
 				if len(batch) == batchSizeFiles {
 					if err := m.CheckFolderHealth(folder); err != nil {
@@ -1767,7 +1767,7 @@ func (m *Model) GlobalDirectoryTree(folder, prefix string, levels int, dirsonly 
 	}
 
 	files.WithPrefixedGlobalTruncated(prefix, func(fi db.FileIntf) bool {
-		f := fi.(protocol.FileInfoTruncated)
+		f := fi.(db.FileInfoTruncated)
 
 		if f.IsInvalid() || f.IsDeleted() || f.Name == prefix {
 			return true
@@ -2124,7 +2124,7 @@ func symlinkInvalid(folder string, fi db.FileIntf) bool {
 		switch fi := fi.(type) {
 		case protocol.FileInfo:
 			name = fi.Name
-		case protocol.FileInfoTruncated:
+		case db.FileInfoTruncated:
 			name = fi.Name
 		}
 		l.Infoln("Unsupported symlink", name, "in folder", folder)

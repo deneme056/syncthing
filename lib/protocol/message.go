@@ -57,47 +57,6 @@ func (f FileInfo) FileName() string {
 	return f.Name
 }
 
-func (f FileInfoTruncated) String() string {
-	return fmt.Sprintf("File{Name:%q, Permissions:0%o, Modified:%d, Version:%v, Length:%d, Deleted:%v, Invalid:%v, NoPermissions:%v}",
-		f.Name, f.Permissions, f.Modified, f.Version, f.Size, f.Deleted, f.Invalid, f.NoPermissions)
-}
-
-func (f FileInfoTruncated) IsDeleted() bool {
-	return f.Deleted
-}
-
-func (f FileInfoTruncated) IsInvalid() bool {
-	return f.Invalid
-}
-
-func (f FileInfoTruncated) IsDirectory() bool {
-	return f.Type == FileInfoTypeDirectory
-}
-
-func (f FileInfoTruncated) IsSymlink() bool {
-	switch f.Type {
-	case FileInfoTypeSymlinkDirectory, FileInfoTypeSymlinkFile, FileInfoTypeSymlinkUnknown:
-		return true
-	default:
-		return false
-	}
-}
-
-func (f FileInfoTruncated) HasPermissionBits() bool {
-	return !f.NoPermissions
-}
-
-func (f FileInfoTruncated) FileLength() int64 {
-	if f.IsDirectory() || f.IsDeleted() {
-		return 128
-	}
-	return f.Size
-}
-
-func (f FileInfoTruncated) FileName() string {
-	return f.Name
-}
-
 // WinsConflict returns true if "f" is the one to choose when it is in
 // conflict with "other".
 func (f FileInfo) WinsConflict(other FileInfo) bool {

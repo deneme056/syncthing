@@ -135,7 +135,7 @@ func (db *Instance) genericReplace(folder, device []byte, fs []protocol.FileInfo
 			// update with the same version if a device has marked a file as
 			// invalid, so handle that too.
 			l.Debugln("generic replace; exists - compare")
-			var ef protocol.FileInfoTruncated
+			var ef FileInfoTruncated
 			ef.Unmarshal(dbi.Value())
 			if !fs[fsi].Version.Equal(ef.Version) || fs[fsi].Invalid != ef.Invalid {
 				l.Debugln("generic replace; differs - insert")
@@ -212,7 +212,7 @@ func (db *Instance) updateFiles(folder, device []byte, fs []protocol.FileInfo, l
 			continue
 		}
 
-		var ef protocol.FileInfoTruncated
+		var ef FileInfoTruncated
 		err = ef.Unmarshal(bs)
 		if err != nil {
 			panic(err)
@@ -274,7 +274,7 @@ func (db *Instance) withHave(folder, device, prefix []byte, truncate bool, fn It
 	}
 }
 
-func (db *Instance) withAllFolderTruncated(folder []byte, fn func(device []byte, f protocol.FileInfoTruncated) bool) {
+func (db *Instance) withAllFolderTruncated(folder []byte, fn func(device []byte, f FileInfoTruncated) bool) {
 	t := db.newReadWriteTransaction()
 	defer t.close()
 
@@ -283,7 +283,7 @@ func (db *Instance) withAllFolderTruncated(folder []byte, fn func(device []byte,
 
 	for dbi.Next() {
 		device := db.deviceKeyDevice(dbi.Key())
-		var f protocol.FileInfoTruncated
+		var f FileInfoTruncated
 		// The iterator function may keep a reference to the unmarshalled
 		// struct, which in turn references the buffer it was unmarshalled
 		// from. dbi.Value() just returns an internal slice that it reuses, so
@@ -694,7 +694,7 @@ func (db *Instance) globalKeyFolder(key []byte) []byte {
 
 func unmarshalTrunc(bs []byte, truncate bool) (FileIntf, error) {
 	if truncate {
-		var tf protocol.FileInfoTruncated
+		var tf FileInfoTruncated
 		err := tf.Unmarshal(bs)
 		return tf, err
 	}

@@ -31,7 +31,7 @@ type FileSet struct {
 }
 
 // FileIntf is the set of methods implemented by both protocol.FileInfo and
-// protocol.FileInfoTruncated.
+// FileInfoTruncated.
 type FileIntf interface {
 	FileLength() int64
 	FileName() string
@@ -43,7 +43,7 @@ type FileIntf interface {
 }
 
 // The Iterator is called with either a protocol.FileInfo or a
-// protocol.FileInfoTruncated (depending on the method) and returns true to
+// FileInfoTruncated (depending on the method) and returns true to
 // continue iteration, false to stop.
 type Iterator func(f FileIntf) bool
 
@@ -105,7 +105,7 @@ func NewFileSet(folder string, db *Instance) *FileSet {
 	s.db.checkGlobals([]byte(folder), &s.globalSize)
 
 	var deviceID protocol.DeviceID
-	s.db.withAllFolderTruncated([]byte(folder), func(device []byte, f protocol.FileInfoTruncated) bool {
+	s.db.withAllFolderTruncated([]byte(folder), func(device []byte, f FileInfoTruncated) bool {
 		copy(deviceID[:], device)
 		if f.LocalVersion > s.localVersion[deviceID] {
 			s.localVersion[deviceID] = f.LocalVersion
@@ -215,12 +215,12 @@ func (s *FileSet) GetGlobal(file string) (protocol.FileInfo, bool) {
 	return f, true
 }
 
-func (s *FileSet) GetGlobalTruncated(file string) (protocol.FileInfoTruncated, bool) {
+func (s *FileSet) GetGlobalTruncated(file string) (FileInfoTruncated, bool) {
 	fi, ok := s.db.getGlobal([]byte(s.folder), []byte(osutil.NormalizedFilename(file)), true)
 	if !ok {
-		return protocol.FileInfoTruncated{}, false
+		return FileInfoTruncated{}, false
 	}
-	f := fi.(protocol.FileInfoTruncated)
+	f := fi.(FileInfoTruncated)
 	f.Name = osutil.NativeFilename(f.Name)
 	return f, true
 }
@@ -267,7 +267,7 @@ func nativeFileIterator(fn Iterator) Iterator {
 		case protocol.FileInfo:
 			f.Name = osutil.NativeFilename(f.Name)
 			return fn(f)
-		case protocol.FileInfoTruncated:
+		case FileInfoTruncated:
 			f.Name = osutil.NativeFilename(f.Name)
 			return fn(f)
 		default:

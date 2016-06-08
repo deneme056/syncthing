@@ -9,6 +9,7 @@ package main
 import (
 	"time"
 
+	"github.com/syncthing/syncthing/lib/db"
 	"github.com/syncthing/syncthing/lib/model"
 	"github.com/syncthing/syncthing/lib/protocol"
 	"github.com/syncthing/syncthing/lib/stats"
@@ -26,7 +27,7 @@ func (m *mockedModel) Completion(device protocol.DeviceID, folder string) float6
 
 func (m *mockedModel) Override(folder string) {}
 
-func (m *mockedModel) NeedFolderFiles(folder string, page, perpage int) ([]protocol.FileInfoTruncated, []protocol.FileInfoTruncated, []protocol.FileInfoTruncated, int) {
+func (m *mockedModel) NeedFolderFiles(folder string, page, perpage int) ([]db.FileInfoTruncated, []db.FileInfoTruncated, []db.FileInfoTruncated, int) {
 	return nil, nil, nil, 0
 }
 

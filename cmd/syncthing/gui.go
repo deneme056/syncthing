@@ -28,6 +28,7 @@ import (
 	"github.com/rcrowley/go-metrics"
 	"github.com/syncthing/syncthing/lib/auto"
 	"github.com/syncthing/syncthing/lib/config"
+	"github.com/syncthing/syncthing/lib/db"
 	"github.com/syncthing/syncthing/lib/discover"
 	"github.com/syncthing/syncthing/lib/events"
 	"github.com/syncthing/syncthing/lib/logger"
@@ -76,7 +77,7 @@ type modelIntf interface {
 	GlobalDirectoryTree(folder, prefix string, levels int, dirsonly bool) map[string]interface{}
 	Completion(device protocol.DeviceID, folder string) float64
 	Override(folder string)
-	NeedFolderFiles(folder string, page, perpage int) ([]protocol.FileInfoTruncated, []protocol.FileInfoTruncated, []protocol.FileInfoTruncated, int)
+	NeedFolderFiles(folder string, page, perpage int) ([]db.FileInfoTruncated, []db.FileInfoTruncated, []db.FileInfoTruncated, int)
 	NeedSize(folder string) (nfiles int, bytes int64)
 	ConnectionStats() map[string]interface{}
 	DeviceStatistics() map[string]stats.DeviceStatistics
@@ -1330,7 +1331,7 @@ func (s *embeddedStatic) String() string {
 	return fmt.Sprintf("embeddedStatic@%p", s)
 }
 
-func (s *apiService) toNeedSlice(fs []protocol.FileInfoTruncated) []jsonDBFileInfo {
+func (s *apiService) toNeedSlice(fs []db.FileInfoTruncated) []jsonDBFileInfo {
 	res := make([]jsonDBFileInfo, len(fs))
 	for i, f := range fs {
 		res[i] = jsonDBFileInfo(f)
@@ -1358,7 +1359,7 @@ func (f jsonFileInfo) MarshalJSON() ([]byte, error) {
 	})
 }
 
-type jsonDBFileInfo protocol.FileInfoTruncated
+type jsonDBFileInfo db.FileInfoTruncated
 
 func (f jsonDBFileInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{

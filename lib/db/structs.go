@@ -4,6 +4,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
 // You can obtain one at http://mozilla.org/MPL/2.0/.
 
+//go:generate go run ../../script/protofmt.go structs.proto
+//go:generate protoc --proto_path=../../../../../:../../../../gogo/protobuf/protobuf:. --gogofast_out=. structs.proto
+
 package db
 
 import (

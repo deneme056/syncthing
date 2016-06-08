@@ -1,7 +1,7 @@
 // Copyright (C) 2014 The Protocol Authors.
 
-//go:generate -command genxdr go run ../../vendor/github.com/calmh/xdr/cmd/genxdr/main.go
-//go:generate genxdr -o message_xdr.go message.go
+//go:generate go run ../../script/protofmt.go bep.proto
+//go:generate protoc --proto_path=../../../../../:../../../../gogo/protobuf/protobuf:. --gogofast_out=. bep.proto
 
 package protocol
 

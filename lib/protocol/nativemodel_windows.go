@@ -47,7 +47,7 @@ func fixupFiles(folder string, files []FileInfo) {
 				// can't possibly exist here anyway.
 				continue
 			}
-			files[i].Flags |= FlagInvalid
+			files[i].Invalid = true
 			l.Warnf("File name %q (folder %q) contains invalid characters; marked as invalid.", f.Name, folder)
 		}
 		files[i].Name = filepath.FromSlash(files[i].Name)

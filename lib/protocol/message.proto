@@ -13,134 +13,134 @@ option (gogoproto.goproto_enum_stringer_all) = true;
 option (gogoproto.goproto_enum_prefix_all) = false;
 
 message HelloMessage {
-    string DeviceName    = 1;
-    string ClientName    = 2;
-    string ClientVersion = 3;
+    string device_name    = 1;
+    string client_name    = 2;
+    string client_version = 3;
 }
 
 message IndexMessage {
     string            folder  = 1;
-    repeated FileInfo Files   = 2 [(gogoproto.nullable) = false];
-    uint32            Flags   = 3;
-    repeated Option   Options = 4 [(gogoproto.nullable) = false];
+    repeated FileInfo files   = 2 [(gogoproto.nullable) = false];
+    uint32            flags   = 3;
+    repeated Option   options = 4 [(gogoproto.nullable) = false];
 }
 
 message FileInfo {
     option (gogoproto.goproto_stringer) = false;
-    string       Name          = 1;
-    FileInfoType Type          = 2;
-    int64        Size          = 3;
-    uint32       Permissions   = 4;
-    int64        Modified      = 5;
-    bool         Deleted       = 6;
-    bool         Invalid       = 7;
-    bool         NoPermissions = 8;
-    Vector       Version       = 9 [(gogoproto.nullable) = false];
-    int64        LocalVersion  = 10;
+    string       name           = 1;
+    FileInfoType type           = 2;
+    int64        size           = 3;
+    uint32       permissions    = 4;
+    int64        modified       = 5;
+    bool         deleted        = 6;
+    bool         invalid        = 7;
+    bool         no_permissions = 8;
+    Vector       version        = 9 [(gogoproto.nullable) = false];
+    int64        local_version  = 10;
 
     repeated BlockInfo Blocks = 16 [(gogoproto.nullable) = false];
 }
 
 enum FileInfoType {
-    File             = 0 [(gogoproto.enumvalue_customname) = "FileInfoTypeFile"];
-    Directory        = 1 [(gogoproto.enumvalue_customname) = "FileInfoTypeDirectory"];
-    SymlinkFile      = 2 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkFile"];
-    SynlinkDirectory = 3 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkDirectory"];
-    SymlinkUnknown   = 4 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkUnknown"];
+    FILE              = 0 [(gogoproto.enumvalue_customname) = "FileInfoTypeFile"];
+    DIRECTORY         = 1 [(gogoproto.enumvalue_customname) = "FileInfoTypeDirectory"];
+    SYMLINK_FILE      = 2 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkFile"];
+    SYMLINK_DIRECOTRY = 3 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkDirectory"];
+    SYMLINK_UNKNOWN   = 4 [(gogoproto.enumvalue_customname) = "FileInfoTypeSymlinkUnknown"];
 }
 
 // Must be the same as FileInfo but without the blocks field
 message FileInfoTruncated {
     option (gogoproto.goproto_stringer) = false;
-    string       Name          = 1;
-    FileInfoType Type          = 2;
-    int64        Size          = 3;
-    uint32       Permissions   = 4;
-    int64        Modified      = 5;
-    bool         Deleted       = 6;
-    bool         Invalid       = 7;
-    bool         NoPermissions = 8;
-    Vector       Version       = 9 [(gogoproto.nullable) = false];
-    int64        LocalVersion  = 10;
+    string       name           = 1;
+    FileInfoType type           = 2;
+    int64        size           = 3;
+    uint32       permissions    = 4;
+    int64        modified       = 5;
+    bool         deleted        = 6;
+    bool         invalid        = 7;
+    bool         no_permissions = 8;
+    Vector       version        = 9 [(gogoproto.nullable) = false];
+    int64        local_version  = 10;
 }
 
 message BlockInfo {
     option (gogoproto.goproto_stringer) = false;
-    int64 Offset = 1;
-    int32 Size   = 2;
-    bytes Hash   = 3;
+    int64 offset = 1;
+    int32 size   = 2;
+    bytes hash   = 3;
 }
 
 message Option {
-    string Key   = 1;
-    string Value = 2;
+    string key   = 1;
+    string value = 2;
 }
 
 message RequestMessage {
-    string          Folder        = 1;
-    string          Name          = 2;
-    int64           Offset        = 3;
-    int32           Size          = 4;
-    bytes           Hash          = 5;
-    bool            FromTemporary = 6;
+    string folder         = 1;
+    string name           = 2;
+    int64  offset         = 3;
+    int32  size           = 4;
+    bytes  hash           = 5;
+    bool   from_temporary = 6;
 }
 
 message ResponseMessage {
-    bytes Data = 1;
-    int32 Code = 2;
+    bytes data = 1;
+    int32 code = 2;
 }
 
 message ClusterConfigMessage {
-    repeated Folder Folders = 1 [(gogoproto.nullable) = false];
-    repeated Option Options = 2 [(gogoproto.nullable) = false];
+    repeated Folder folders = 1 [(gogoproto.nullable) = false];
+    repeated Option options = 2 [(gogoproto.nullable) = false];
 }
 
 message DownloadProgressMessage {
-    string                              Folder  = 1;
-    repeated FileDownloadProgressUpdate Updates = 2 [(gogoproto.nullable) = false];
-    uint32                              Flags   = 3;
-    repeated Option                     Options = 4 [(gogoproto.nullable) = false];
+    string                              folder  = 1;
+    repeated FileDownloadProgressUpdate updates = 2 [(gogoproto.nullable) = false];
+    uint32                              flags   = 3;
+    repeated Option                     options = 4 [(gogoproto.nullable) = false];
 }
 
 message Folder {
-    string          ID      = 1;
-    string          Label   = 2;
-    repeated Device Devices = 3 [(gogoproto.nullable) = false];
-    uint32          Flags   = 4;
-    repeated Option Options = 5 [(gogoproto.nullable) = false];
+    string          id      = 1 [(gogoproto.customname) = "ID"];
+    string          label   = 2;
+    repeated Device devices = 3 [(gogoproto.nullable) = false];
+    uint32          flags   = 4;
+    repeated Option options = 5 [(gogoproto.nullable) = false];
 }
 
 message Device {
-    bytes           ID              = 1;
-    string          Name            = 2;
-    repeated string Addresses       = 3;
-    uint32          Compression     = 4;
-    string          CertName        = 5;
-    int64           MaxLocalVersion = 6;
-    uint32          Flags           = 7;
-    repeated Option Options         = 8 [(gogoproto.nullable) = false];
+    bytes           id                = 1 [(gogoproto.customname) = "ID"];
+    string          name              = 2;
+    repeated string addresses         = 3;
+    uint32          compression       = 4;
+    string          cert_name         = 5;
+    int64           max_local_version = 6;
+    uint32          flags             = 7;
+    repeated Option options           = 8 [(gogoproto.nullable) = false];
 }
 
 message FileDownloadProgressUpdate {
-    uint32         UpdateType   = 1;
-    string         Name         = 2;
-    Vector         Version      = 3 [(gogoproto.nullable) = false];
-    repeated int32 BlockIndexes = 4;
+    uint32         update_type   = 1;
+    string         name          = 2;
+    Vector         version       = 3 [(gogoproto.nullable) = false];
+    repeated int32 block_indexes = 4;
 }
 
 message CloseMessage {
-    string Reason = 1;
-    int32  Code   = 2;
+    string reason = 1;
+    int32  code   = 2;
 }
 
 message EmptyMessage {
 }
 
 message Vector {
-    repeated Counter Counters = 1 [(gogoproto.nullable) = false];
+    repeated Counter counters = 1 [(gogoproto.nullable) = false];
 }
 
 message Counter {
-    uint64 ID    = 1;
-    uint64 Value = 2;
+    uint64 id    = 1 [(gogoproto.customname) = "ID"];
+    uint64 value = 2;
 }

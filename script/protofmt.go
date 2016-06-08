@@ -34,7 +34,7 @@ func main() {
 
 func formatProto(in io.Reader, out io.Writer) error {
 	sc := bufio.NewScanner(in)
-	lineExp := regexp.MustCompile(`\s*([^=]*)\s+([^=\s]+?)\s*=\s*(.+)`)
+	lineExp := regexp.MustCompile(`([^=]+)\s+([^=\s]+?)\s*=(.+)`)
 	var tw *tabwriter.Writer
 	for sc.Scan() {
 		line := sc.Text()
@@ -46,8 +46,11 @@ func formatProto(in io.Reader, out io.Writer) error {
 		}
 
 		ms := lineExp.FindStringSubmatch(line)
+		for i := range ms {
+			ms[i] = strings.TrimSpace(ms[i])
+		}
 		if len(ms) == 4 && ms[1] != "option" {
-			typ := ms[1]
+			typ := strings.Join(strings.Fields(ms[1]), " ")
 			name := ms[2]
 			id := ms[3]
 			if tw == nil {

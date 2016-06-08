@@ -147,7 +147,7 @@ message CloseMessage {
     int32  code   = 2;
 }
 
-message EmptyMessage {
+message PingMessage {
 }
 
 message Vector {

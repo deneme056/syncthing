@@ -66,9 +66,6 @@ var (
 	ErrSwitchingConnections = errors.New("switching connections")
 )
 
-// Specific variants of empty messages...
-type pingMessage struct{ EmptyMessage }
-
 type Model interface {
 	// An index was received from the peer device
 	Index(deviceID DeviceID, folder string, files []FileInfo, flags uint32, options []Option)
@@ -366,7 +363,7 @@ func (c *rawConnection) readerLoop() (err error) {
 			}
 			c.receiver.DownloadProgress(c.id, msg.Folder, msg.Updates, msg.Flags, msg.Options)
 
-		case *pingMessage:
+		case *PingMessage:
 			if state != stateReady {
 				return fmt.Errorf("protocol error: ping message in state %d", state)
 			}
@@ -464,7 +461,7 @@ func (c *rawConnection) readMessage() (hdr header, msg encodable, err error) {
 		msg = &resp
 
 	case messageTypePing:
-		msg = &pingMessage{}
+		msg = &PingMessage{}
 
 	case messageTypeClusterConfig:
 		var cc ClusterConfigMessage

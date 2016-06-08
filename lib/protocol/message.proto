@@ -19,10 +19,8 @@ message HelloMessage {
 }
 
 message IndexMessage {
-    string            folder  = 1;
-    repeated FileInfo files   = 2 [(gogoproto.nullable) = false];
-    uint32            flags   = 3;
-    repeated Option   options = 4 [(gogoproto.nullable) = false];
+    string            folder = 1;
+    repeated FileInfo files  = 2 [(gogoproto.nullable) = false];
 }
 
 message FileInfo {

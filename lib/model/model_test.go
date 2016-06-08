@@ -168,11 +168,11 @@ func benchmarkIndex(b *testing.B, nfiles int) {
 	m.ServeBackground()
 
 	files := genFiles(nfiles)
-	m.Index(device1, "default", files, 0, nil)
+	m.Index(device1, "default", files)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.Index(device1, "default", files, 0, nil)
+		m.Index(device1, "default", files)
 	}
 	b.ReportAllocs()
 }
@@ -199,11 +199,11 @@ func benchmarkIndexUpdate(b *testing.B, nfiles, nufiles int) {
 	files := genFiles(nfiles)
 	ufiles := genFiles(nufiles)
 
-	m.Index(device1, "default", files, 0, nil)
+	m.Index(device1, "default", files)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.IndexUpdate(device1, "default", ufiles, 0, nil)
+		m.IndexUpdate(device1, "default", ufiles)
 	}
 	b.ReportAllocs()
 }
@@ -240,11 +240,11 @@ func (f FakeConnection) Option(string) string {
 	return ""
 }
 
-func (FakeConnection) Index(string, []protocol.FileInfo, uint32, []protocol.Option) error {
+func (FakeConnection) Index(string, []protocol.FileInfo) error {
 	return nil
 }
 
-func (FakeConnection) IndexUpdate(string, []protocol.FileInfo, uint32, []protocol.Option) error {
+func (FakeConnection) IndexUpdate(string, []protocol.FileInfo) error {
 	return nil
 }
 
@@ -305,7 +305,7 @@ func BenchmarkRequest(b *testing.B) {
 		},
 		Connection: fc,
 	}, protocol.HelloMessage{})
-	m.Index(device1, "default", files, 0, nil)
+	m.Index(device1, "default", files)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -832,7 +832,7 @@ func TestGlobalDirectoryTree(t *testing.T) {
 		return string(bytes)
 	}
 
-	m.Index(device1, "default", testdata, 0, nil)
+	m.Index(device1, "default", testdata)
 
 	result := m.GlobalDirectoryTree("default", "", -1, false)
 
@@ -1092,7 +1092,7 @@ func TestGlobalDirectorySelfFixing(t *testing.T) {
 		return string(bytes)
 	}
 
-	m.Index(device1, "default", testdata, 0, nil)
+	m.Index(device1, "default", testdata)
 
 	result := m.GlobalDirectoryTree("default", "", -1, false)
 
@@ -1177,7 +1177,7 @@ func benchmarkTree(b *testing.B, n1, n2 int) {
 	m.ScanFolder("default")
 	files := genDeepFiles(n1, n2)
 
-	m.Index(device1, "default", files, 0, nil)
+	m.Index(device1, "default", files)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -1211,7 +1211,7 @@ func TestIgnoreDelete(t *testing.T) {
 	f.Blocks = nil
 
 	// Send the index
-	m.Index(device1, "default", []protocol.FileInfo{f}, 0, nil)
+	m.Index(device1, "default", []protocol.FileInfo{f})
 
 	// Make sure we ignored it
 	f, ok = m.CurrentGlobalFile("default", "foo")

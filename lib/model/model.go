@@ -519,12 +519,7 @@ func (m *Model) NeedFolderFiles(folder string, page, perpage int) ([]protocol.Fi
 
 // Index is called when a new device is connected and we receive their full index.
 // Implements the protocol.Model interface.
-func (m *Model) Index(deviceID protocol.DeviceID, folder string, fs []protocol.FileInfo, flags uint32, options []protocol.Option) {
-	if flags != 0 {
-		l.Warnln("protocol error: unknown flags 0x%x in Index message", flags)
-		return
-	}
-
+func (m *Model) Index(deviceID protocol.DeviceID, folder string, fs []protocol.FileInfo) {
 	l.Debugf("IDX(in): %s %q: %d files", deviceID, folder, len(fs))
 
 	if !m.folderSharedWith(folder, deviceID) {
@@ -566,12 +561,7 @@ func (m *Model) Index(deviceID protocol.DeviceID, folder string, fs []protocol.F
 
 // IndexUpdate is called for incremental updates to connected devices' indexes.
 // Implements the protocol.Model interface.
-func (m *Model) IndexUpdate(deviceID protocol.DeviceID, folder string, fs []protocol.FileInfo, flags uint32, options []protocol.Option) {
-	if flags != 0 {
-		l.Warnln("protocol error: unknown flags 0x%x in IndexUpdate message", flags)
-		return
-	}
-
+func (m *Model) IndexUpdate(deviceID protocol.DeviceID, folder string, fs []protocol.FileInfo) {
 	l.Debugf("%v IDXUP(in): %s / %q: %d files", m, deviceID, folder, len(fs))
 
 	if !m.folderSharedWith(folder, deviceID) {
@@ -1194,13 +1184,13 @@ func sendIndexTo(initial bool, minLocalVer int64, conn protocol.Connection, fold
 
 		if len(batch) == indexBatchSize || currentBatchSize > indexTargetSize {
 			if initial {
-				if err = conn.Index(folder, batch, 0, nil); err != nil {
+				if err = conn.Index(folder, batch); err != nil {
 					return false
 				}
 				l.Debugf("sendIndexes for %s-%s/%q: %d files (<%d bytes) (initial index)", deviceID, name, folder, len(batch), currentBatchSize)
 				initial = false
 			} else {
-				if err = conn.IndexUpdate(folder, batch, 0, nil); err != nil {
+				if err = conn.IndexUpdate(folder, batch); err != nil {
 					return false
 				}
 				l.Debugf("sendIndexes for %s-%s/%q: %d files (<%d bytes) (batched update)", deviceID, name, folder, len(batch), currentBatchSize)
@@ -1216,12 +1206,12 @@ func sendIndexTo(initial bool, minLocalVer int64, conn protocol.Connection, fold
 	})
 
 	if initial && err == nil {
-		err = conn.Index(folder, batch, 0, nil)
+		err = conn.Index(folder, batch)
 		if err == nil {
 			l.Debugf("sendIndexes for %s-%s/%q: %d files (small initial index)", deviceID, name, folder, len(batch))
 		}
 	} else if len(batch) > 0 && err == nil {
-		err = conn.IndexUpdate(folder, batch, 0, nil)
+		err = conn.IndexUpdate(folder, batch)
 		if err == nil {
 			l.Debugf("sendIndexes for %s-%s/%q: %d files (last batch)", deviceID, name, folder, len(batch))
 		}

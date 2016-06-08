@@ -175,8 +175,8 @@ func TestClose(t *testing.T) {
 		t.Error("Ping should not return true")
 	}
 
-	c0.Index("default", nil, 0, nil)
-	c0.Index("default", nil, 0, nil)
+	c0.Index("default", nil)
+	c0.Index("default", nil)
 
 	if _, err := c0.Request("default", "foo", 0, 0, nil, false); err == nil {
 		t.Error("Request should return an error")
@@ -189,9 +189,6 @@ func TestMarshalIndexMessage(t *testing.T) {
 	}
 
 	f := func(m1 IndexMessage) bool {
-		if len(m1.Options) == 0 {
-			m1.Options = nil
-		}
 		if len(m1.Files) == 0 {
 			m1.Files = nil
 		}

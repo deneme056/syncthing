@@ -164,10 +164,10 @@ func negotiateTLS(cert tls.Certificate, conn0, conn1 net.Conn) (net.Conn, net.Co
 
 type fakeModel struct{}
 
-func (m *fakeModel) Index(deviceID DeviceID, folder string, files []FileInfo, flags uint32, options []Option) {
+func (m *fakeModel) Index(deviceID DeviceID, folder string, files []FileInfo) {
 }
 
-func (m *fakeModel) IndexUpdate(deviceID DeviceID, folder string, files []FileInfo, flags uint32, options []Option) {
+func (m *fakeModel) IndexUpdate(deviceID DeviceID, folder string, files []FileInfo) {
 }
 
 func (m *fakeModel) Request(deviceID DeviceID, folder string, name string, offset int64, hash []byte, fromTemporary bool, buf []byte) error {

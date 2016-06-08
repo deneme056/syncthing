@@ -23,10 +23,10 @@ func newTestModel() *TestModel {
 	}
 }
 
-func (t *TestModel) Index(deviceID DeviceID, folder string, files []FileInfo, flags uint32, options []Option) {
+func (t *TestModel) Index(deviceID DeviceID, folder string, files []FileInfo) {
 }
 
-func (t *TestModel) IndexUpdate(deviceID DeviceID, folder string, files []FileInfo, flags uint32, options []Option) {
+func (t *TestModel) IndexUpdate(deviceID DeviceID, folder string, files []FileInfo) {
 }
 
 func (t *TestModel) Request(deviceID DeviceID, folder, name string, offset int64, hash []byte, fromTemporary bool, buf []byte) error {

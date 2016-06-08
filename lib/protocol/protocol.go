@@ -78,7 +78,7 @@ type Model interface {
 	// The peer device closed the connection
 	Close(deviceID DeviceID, err error)
 	// The peer device sent progress updates for the files it is currently downloading
-	DownloadProgress(deviceID DeviceID, folder string, updates []FileDownloadProgressUpdate, flags uint32, options []Option)
+	DownloadProgress(deviceID DeviceID, folder string, updates []FileDownloadProgressUpdate)
 }
 
 type Connection interface {
@@ -89,7 +89,7 @@ type Connection interface {
 	IndexUpdate(folder string, files []FileInfo) error
 	Request(folder string, name string, offset int64, size int, hash []byte, fromTemporary bool) ([]byte, error)
 	ClusterConfig(config ClusterConfigMessage)
-	DownloadProgress(folder string, updates []FileDownloadProgressUpdate, flags uint32, options []Option)
+	DownloadProgress(folder string, updates []FileDownloadProgressUpdate)
 	Statistics() Statistics
 	Closed() bool
 }
@@ -277,12 +277,10 @@ func (c *rawConnection) Closed() bool {
 }
 
 // DownloadProgress sends the progress updates for the files that are currently being downloaded.
-func (c *rawConnection) DownloadProgress(folder string, updates []FileDownloadProgressUpdate, flags uint32, options []Option) {
+func (c *rawConnection) DownloadProgress(folder string, updates []FileDownloadProgressUpdate) {
 	c.send(-1, messageTypeDownloadProgress, &DownloadProgressMessage{
 		Folder:  folder,
 		Updates: updates,
-		Flags:   flags,
-		Options: options,
 	}, nil)
 }
 
@@ -357,7 +355,7 @@ func (c *rawConnection) readerLoop() (err error) {
 			if state != stateReady {
 				return fmt.Errorf("protocol error: response message in state %d", state)
 			}
-			c.receiver.DownloadProgress(c.id, msg.Folder, msg.Updates, msg.Flags, msg.Options)
+			c.receiver.DownloadProgress(c.id, msg.Folder, msg.Updates)
 
 		case *PingMessage:
 			if state != stateReady {

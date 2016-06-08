@@ -12,7 +12,6 @@ type TestModel struct {
 	size          int
 	hash          []byte
 	fromTemporary bool
-	options       []Option
 	closedCh      chan struct{}
 	closedErr     error
 }
@@ -48,7 +47,7 @@ func (t *TestModel) Close(deviceID DeviceID, err error) {
 func (t *TestModel) ClusterConfig(deviceID DeviceID, config ClusterConfigMessage) {
 }
 
-func (t *TestModel) DownloadProgress(DeviceID, string, []FileDownloadProgressUpdate, uint32, []Option) {
+func (t *TestModel) DownloadProgress(DeviceID, string, []FileDownloadProgressUpdate) {
 }
 
 func (t *TestModel) closedError() error {

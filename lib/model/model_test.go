@@ -211,8 +211,6 @@ func benchmarkIndexUpdate(b *testing.B, nfiles, nufiles int) {
 type downloadProgressMessage struct {
 	folder  string
 	updates []protocol.FileDownloadProgressUpdate
-	flags   uint32
-	options []protocol.Option
 }
 
 type FakeConnection struct {
@@ -266,12 +264,10 @@ func (FakeConnection) Statistics() protocol.Statistics {
 	return protocol.Statistics{}
 }
 
-func (f *FakeConnection) DownloadProgress(folder string, updates []protocol.FileDownloadProgressUpdate, flags uint32, options []protocol.Option) {
+func (f *FakeConnection) DownloadProgress(folder string, updates []protocol.FileDownloadProgressUpdate) {
 	f.downloadProgressMessages = append(f.downloadProgressMessages, downloadProgressMessage{
 		folder:  folder,
 		updates: updates,
-		flags:   flags,
-		options: options,
 	})
 }
 

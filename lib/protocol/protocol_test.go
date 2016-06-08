@@ -256,9 +256,6 @@ func TestMarshalClusterConfigMessage(t *testing.T) {
 	}
 
 	f := func(m1 ClusterConfigMessage) bool {
-		if len(m1.Options) == 0 {
-			m1.Options = nil
-		}
 		if len(m1.Folders) == 0 {
 			m1.Folders = nil
 		}

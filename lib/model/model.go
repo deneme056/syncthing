@@ -1047,7 +1047,7 @@ func (m *Model) PauseDevice(device protocol.DeviceID) {
 	events.Default.Log(events.DevicePaused, map[string]string{"device": device.String()})
 }
 
-func (m *Model) DownloadProgress(device protocol.DeviceID, folder string, updates []protocol.FileDownloadProgressUpdate, flags uint32, options []protocol.Option) {
+func (m *Model) DownloadProgress(device protocol.DeviceID, folder string, updates []protocol.FileDownloadProgressUpdate) {
 	if !m.folderSharedWith(folder, device) {
 		return
 	}

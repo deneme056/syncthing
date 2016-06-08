@@ -225,9 +225,6 @@ func TestMarshalRequestMessage(t *testing.T) {
 	}
 
 	f := func(m1 RequestMessage) bool {
-		if len(m1.Options) == 0 {
-			m1.Options = nil
-		}
 		if len(m1.Hash) == 0 {
 			m1.Hash = nil
 		}

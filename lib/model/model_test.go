@@ -54,19 +54,19 @@ func init() {
 var testDataExpected = map[string]protocol.FileInfo{
 	"foo": {
 		Name:     "foo",
-		Flags:    0,
+		Type:     protocol.FileInfoTypeFile,
 		Modified: 0,
 		Blocks:   []protocol.BlockInfo{{Offset: 0x0, Size: 0x7, Hash: []uint8{0xae, 0xc0, 0x70, 0x64, 0x5f, 0xe5, 0x3e, 0xe3, 0xb3, 0x76, 0x30, 0x59, 0x37, 0x61, 0x34, 0xf0, 0x58, 0xcc, 0x33, 0x72, 0x47, 0xc9, 0x78, 0xad, 0xd1, 0x78, 0xb6, 0xcc, 0xdf, 0xb0, 0x1, 0x9f}}},
 	},
 	"empty": {
 		Name:     "empty",
-		Flags:    0,
+		Type:     protocol.FileInfoTypeFile,
 		Modified: 0,
 		Blocks:   []protocol.BlockInfo{{Offset: 0x0, Size: 0x0, Hash: []uint8{0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14, 0x9a, 0xfb, 0xf4, 0xc8, 0x99, 0x6f, 0xb9, 0x24, 0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c, 0xa4, 0x95, 0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55}}},
 	},
 	"bar": {
 		Name:     "bar",
-		Flags:    0,
+		Type:     protocol.FileInfoTypeFile,
 		Modified: 0,
 		Blocks:   []protocol.BlockInfo{{Offset: 0x0, Size: 0xa, Hash: []uint8{0x2f, 0x72, 0xcc, 0x11, 0xa6, 0xfc, 0xd0, 0x27, 0x1e, 0xce, 0xf8, 0xc6, 0x10, 0x56, 0xee, 0x1e, 0xb1, 0x24, 0x3b, 0xe3, 0x80, 0x5b, 0xf9, 0xa9, 0xdf, 0x98, 0xf9, 0x2f, 0x76, 0x36, 0xb0, 0x5c}}},
 	},
@@ -76,8 +76,9 @@ func init() {
 	// Fix expected test data to match reality
 	for n, f := range testDataExpected {
 		fi, _ := os.Stat("testdata/" + n)
-		f.Flags = uint32(fi.Mode())
+		f.Permissions = uint32(fi.Mode())
 		f.Modified = fi.ModTime().Unix()
+		f.Size = fi.Size()
 		testDataExpected[n] = f
 	}
 }
@@ -97,7 +98,7 @@ func TestRequest(t *testing.T) {
 
 	// Existing, shared file
 	bs = bs[:6]
-	err := m.Request(device1, "default", "foo", 0, nil, 0, nil, bs)
+	err := m.Request(device1, "default", "foo", 0, nil, false, bs)
 	if err != nil {
 		t.Error(err)
 	}
@@ -106,32 +107,32 @@ func TestRequest(t *testing.T) {
 	}
 
 	// Existing, nonshared file
-	err = m.Request(device2, "default", "foo", 0, nil, 0, nil, bs)
+	err = m.Request(device2, "default", "foo", 0, nil, false, bs)
 	if err == nil {
 		t.Error("Unexpected nil error on insecure file read")
 	}
 
 	// Nonexistent file
-	err = m.Request(device1, "default", "nonexistent", 0, nil, 0, nil, bs)
+	err = m.Request(device1, "default", "nonexistent", 0, nil, false, bs)
 	if err == nil {
 		t.Error("Unexpected nil error on insecure file read")
 	}
 
 	// Shared folder, but disallowed file name
-	err = m.Request(device1, "default", "../walk.go", 0, nil, 0, nil, bs)
+	err = m.Request(device1, "default", "../walk.go", 0, nil, false, bs)
 	if err == nil {
 		t.Error("Unexpected nil error on insecure file read")
 	}
 
 	// Negative offset
-	err = m.Request(device1, "default", "foo", -4, nil, 0, nil, bs[:0])
+	err = m.Request(device1, "default", "foo", -4, nil, false, bs[:0])
 	if err == nil {
 		t.Error("Unexpected nil error on insecure file read")
 	}
 
 	// Larger block than available
 	bs = bs[:42]
-	err = m.Request(device1, "default", "foo", 0, nil, 0, nil, bs)
+	err = m.Request(device1, "default", "foo", 0, nil, false, bs)
 	if err == nil {
 		t.Error("Unexpected nil error on insecure file read")
 	}
@@ -571,44 +572,6 @@ func TestIgnores(t *testing.T) {
 	}
 }
 
-func TestRefuseUnknownBits(t *testing.T) {
-	db := db.OpenMemory()
-	m := NewModel(defaultConfig, protocol.LocalDeviceID, "device", "syncthing", "dev", db, nil)
-	m.AddFolder(defaultFolderConfig)
-	m.ServeBackground()
-
-	m.ScanFolder("default")
-	m.Index(device1, "default", []protocol.FileInfo{
-		{
-			Name:  "invalid1",
-			Flags: (protocol.FlagsAll + 1) &^ protocol.FlagInvalid,
-		},
-		{
-			Name:  "invalid2",
-			Flags: (protocol.FlagsAll + 2) &^ protocol.FlagInvalid,
-		},
-		{
-			Name:  "invalid3",
-			Flags: (1 << 31) &^ protocol.FlagInvalid,
-		},
-		{
-			Name:  "valid",
-			Flags: protocol.FlagsAll &^ (protocol.FlagInvalid | protocol.FlagSymlink),
-		},
-	}, 0, nil)
-
-	for _, name := range []string{"invalid1", "invalid2", "invalid3"} {
-		f, ok := m.CurrentGlobalFile("default", name)
-		if ok || f.Name == name {
-			t.Error("Invalid file found or name match")
-		}
-	}
-	f, ok := m.CurrentGlobalFile("default", "valid")
-	if !ok || f.Name != "valid" {
-		t.Error("Valid file not found or name mismatch", ok, f)
-	}
-}
-
 func TestROScanRecovery(t *testing.T) {
 	ldb := db.OpenMemory()
 	set := db.NewFileSet("default", ldb)
@@ -786,15 +749,15 @@ func TestGlobalDirectoryTree(t *testing.T) {
 	m.ServeBackground()
 
 	b := func(isfile bool, path ...string) protocol.FileInfo {
-		flags := uint32(protocol.FlagDirectory)
+		typ := protocol.FileInfoTypeDirectory
 		blocks := []protocol.BlockInfo{}
 		if isfile {
-			flags = 0
+			typ = protocol.FileInfoTypeFile
 			blocks = []protocol.BlockInfo{{Offset: 0x0, Size: 0xa, Hash: []uint8{0x2f, 0x72, 0xcc, 0x11, 0xa6, 0xfc, 0xd0, 0x27, 0x1e, 0xce, 0xf8, 0xc6, 0x10, 0x56, 0xee, 0x1e, 0xb1, 0x24, 0x3b, 0xe3, 0x80, 0x5b, 0xf9, 0xa9, 0xdf, 0x98, 0xf9, 0x2f, 0x76, 0x36, 0xb0, 0x5c}}}
 		}
 		return protocol.FileInfo{
 			Name:     filepath.Join(path...),
-			Flags:    flags,
+			Type:     typ,
 			Modified: 0x666,
 			Blocks:   blocks,
 			Size:     0xa,
@@ -1037,15 +1000,15 @@ func TestGlobalDirectorySelfFixing(t *testing.T) {
 	m.ServeBackground()
 
 	b := func(isfile bool, path ...string) protocol.FileInfo {
-		flags := uint32(protocol.FlagDirectory)
+		typ := protocol.FileInfoTypeDirectory
 		blocks := []protocol.BlockInfo{}
 		if isfile {
-			flags = 0
+			typ = protocol.FileInfoTypeFile
 			blocks = []protocol.BlockInfo{{Offset: 0x0, Size: 0xa, Hash: []uint8{0x2f, 0x72, 0xcc, 0x11, 0xa6, 0xfc, 0xd0, 0x27, 0x1e, 0xce, 0xf8, 0xc6, 0x10, 0x56, 0xee, 0x1e, 0xb1, 0x24, 0x3b, 0xe3, 0x80, 0x5b, 0xf9, 0xa9, 0xdf, 0x98, 0xf9, 0x2f, 0x76, 0x36, 0xb0, 0x5c}}}
 		}
 		return protocol.FileInfo{
 			Name:     filepath.Join(path...),
-			Flags:    flags,
+			Type:     typ,
 			Modified: 0x666,
 			Blocks:   blocks,
 			Size:     0xa,
@@ -1243,7 +1206,7 @@ func TestIgnoreDelete(t *testing.T) {
 	}
 
 	// Mark it for deletion
-	f.Flags = protocol.FlagDeleted
+	f.Deleted = true
 	f.Version = f.Version.Update(142) // arbitrary short remote ID
 	f.Blocks = nil
 

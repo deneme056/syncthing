@@ -342,28 +342,28 @@ func (l testfileList) String() string {
 
 func TestSymlinkTypeEqual(t *testing.T) {
 	testcases := []struct {
-		onDiskType   symlinks.TargetType
-		inIndexFlags uint32
-		equal        bool
+		onDiskType symlinks.TargetType
+		fiType     protocol.FileInfoType
+		equal      bool
 	}{
 		// File is only equal to file
-		{symlinks.TargetFile, 0, true},
-		{symlinks.TargetFile, protocol.FlagDirectory, false},
-		{symlinks.TargetFile, protocol.FlagSymlinkMissingTarget, false},
+		{symlinks.TargetFile, protocol.FileInfoTypeSymlinkFile, true},
+		{symlinks.TargetFile, protocol.FileInfoTypeSymlinkDirectory, false},
+		{symlinks.TargetFile, protocol.FileInfoTypeSymlinkUnknown, false},
 		// Directory is only equal to directory
-		{symlinks.TargetDirectory, 0, false},
-		{symlinks.TargetDirectory, protocol.FlagDirectory, true},
-		{symlinks.TargetDirectory, protocol.FlagSymlinkMissingTarget, false},
+		{symlinks.TargetDirectory, protocol.FileInfoTypeSymlinkFile, false},
+		{symlinks.TargetDirectory, protocol.FileInfoTypeSymlinkDirectory, true},
+		{symlinks.TargetDirectory, protocol.FileInfoTypeSymlinkUnknown, false},
 		// Unknown is equal to anything
-		{symlinks.TargetUnknown, 0, true},
-		{symlinks.TargetUnknown, protocol.FlagDirectory, true},
-		{symlinks.TargetUnknown, protocol.FlagSymlinkMissingTarget, true},
+		{symlinks.TargetUnknown, protocol.FileInfoTypeSymlinkFile, true},
+		{symlinks.TargetUnknown, protocol.FileInfoTypeSymlinkDirectory, true},
+		{symlinks.TargetUnknown, protocol.FileInfoTypeSymlinkUnknown, true},
 	}
 
 	for _, tc := range testcases {
-		res := SymlinkTypeEqual(tc.onDiskType, protocol.FileInfo{Flags: tc.inIndexFlags})
+		res := SymlinkTypeEqual(tc.onDiskType, protocol.FileInfo{Type: tc.fiType})
 		if res != tc.equal {
-			t.Errorf("Incorrect result %v for %v, %v", res, tc.onDiskType, tc.inIndexFlags)
+			t.Errorf("Incorrect result %v for %v, %v", res, tc.onDiskType, tc.fiType)
 		}
 	}
 }

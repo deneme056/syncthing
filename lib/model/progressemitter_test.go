@@ -346,7 +346,7 @@ func TestSendDownloadProgressMessages(t *testing.T) {
 		file: protocol.FileInfo{
 			Name:    "state5",
 			Version: v1,
-			Flags:   protocol.FlagDirectory,
+			Type:    protocol.FileInfoTypeDirectory,
 			Blocks:  blocks,
 		},
 		mut:              sync.NewRWMutex(),
@@ -359,7 +359,7 @@ func TestSendDownloadProgressMessages(t *testing.T) {
 		file: protocol.FileInfo{
 			Name:    "state6",
 			Version: v1,
-			Flags:   protocol.FlagSymlink,
+			Type:    protocol.FileInfoTypeSymlinkUnknown,
 		},
 		mut:              sync.NewRWMutex(),
 		available:        []int32{1, 2, 3},

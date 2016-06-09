@@ -1530,6 +1530,7 @@ func (m *Model) internalScanFolderSubdirs(folder string, subs []string) error {
 					nf := protocol.FileInfo{
 						Name:          f.Name,
 						Type:          f.Type,
+						Size:          f.Size,
 						Modified:      f.Modified,
 						Permissions:   f.Permissions,
 						NoPermissions: f.NoPermissions,
@@ -1550,6 +1551,7 @@ func (m *Model) internalScanFolderSubdirs(folder string, subs []string) error {
 					nf := protocol.FileInfo{
 						Name:     f.Name,
 						Type:     f.Type,
+						Size:     f.Size,
 						Modified: f.Modified,
 						Deleted:  true,
 						Version:  f.Version.Update(m.shortID),

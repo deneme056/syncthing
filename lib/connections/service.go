@@ -157,8 +157,14 @@ next:
 		if err != nil {
 			if protocol.IsVersionMismatch(err) {
 				// The error will be a relatively user friendly description
-				// of what's wrong with the version compatibility
-				l.Warnf("Connecting to %s (%s): %s", remoteID, c.RemoteAddr(), err)
+				// of what's wrong with the version compatibility. If the
+				// name was set in the hello return, use that to give the
+				// user more info about which device is the affected one.
+				remote := remoteID.String()
+				if hello.DeviceName != "" {
+					remote = fmt.Sprintf("%q (%s %s, %s)", hello.DeviceName, hello.ClientName, hello.ClientVersion, remote)
+				}
+				l.Warnf("Connecting to %s (%s): %s", remote, c.RemoteAddr(), err)
 			} else {
 				// It's something else - connection reset or whatever
 				l.Infof("Failed to exchange Hello messages with %s (%s): %s", remoteID, c.RemoteAddr(), err)

@@ -13,8 +13,12 @@ import (
 
 var (
 	sha256OfEmptyBlock        = sha256.Sum256(make([]byte, BlockSize))
-	HelloMessageMagic  uint32 = 0x9F79BC40
+	HelloMessageMagic  uint32 = 0x2EA7D90B
 )
+
+func (m HelloMessage) Magic() uint32 {
+	return HelloMessageMagic
+}
 
 func (f FileInfo) String() string {
 	return fmt.Sprintf("File{Name:%q, Permissions:0%o, Modified:%d, Version:%v, Length:%d, Deleted:%v, Invalid:%v, NoPermissions:%v, Blocks:%v}",

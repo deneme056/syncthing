@@ -300,7 +300,7 @@ func BenchmarkRequest(b *testing.B) {
 			Priority: 10,
 		},
 		Connection: fc,
-	}, protocol.HelloMessage{})
+	}, protocol.HelloResult{})
 	m.Index(device1, "default", files)
 
 	b.ResetTimer()
@@ -316,7 +316,7 @@ func BenchmarkRequest(b *testing.B) {
 }
 
 func TestDeviceRename(t *testing.T) {
-	hello := protocol.HelloMessage{
+	hello := protocol.HelloResult{
 		ClientName:    "syncthing",
 		ClientVersion: "v0.9.4",
 	}

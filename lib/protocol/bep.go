@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	sha256OfEmptyBlock        = sha256.Sum256(make([]byte, BlockSize))
-	HelloMessageMagic  uint32 = 0x2EA7D90B
+	sha256OfEmptyBlock = sha256.Sum256(make([]byte, BlockSize))
+	HelloMessageMagic  = uint32(0x2EA7D90B)
 )
 
 func (m HelloMessage) Magic() uint32 {

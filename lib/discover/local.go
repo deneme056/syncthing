@@ -11,6 +11,7 @@ package discover
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/hex"
 	"io"
 	"net"
@@ -41,6 +42,7 @@ type localClient struct {
 const (
 	BroadcastInterval = 30 * time.Second
 	CacheLifeTime     = 3 * BroadcastInterval
+	Magic             = uint32(0x2EA7D90B) // same as in BEP
 )
 
 func NewLocal(id protocol.DeviceID, addr string, addrList AddressLister) (FinderService, error) {
@@ -117,8 +119,12 @@ func (c *localClient) announcementPkt() Announce {
 }
 
 func (c *localClient) sendLocalAnnouncements() {
+	msg := make([]byte, 4)
+	binary.BigEndian.PutUint32(msg, Magic)
+
 	var pkt = c.announcementPkt()
-	msg, _ := pkt.Marshal()
+	bs, _ := pkt.Marshal()
+	msg = append(msg, bs...)
 
 	for {
 		c.beacon.Send(msg)
@@ -133,9 +139,13 @@ func (c *localClient) sendLocalAnnouncements() {
 func (c *localClient) recvAnnouncements(b beacon.Interface) {
 	for {
 		buf, addr := b.Recv()
+		if m := binary.BigEndian.Uint32(buf); m != Magic {
+			l.Debugf("discovering: Incorrect magic %0x from %s:", m, addr)
+			continue
+		}
 
 		var pkt Announce
-		err := pkt.Unmarshal(buf)
+		err := pkt.Unmarshal(buf[4:])
 		if err != nil && err != io.EOF {
 			l.Debugf("discover: Failed to unmarshal local announcement from %s:\n%s", addr, hex.Dump(buf))
 			continue

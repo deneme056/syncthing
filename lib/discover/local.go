@@ -140,7 +140,7 @@ func (c *localClient) recvAnnouncements(b beacon.Interface) {
 	for {
 		buf, addr := b.Recv()
 		if m := binary.BigEndian.Uint32(buf); m != Magic {
-			l.Debugf("discovering: Incorrect magic %0x from %s:", m, addr)
+			l.Debugf("discovering: Incorrect magic %x from %s:", m, addr)
 			continue
 		}
 

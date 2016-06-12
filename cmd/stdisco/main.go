@@ -9,6 +9,7 @@ package main
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/binary"
 	"flag"
 	"log"
 	"strings"
@@ -66,8 +67,13 @@ func recv(bc beacon.Interface) {
 	seen := make(map[string]bool)
 	for {
 		data, src := bc.Recv()
+		if m := binary.BigEndian.Uint32(data); m != discover.Magic {
+			log.Printf("Incorrect magic %x in announcement from %v", m, src)
+			continue
+		}
+
 		var ann discover.Announce
-		ann.Unmarshal(data)
+		ann.Unmarshal(data[4:])
 
 		if bytes.Equal(ann.ID, myID) {
 			// This is one of our own fake packets, don't print it.

@@ -407,7 +407,7 @@ func sizeOfFile(f db.FileIntf) (files, deleted int, bytes int64) {
 	} else {
 		deleted++
 	}
-	bytes += f.FileLength()
+	bytes += f.FileSize()
 	return
 }
 
@@ -1806,7 +1806,7 @@ func (m *Model) GlobalDirectoryTree(folder, prefix string, levels int, dirsonly 
 
 		if !dirsonly && base != "" {
 			last[base] = []interface{}{
-				time.Unix(f.Modified, 0), f.FileLength(),
+				time.Unix(f.Modified, 0), f.FileSize(),
 			}
 		}
 

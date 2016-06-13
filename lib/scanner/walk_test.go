@@ -322,7 +322,7 @@ func (l fileList) testfiles() testfileList {
 		if len(f.Blocks) > 1 {
 			panic("simple test case stuff only supports a single block per file")
 		}
-		testfiles[i] = testfile{name: f.Name, length: f.FileLength()}
+		testfiles[i] = testfile{name: f.Name, length: f.FileSize()}
 		if len(f.Blocks) == 1 {
 			testfiles[i].hash = fmt.Sprintf("%x", f.Blocks[0].Hash)
 		}

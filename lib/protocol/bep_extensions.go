@@ -50,7 +50,7 @@ func (f FileInfo) HasPermissionBits() bool {
 	return !f.NoPermissions
 }
 
-func (f FileInfo) FileLength() int64 {
+func (f FileInfo) FileSize() int64 {
 	if f.IsDirectory() || f.IsDeleted() {
 		return 128
 	}

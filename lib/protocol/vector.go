@@ -108,3 +108,89 @@ func (v Vector) Counter(id ShortID) uint64 {
 	}
 	return 0
 }
+
+// Ordering represents the relationship between two Vectors.
+type Ordering int
+
+const (
+	Equal Ordering = iota
+	Greater
+	Lesser
+	ConcurrentLesser
+	ConcurrentGreater
+)
+
+// There's really no such thing as "concurrent lesser" and "concurrent
+// greater" in version vectors, just "concurrent". But it's useful to be able
+// to get a strict ordering between versions for stable sorts and so on, so we
+// return both variants. The convenience method Concurrent() can be used to
+// check for either case.
+
+// Compare returns the Ordering that describes a's relation to b.
+func (v Vector) Compare(b Vector) Ordering {
+	var ai, bi int     // index into a and b
+	var av, bv Counter // value at current index
+
+	result := Equal
+
+	for ai < len(v.Counters) || bi < len(b.Counters) {
+		var aMissing, bMissing bool
+
+		if ai < len(v.Counters) {
+			av = v.Counters[ai]
+		} else {
+			av = Counter{}
+			aMissing = true
+		}
+
+		if bi < len(b.Counters) {
+			bv = b.Counters[bi]
+		} else {
+			bv = Counter{}
+			bMissing = true
+		}
+
+		switch {
+		case av.ID == bv.ID:
+			// We have a counter value for each side
+			if av.Value > bv.Value {
+				if result == Lesser {
+					return ConcurrentLesser
+				}
+				result = Greater
+			} else if av.Value < bv.Value {
+				if result == Greater {
+					return ConcurrentGreater
+				}
+				result = Lesser
+			}
+
+		case !aMissing && av.ID < bv.ID || bMissing:
+			// Value is missing on the b side
+			if av.Value > 0 {
+				if result == Lesser {
+					return ConcurrentLesser
+				}
+				result = Greater
+			}
+
+		case !bMissing && bv.ID < av.ID || aMissing:
+			// Value is missing on the a side
+			if bv.Value > 0 {
+				if result == Greater {
+					return ConcurrentGreater
+				}
+				result = Lesser
+			}
+		}
+
+		if ai < len(v.Counters) && (av.ID <= bv.ID || bMissing) {
+			ai++
+		}
+		if bi < len(b.Counters) && (bv.ID <= av.ID || aMissing) {
+			bi++
+		}
+	}
+
+	return result
+}

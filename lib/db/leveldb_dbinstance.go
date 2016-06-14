@@ -12,6 +12,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync/atomic"
 
 	"github.com/syncthing/syncthing/lib/protocol"
 	"github.com/syncthing/syncthing/lib/sync"
@@ -29,6 +30,7 @@ type Instance struct {
 	*leveldb.DB
 	folderIdx *smallIndex
 	deviceIdx *smallIndex
+	committed int64
 }
 
 const (
@@ -77,6 +79,11 @@ func newDBInstance(db *leveldb.DB) *Instance {
 	i.folderIdx = newSmallIndex(i, []byte{KeyTypeFolderIdx})
 	i.deviceIdx = newSmallIndex(i, []byte{KeyTypeDeviceIdx})
 	return i
+}
+
+// Committed returns the number of items committed to the database since startup
+func (db *Instance) Committed() int64 {
+	return atomic.LoadInt64(&db.committed)
 }
 
 func (db *Instance) genericReplace(folder, device []byte, fs []protocol.FileInfo, localSize, globalSize *sizeTracker, deleteFn deletionHandler) int64 {

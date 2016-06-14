@@ -633,7 +633,7 @@ func TestCommitted(t *testing.T) {
 	s := db.NewFileSet("test", ldb)
 
 	local := []protocol.FileInfo{
-		{Name: string("file"), Version: protocol.Vector{Counters: {ID: myID, Value: 1000}}},
+		{Name: string("file"), Version: protocol.Vector{Counters: []protocol.Counter{{ID: myID, Value: 1000}}}},
 	}
 
 	// Adding a file should increase the counter

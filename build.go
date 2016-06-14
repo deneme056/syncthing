@@ -271,9 +271,12 @@ func runCommand(cmd string, target target) {
 	case "metalint":
 		if isGometalinterInstalled() {
 			dirs := []string{".", "./cmd/...", "./lib/..."}
-			gometalinter("deadcode", dirs, "test/util.go")
-			gometalinter("structcheck", dirs)
-			gometalinter("varcheck", dirs)
+			ok := gometalinter("deadcode", dirs, "test/util.go")
+			ok = gometalinter("structcheck", dirs) && ok
+			ok = gometalinter("varcheck", dirs) && ok
+			if !ok {
+				os.Exit(1)
+			}
 		}
 
 	default:
@@ -999,7 +1002,7 @@ func isGometalinterInstalled() bool {
 	return true
 }
 
-func gometalinter(linter string, dirs []string, excludes ...string) {
+func gometalinter(linter string, dirs []string, excludes ...string) bool {
 	params := []string{"--disable-all"}
 	params = append(params, fmt.Sprintf("--deadline=%ds", 60))
 	params = append(params, "--enable="+linter)
@@ -1013,6 +1016,8 @@ func gometalinter(linter string, dirs []string, excludes ...string) {
 	}
 
 	bs, _ := runError("gometalinter", params...)
+
+	nerr := 0
 	for _, line := range strings.Split(string(bs), "\n") {
 		if line == "" {
 			continue
@@ -1021,5 +1026,8 @@ func gometalinter(linter string, dirs []string, excludes ...string) {
 			continue
 		}
 		log.Println(line)
+		nerr++
 	}
+
+	return nerr == 0
 }

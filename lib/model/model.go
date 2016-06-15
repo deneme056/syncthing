@@ -1648,7 +1648,7 @@ func (m *Model) generateClusterConfig(device protocol.DeviceID) protocol.Cluster
 				ID:          device[:],
 				Name:        deviceCfg.Name,
 				Addresses:   deviceCfg.Addresses,
-				Compression: uint32(deviceCfg.Compression),
+				Compression: deviceCfg.Compression,
 				CertName:    deviceCfg.CertName,
 				Introducer:  deviceCfg.Introducer,
 			}

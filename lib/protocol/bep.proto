@@ -125,7 +125,6 @@ enum FileDownloadProgressUpdateType {
 
 message CloseMessage {
     string reason = 1;
-    int32  code   = 2;
 }
 
 message PingMessage {

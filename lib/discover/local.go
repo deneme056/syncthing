@@ -43,6 +43,7 @@ const (
 	BroadcastInterval = 30 * time.Second
 	CacheLifeTime     = 3 * BroadcastInterval
 	Magic             = uint32(0x2EA7D90B) // same as in BEP
+	v13Magic          = uint32(0x7D79BC40) // previous version
 )
 
 func NewLocal(id protocol.DeviceID, addr string, addrList AddressLister) (FinderService, error) {
@@ -137,10 +138,29 @@ func (c *localClient) sendLocalAnnouncements() {
 }
 
 func (c *localClient) recvAnnouncements(b beacon.Interface) {
+	warnedAbout := make(map[string]bool)
 	for {
 		buf, addr := b.Recv()
-		if m := binary.BigEndian.Uint32(buf); m != Magic {
-			l.Debugf("discovering: Incorrect magic %x from %s:", m, addr)
+		if len(buf) < 4 {
+			l.Debugf("discover: short packet from %s")
+			continue
+		}
+
+		magic := binary.BigEndian.Uint32(buf)
+		switch magic {
+		case Magic:
+			// All good
+
+		case v13Magic:
+			// Old version
+			if !warnedAbout[addr.String()] {
+				l.Warnf("Incompatible (v0.13) local discovery packet from %v - upgrade that device to connect", addr)
+				warnedAbout[addr.String()] = true
+			}
+			continue
+
+		default:
+			l.Debugf("discover: Incorrect magic %x from %s", magic, addr)
 			continue
 		}
 

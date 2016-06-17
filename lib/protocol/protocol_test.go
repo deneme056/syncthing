@@ -22,10 +22,10 @@ var (
 )
 
 func TestHeaderEncodeDecode(t *testing.T) {
-	f := func(ver, id, typ int) bool {
+	f := func(ver, id int, typ MessageType) bool {
 		ver = int(uint(ver) % 16)
 		id = int(uint(id) % 4096)
-		typ = int(uint(typ) % 256)
+		typ = MessageType(uint(typ) % 256)
 		h0 := header{version: ver, msgID: id, msgType: typ}
 		h1 := decodeHeader(encodeHeader(h0))
 		return h0 == h1
@@ -36,10 +36,10 @@ func TestHeaderEncodeDecode(t *testing.T) {
 }
 
 func TestHeaderMarshalUnmarshal(t *testing.T) {
-	f := func(ver, id, typ int) bool {
+	f := func(ver, id int, typ MessageType) bool {
 		ver = int(uint(ver) % 16)
 		id = int(uint(id) % 4096)
-		typ = int(uint(typ) % 256)
+		typ = MessageType(uint(typ) % 256)
 		buf := make([]byte, 4)
 
 		h0 := header{version: ver, msgID: id, msgType: typ}

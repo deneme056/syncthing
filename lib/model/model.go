@@ -40,10 +40,8 @@ import (
 
 // How many files to send in each Index/IndexUpdate message.
 const (
-	indexTargetSize   = 250 * 1024 // Aim for making index messages no larger than 250 KiB (uncompressed)
-	indexPerFileSize  = 250        // Each FileInfo is approximately this big, in bytes, excluding BlockInfos
-	indexPerBlockSize = 40         // Each BlockInfo is approximately this big
-	indexBatchSize    = 1000       // Either way, don't include more files than this
+	indexTargetSize = 250 * 1024 // Aim for making index messages no larger than 250 KiB (uncompressed)
+	indexBatchSize  = 1000       // Either way, don't include more files than this
 )
 
 type service interface {
@@ -1201,7 +1199,7 @@ func sendIndexTo(initial bool, minLocalVer int64, conn protocol.Connection, fold
 		}
 
 		batch = append(batch, f)
-		currentBatchSize += indexPerFileSize + len(f.Blocks)*indexPerBlockSize
+		currentBatchSize += f.ProtoSize()
 		return true
 	})
 

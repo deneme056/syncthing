@@ -339,6 +339,11 @@ func TestMarshalledIndexMessageSize(t *testing.T) {
 	// We should be able to handle a 1 TiB file without
 	// blowing the default max message size.
 
+	if testing.Short() {
+		t.Skip("this test requires a lot of memory")
+		return
+	}
+
 	const (
 		maxMessageSize = MaxMessageLen
 		fileSize       = 1 << 40

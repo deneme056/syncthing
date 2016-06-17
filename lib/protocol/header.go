@@ -7,7 +7,7 @@ import "encoding/binary"
 type header struct {
 	version     int
 	msgID       int
-	msgType     int
+	msgType     MessageType
 	compression bool
 }
 
@@ -43,7 +43,7 @@ func decodeHeader(u uint32) header {
 	return header{
 		version:     int(u>>28) & 0xf,
 		msgID:       int(u>>16) & 0xfff,
-		msgType:     int(u>>8) & 0xff,
+		msgType:     MessageType(u>>8) & 0xff,
 		compression: u&1 == 1,
 	}
 }

@@ -23,17 +23,6 @@ const (
 )
 
 const (
-	messageTypeClusterConfig    = 0
-	messageTypeIndex            = 1
-	messageTypeRequest          = 2
-	messageTypeResponse         = 3
-	messageTypePing             = 4
-	messageTypeIndexUpdate      = 6
-	messageTypeClose            = 7
-	messageTypeDownloadProgress = 8
-)
-
-const (
 	stateInitial = iota
 	stateReady
 )
@@ -548,7 +537,7 @@ func (c *rawConnection) handleResponse(msgID int, resp ResponseMessage) {
 	c.awaitingMut.Unlock()
 }
 
-func (c *rawConnection) send(msgID int, msgType int, msg encodable, done chan struct{}) bool {
+func (c *rawConnection) send(msgID int, msgType MessageType, msg encodable, done chan struct{}) bool {
 	if msgID < 0 {
 		select {
 		case id := <-c.nextID:

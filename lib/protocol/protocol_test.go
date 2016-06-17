@@ -334,3 +334,40 @@ func timeoutWriteHeader(w io.Writer, hdr header) {
 	case <-time.After(250 * time.Millisecond):
 	}
 }
+
+func TestMarshalledIndexMessageSize(t *testing.T) {
+	// We should be able to handle a 1 TiB file without
+	// blowing the default max message size.
+
+	const (
+		maxMessageSize = MaxMessageLen
+		fileSize       = 1 << 40
+		blockSize      = BlockSize
+	)
+
+	f := FileInfo{
+		Name:        "a normal length file name withoout any weird stuff.txt",
+		Type:        FileInfoTypeFile,
+		Size:        fileSize,
+		Permissions: 0666,
+		Modified:    time.Now().Unix(),
+		Version:     Vector{Counters: []Counter{{ID: 1 << 60, Value: 1}, {ID: 2 << 60, Value: 1}}},
+		Blocks:      make([]BlockInfo, fileSize/blockSize),
+	}
+
+	for i := 0; i < fileSize/blockSize; i++ {
+		f.Blocks[i].Offset = int64(i) * blockSize
+		f.Blocks[i].Size = blockSize
+		f.Blocks[i].Hash = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 1, 2, 3, 4, 5, 6, 7, 8, 9, 30, 1, 2}
+	}
+
+	idx := IndexMessage{
+		Folder: "some folder ID",
+		Files:  []FileInfo{f},
+	}
+
+	msgSize := idx.ProtoSize()
+	if msgSize > maxMessageSize {
+		t.Errorf("Message size %d bytes is larger than max %d", msgSize, maxMessageSize)
+	}
+}
